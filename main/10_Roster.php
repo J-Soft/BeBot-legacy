@@ -533,11 +533,11 @@ class Roster_Core extends BasePassiveModule
 			$msg = "";
 			if ($this -> added > 0)
 			{
-				$msg .= "::: Added " . $this -> added members . " ";
+				$msg .= "::: Added " . $this -> added . " members ";
 			}
 			if ($this -> removed > 0)
 			{
-				$msg .= "::: Removed " . $this -> removed members . " ";
+				$msg .= "::: Removed " . $this -> removed . " members ";
 			}
 			if ($this -> rerolled > 0)
 			{
