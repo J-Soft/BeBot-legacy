@@ -223,11 +223,6 @@ class Roster_Core extends BasePassiveModule
 
 	function update_guild($force = false)
 	{
-		if ($this -> startup && !$force)
-		{
-			$msg = "Bot is online ::: ";
-			$this -> startup = FALSE;
-		}
 		$this -> lastrun = $this -> bot -> core("settings") -> get("members", "LastRosterUpdate");
 		if (($this -> lastrun + (60 * 60 * 6)) >= time() && $force == false)
 		{
@@ -538,15 +533,15 @@ class Roster_Core extends BasePassiveModule
 			$msg = "";
 			if ($this -> added > 0)
 			{
-				$msg .= "::: Added $this -> added members ";
+				$msg .= "::: Added " . $this -> added members . " ";
 			}
 			if ($this -> removed > 0)
 			{
-				$msg .= "::: Removed $this -> removed members ";
+				$msg .= "::: Removed " . $this -> removed members . " ";
 			}
 			if ($this -> rerolled > 0)
 			{
-				$msg .= "::: $this -> removed members was found to have rerolled ";
+				$msg .= "::: " . $this -> removed . " members was found to have rerolled ";
 			}
 			
 			$this -> bot -> core("settings") -> save("members", "LastRosterUpdate", time());
