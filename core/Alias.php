@@ -4,7 +4,7 @@
 *
 * BeBot - An Anarchy Online & Age of Conan Chat Automaton
 * Copyright (C) 2004 Jonas Jax
-* Copyright (C) 2005-2007 Thomas Juberg StensÃ¥s, ShadowRealm Creations and the BeBot development team.
+* Copyright (C) 2005-2007 Thomas Juberg Stensås, ShadowRealm Creations and the BeBot development team.
 *
 * Developed by:
 * - Alreadythere (RK2)
@@ -53,15 +53,15 @@ class Alias extends BaseActiveModule
 		$this -> register_module("alias");
 		$this -> register_event("connect");
 
-		$this -> help['description'] = "Add Alias's like what you are comanly called to be used in other modules.";
+		$this -> help['description'] = "Add Alias's like what you are commonly called to be used in other modules.";
 		$this -> help['command']['alias add <Alias>']="Add Alias.";
 		$this -> help['command']['alias del <Alias>']="Delete Alias.";
 		$this -> help['command']['alias rem <Alias>']="Delete Alias.";
-		$this -> help['command']['aliasadmin add <nickname> <Alias>']="Add Alias to Nickname.";
-		$this -> help['command']['aliasadmin del <Alias>']="Delete Alias.";
-		$this -> help['command']['aliasadmin rem <Alias>']="Delete Alias.";
-		$this -> help['command']['alias <name>']="Show Alias's Asosiated with <name> and Alts.";
-		$this -> help['command']['alias']="Show Alias's Asosiated with you and your Alts.";
+		$this -> help['command']['alias admin add <nickname> <Alias>']="Add Alias to Nickname.";
+		$this -> help['command']['alias admin del <Alias>']="Delete Alias.";
+		$this -> help['command']['alias admin rem <Alias>']="Delete Alias.";
+		$this -> help['command']['alias <name>']="Show Alias's associated with <name> and Alts.";
+		$this -> help['command']['alias']="Show Alias's associated with you and your Alts.";
 		$this -> help['command']['alias list']="Show all Alias's.";
 		
 		$this -> bot -> db -> query("CREATE TABLE IF NOT EXISTS " . $this -> bot -> db -> define_tablename("alias", "false") . " (
@@ -108,12 +108,12 @@ class Alias extends BaseActiveModule
 				switch($vars[1])
 				{
 					case 'add':
-						return($this -> add_alias($name, $vars[2]));
+						return $this->add_alias($name, $vars[2]);
 					case 'del':
 					case 'rem':
-						return($this -> del_alias($name, $vars[2]));
+						return $this->del_alias($name, $vars[2]);
 					case 'main':
-						Return($this -> set_main($name, $vars[2]));
+						return $this->set_main($name, $vars[2]);
 					case '':
 						return $this -> get_alias($name);
 					case 'admin':
@@ -121,19 +121,19 @@ class Alias extends BaseActiveModule
 						{
 							case 'add':
 								$vars[3] = ucfirst(strtolower($vars[3]));
-								return($this -> add_alias($vars[3], $vars[4]));
+								return $this->add_alias($vars[3], $vars[4]);
 							case 'rem':
 							case 'del':
-								return($this -> del_alias_admin($vars[3]));
+								return $this->del_alias_admin($vars[3]);
 							default:
-								Return("Unknown Subcommand of alias admin: ".$vars[1]);
+								return "Unknown Subcommand of alias admin: " . $vars[1];
 						}
 					default:
 						return $this -> get_alias($vars[1]);
 				}
 				break;
 			default:
-				Return("Broken plugin, recieved unhandled command: ".$vars[0]);
+				return "Broken plugin, received unhandled command: " . $vars[0];
 		}
 	}
 
@@ -141,12 +141,12 @@ class Alias extends BaseActiveModule
 
 	function add_alias($name, $alias)
 	{
-		if (!$this -> bot -> core("chat") -> get_uid($name))
-			Return "##error##Character ##highlight##".$name."##end## does not exist.##end##";
+		if (! $this->bot->core("chat")->get_uid($name))
+			return "##error##Character ##highlight##" . $name . "##end## does not exist.##end##";
 		if (strlen($alias) < 3)
-			Return "##error##Alias ##highlight##".$alias."##end## is too Short. (min 3)##end##";
-		$name = $this -> bot -> core("alts") -> main($name);
-		$result = $this -> bot -> db -> select("SELECT nickname FROM #___alias WHERE alias = '$alias'");
+			return "##error##Alias ##highlight##" . $alias . "##end## is too Short. (min 3)##end##";
+		$name = $this->bot->core("alts")->main($name);
+		$result = $this->bot->db->select("SELECT nickname FROM #___alias WHERE alias = '$alias'");
 		if (empty($result))
 		{
 			$name = ucfirst(strtolower($name));
@@ -250,26 +250,26 @@ class Alias extends BaseActiveModule
 		$main = $this -> bot -> core("alts") -> main($name);
 		if(isset($this -> main[$main]))
 		{
-			if(strtolower($this -> main[$main]) == $alias)
-				Return("##highlight##".$alias."##end## is Already you main alias");
-			$amain = $this -> bot -> core("alts") -> main($this -> alias[$alias]);
-			if($main != $amain)
-				Return("##highlight##".$alias."##end## is not your Alias so cannot be set as main");
-			//set all alias's for $name and alts to not main
-			$this -> bot -> db -> query("UPDATE #___alias SET main = 0 WHERE nickname = '".$main."'");
-			$this -> bot -> db -> query("UPDATE #___alias SET main = 1 WHERE alias = '".$alias."'");
-			$this -> create_caches();
-			Return ("Alias Main set");
+			if (strtolower($this->main[$main]) == $alias)
+				return "##highlight##" . $alias . "##end## is Already you main alias";
+			$amain = $this->bot->core("alts")->main($this->alias[$alias]);
+			if ($main != $amain)
+				return "##highlight##" . $alias . "##end## is not your Alias so cannot be set as main";
+				//set all alias's for $name and alts to not main
+			$this->bot->db->query("UPDATE #___alias SET main = 0 WHERE nickname = '" . $main . "'");
+			$this->bot->db->query("UPDATE #___alias SET main = 1 WHERE alias = '" . $alias . "'");
+			$this->create_caches();
+			return "Alias Main set";
 		}
 		elseif(isset($this -> alias[$alias]))
 		{
-			$amain = $this -> bot -> core("alts") -> main($this -> alias[$alias]);
-			if($main != $amain)
-				Return("##highlight##".$alias."##end## is not your Alias so cannot be set as main");
-			//set all alias's for $name and alts to not main
-			$sql .= "UPDATE #___alias SET main = 0 WHERE nickname = '".$main."'";
-			$alts = $this -> bot -> core("alts") -> get_alts($main);
-			if(!empty($alts))
+			$amain = $this->bot->core("alts")->main($this->alias[$alias]);
+			if ($main != $amain)
+				return "##highlight##" . $alias . "##end## is not your Alias so cannot be set as main";
+				//set all alias's for $name and alts to not main
+			$sql .= "UPDATE #___alias SET main = 0 WHERE nickname = '" . $main . "'";
+			$alts = $this->bot->core("alts")->get_alts($main);
+			if (! empty($alts))
 			{
 				foreach($alts as $alt)
 				{
@@ -279,19 +279,19 @@ class Alias extends BaseActiveModule
 			$this -> bot -> db -> query($sql);
 			$this -> bot -> db -> query("UPDATE #___alias SET main = 1 WHERE alias = '".$alias."'");
 			$this -> create_caches();
-			Return ("Alias Main set");
+			return "Alias Main set";
 		}
 		else
-			Return ("Alias not Found");
+			return "Alias not Found";
 	}
 
 	function get_main($name)
 	{
-		$main = $this -> bot -> core("alts") -> main($name);
-		if(isset($this -> main[$main]))
-			Return($this -> main[$main]);
+		$main = $this->bot->core("alts")->main($name);
+		if (isset($this->main[$main]))
+			return $this->main[$main];
 		else
-			Return FALSE;
+			return FALSE;
 	}
 
 }

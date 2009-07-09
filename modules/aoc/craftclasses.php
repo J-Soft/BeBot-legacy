@@ -2,7 +2,7 @@
 /*
 * BeBot - An Anarchy Online & Age of Conan Chat Automaton
 * Copyright (C) 2004 Jonas Jax
-* Copyright (C) 2005-2007 Thomas Juberg StensÃ¥s, ShadowRealm Creations and the BeBot development team.
+* Copyright (C) 2005-2007 Thomas Juberg Stensås, ShadowRealm Creations and the BeBot development team.
 *
 * Developed by:
 * - Alreadythere (RK2)
@@ -48,7 +48,7 @@ $craftclasses = new craftclasses($bot);
 
 //////////////////////////////////////////////////////////////////////
 // The Class itself...
-class craftclasses Extends BaseActiveModule
+class craftclasses extends BaseActiveModule
 {
 	var $bot;
 	var $help;
@@ -80,7 +80,7 @@ class craftclasses Extends BaseActiveModule
 		$this -> register_command("all", "setcraft", "MEMBER");
 		$this -> register_command("all", "craft", "MEMBER");
 		$this -> help['description'] = 'Used to set the crafting classes on a user.';
-		$this -> help['command']['setcraft [class1] [class2]']="Sets the two crafting classes for you. Classes can be Alchemist, Architect, Armorsmith, Gemcutter, Weaponsmith and None";
+		$this -> help['command']['setcraft <class1> <class2>']="Sets the two crafting classes for you. Classes can be Alchemist, Architect, Armorsmith, Gemcutter, Weaponsmith and None";
 		$this -> help['command']['craft']="Shows the classes you currently have assigned to you.";
 
 		$this -> bot -> core("settings") -> create("Craftclasses", "Remind", TRUE, "Should users level 40+ be reminded to set their craft classes?");
@@ -121,7 +121,7 @@ class craftclasses Extends BaseActiveModule
 			{
 				$this -> bot -> db -> query('INSERT INTO #___craftingclass (name,class1,class2) VALUES("'.$name.'","'.$options[0].'","'.$options[1].'") ON DUPLICATE KEY UPDATE class1=values(class1), class2=values(class2)');
 				$this -> bot -> db -> query("UPDATE #___whois set craft1 = '" . $options[0] . "', craft2 = '" . $options[1]
-				. "' WHERE nickname = '" . $name . "'");
+						. "' WHERE nickname = '" . $name . "'");
 				$output = "Thank you for updating your crafting information.";
 			}
 			else
