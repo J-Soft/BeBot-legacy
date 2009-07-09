@@ -45,6 +45,8 @@ class BotStatistics_Core extends BasePassiveModule
 
 		$this -> bot -> core("settings") -> create("Bots", "DB", "", "Use dif Database? (Restart Required)");
 
+		$this->DB = "";
+		
 		if ($this -> bot -> core("settings") -> get ("bots", "DB") !== "")
 			$this -> DB = $this -> bot -> core("settings") -> get ("bots", "DB").".";
 

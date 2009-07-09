@@ -1100,7 +1100,7 @@ class AOChat
 
 		$pq = new AOChatPacket("out", AOCP_CLIENT_LOOKUP, $u);
 		$this->send_packet($pq);
-		if($game == "aoc")
+		if($this -> game == "aoc")
 		{
 			$pr = $this->get_packet();
 
@@ -1331,7 +1331,12 @@ class AOChat
 		{
 			return false;
 		}
-		return (int)$this->buddies[$uid];
+		if (! isset($this->buddies[$uid]))
+		{
+			$this->buddies[$uid] = 0;
+		}
+		$return = (int) $this->buddies[$uid];
+		return $return;
 	}
 
 	function buddy_online($who)
@@ -1674,7 +1679,7 @@ class AOChat
 * M - mapping [see t.class in ao_nosign.jar] - unsupported
 *
 */
-if(strtolower($game) == "ao")
+if(strtolower($this -> game) == "ao")
 	$aocpdifs = array("IS", "IIS", "IS", "s");
 else
 	$aocpdifs = array("IIS", "IBBIB", "I", "ISS");
