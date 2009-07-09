@@ -1659,32 +1659,6 @@ class AOChat
 
 }
 
-/* There is a bug in php before 5.3 with long integers as array keys under linux 32 bit.
- * See here: http://bugs.php.net/46701
- * The following conversion to (string) is a workaround and can be removed once php 5.3
- * is widely used. This php version must then be described to be the minimum requirement
- * for the bot!
- * Also look for that line in this file, which was changed too:
- * $pmap = $GLOBALS["aochat-rpcpacketmap"][$dir][(string)$type];
- */
-$GLOBALS["aochat-rpcpacketmap"] = array(
-"in" => array(
-	(string)RPC_UNIVERSE_CHALLENGE			=> array("name"=>"Login Challenge",				"args"=>"S"),
-	(string)RPC_UNIVERSE_AUTHENTICATED		=> array("name"=>"Login Authenticated",			"args"=>"IIISII"),
-	(string)RPC_UNIVERSE_ERROR				=> array("name"=>"Login Error",					"args"=>"I"),
-	(string)RPC_TERRITORY_INITACK			=> array("name"=>"Player Authenticated",		"args"=>"S"),
-	(string)RPC_TERRITORY_CHARACTERLIST		=> array("name"=>"Player Characterlist",		"args"=>"II"),
-	(string)RPC_TERRITORY_GETCHATSERVER		=> array("name"=>"Receive Chatserver",			"args"=>"InIII"),
-	(string)RPC_TERRITORY_ERROR				=> array("name"=>"Error while logging in",		"args"=>"I")),
-"out" => array(
-	(string)RPC_UNIVERSE_INIT				=> array("name"=>"Login Init",					"args"=>"SSI"),
-	(string)RPC_UNIVERSE_ANSWERCHALLENGE	=> array("name"=>"Login Answer Challenge",		"args"=>"S"),
-	(string)RPC_UNIVERSE_ACCOUNT			=> array("name"=>"Login Player Account",		"args"=>"II"),
-	(string)RPC_TERRITORY_INIT				=> array("name"=>"Player Init",					"args"=>"II"),
-	(string)RPC_TERRITORY_STARTUP			=> array("name"=>"Player Startup",				"args"=>""),
-	(string)RPC_TERRITORY_LOGINCHARACTER	=> array("name"=>"Login Character",				"args"=>"ISS"))
-);
-
 /* The AOChatPacket class - turning packets into binary blobs and binary
 * blobs into packets
 */
@@ -1893,164 +1867,6 @@ class AOChatPacket
 			$this->data = $data;
 		}
 		return true;
-	}
-}
-
-/****************************************************
- *
- * New Conan Authentication System - Rayek @ Hyrkania
- *
- *****************************************************/
-
-class RPCPacket
-{
-	function RPCPacket($dir, $type, $data)
-	{
-		$this->args 		= array();
-		$this->type 		= $type;
-		$this->dir  		= $dir;
-		$pmap = $GLOBALS["aochat-rpcpacketmap"][$dir][(string)$type];
-
-		if(!$pmap)
-		{
-			echo "Unsupported rpcpacket type (".$dir.", ".$type.")\n";
-			return;
-		}
-
-		if($dir == "in")
-		{
-			if(!is_string($data))
-			{
-				echo "Incorrect argument for incoming rpcpacket, expecting a string.\n";
-				return 0;
-			}
-
-			for($i=0; $i<strlen($pmap["args"]); $i++)
-			{
-				$sa = $pmap["args"][$i];
-				switch($sa)
-				{
-					case "I" :
-						$temparray = unpack("N", $data);
-						$res  = array_pop($temparray);
-						$data = substr($data, 4);
-						
-						// Make sure the argument is unsigned int 32
-						if ($res <0)
-						{
-						  $res += 4294967296;
-						}
-
-						break;
-
-					case "n" :
-						$temparray = unpack("n", $data);
-						$res  = array_pop($temparray);
-						$data = substr($data, 2);
-						break;
-
-					case "B" :
-						$temparray = unpack("C", $data);
-						$res  = array_pop($temparray);
-						$data = substr($data, 1);
-						break;
-
-					case "S" :
-						$temparray = unpack("n", $data);
-						$len  = array_pop($temparray);
-						$res  = substr($data, 2, $len);
-						$data = substr($data, 2 + $len);
-						break;
-
-					case "G" :
-						$res  = substr($data, 0, 5);
-						$data = substr($data, 5);
-						break;
-
-					case "i" :
-						$temparray = unpack("n", $data);
-						$len  = array_pop($temparray);
-						$res  = array_values(unpack("N" . $len, substr($data, 2)));
-						$data = substr($data, 2 + 4 * $len);
-						break;
-
-					case "s" :
-						$temparray = unpack("n", $data);
-						$len  = array_pop($temparray);
-						$data = substr($data, 2);
-						$res  = array();
-						while($len--)
-						{
-							$temparray = unpack("n", $data);
-							$slen  = array_pop($temparray);
-							$res[] = substr($data, 2, $slen);
-							$data  = substr($data, 2+$slen);
-						}
-						break;
-
-					default :
-						echo "Unknown argument type! (" . $sa . ")\n";
-						continue(2);
-				}
-				$this->args[] = $res;
-			}
-		}
-		else
-		{
-			if(!is_array($data))
-			{
-				$args = array($data);
-			}
-			else
-			{
-				$args = $data;
-			}
-			$data = "";
-
-			for($i=0; $i<strlen($pmap["args"]); $i++)
-			{
-				$sa = $pmap["args"][$i];
-				$it = array_shift($args);
-
-				if(is_null($it))
-				{
-					echo "Missing argument for packet (RPC-ID:$type)\n";
-					break;
-				}
-
-				switch($sa)
-				{
-					case "I" :
-						$data .= pack("N", $it);
-						break;
-
-					case "i" :
-						$data .= pack("n", $it);
-						break;
-
-					case "S" :
-						$data .= pack("n", strlen($it)) . $it;
-						break;
-
-					case "G" :
-						$data .= $it;
-						break;
-
-					case "s" :
-						$data .= pack("n", sizeof($it));
-						foreach($it as $it_elem)
-						$data .= pack("n", strlen($it_elem)) . $it_elem;
-						break;
-
-					default :
-						echo "Unknown argument type! (" . $sa . ")\n";
-						continue(2);
-				}
-			}
-
-			$this->data = $data;
-		}
-		return;
 	}
 }
 
@@ -2282,6 +2098,190 @@ class AOExtMsg
 		$n = $n*85 + ord($str[$i])-33;
 		$str = substr($str, 5);
 		return $n;
+	}
+}
+
+/* There is a bug in php before 5.3 with long integers as array keys under linux 32 bit.
+ * See here: http://bugs.php.net/46701
+ * The following conversion to (string) is a workaround and can be removed once php 5.3
+ * is widely used. This php version must then be described to be the minimum requirement
+ * for the bot!
+ * Also look for that line in this file, which was changed too:
+ * $pmap = $GLOBALS["aochat-rpcpacketmap"][$dir][(string)$type];
+ */
+$GLOBALS["aochat-rpcpacketmap"] = array(
+"in" => array(
+	(string)RPC_UNIVERSE_CHALLENGE			=> array("name"=>"Login Challenge",				"args"=>"S"),
+	(string)RPC_UNIVERSE_AUTHENTICATED		=> array("name"=>"Login Authenticated",			"args"=>"IIISII"),
+	(string)RPC_UNIVERSE_ERROR				=> array("name"=>"Login Error",					"args"=>"I"),
+	(string)RPC_TERRITORY_INITACK			=> array("name"=>"Player Authenticated",		"args"=>"S"),
+	(string)RPC_TERRITORY_CHARACTERLIST		=> array("name"=>"Player Characterlist",		"args"=>"II"),
+	(string)RPC_TERRITORY_GETCHATSERVER		=> array("name"=>"Receive Chatserver",			"args"=>"InIII"),
+	(string)RPC_TERRITORY_ERROR				=> array("name"=>"Error while logging in",		"args"=>"I")),
+"out" => array(
+	(string)RPC_UNIVERSE_INIT				=> array("name"=>"Login Init",					"args"=>"SSI"),
+	(string)RPC_UNIVERSE_ANSWERCHALLENGE	=> array("name"=>"Login Answer Challenge",		"args"=>"S"),
+	(string)RPC_UNIVERSE_ACCOUNT			=> array("name"=>"Login Player Account",		"args"=>"II"),
+	(string)RPC_TERRITORY_INIT				=> array("name"=>"Player Init",					"args"=>"II"),
+	(string)RPC_TERRITORY_STARTUP			=> array("name"=>"Player Startup",				"args"=>""),
+	(string)RPC_TERRITORY_LOGINCHARACTER	=> array("name"=>"Login Character",				"args"=>"ISS"))
+);
+
+/****************************************************
+ *
+ * New Conan Authentication System - Rayek @ Hyrkania
+ *
+ *****************************************************/
+
+class RPCPacket
+{
+	function RPCPacket($dir, $type, $data)
+	{
+		$this->args 		= array();
+		$this->type 		= $type;
+		$this->dir  		= $dir;
+		$pmap = $GLOBALS["aochat-rpcpacketmap"][$dir][(string)$type];
+
+		if(!$pmap)
+		{
+			echo "Unsupported rpcpacket type (".$dir.", ".$type.")\n";
+			return;
+		}
+
+		if($dir == "in")
+		{
+			if(!is_string($data))
+			{
+				echo "Incorrect argument for incoming rpcpacket, expecting a string.\n";
+				return 0;
+			}
+
+			for($i=0; $i<strlen($pmap["args"]); $i++)
+			{
+				$sa = $pmap["args"][$i];
+				switch($sa)
+				{
+					case "I" :
+						$temparray = unpack("N", $data);
+						$res  = array_pop($temparray);
+						$data = substr($data, 4);
+						
+						// Make sure the argument is unsigned int 32
+						if ($res <0)
+						{
+						  $res += 4294967296;
+						}
+
+						break;
+
+					case "n" :
+						$temparray = unpack("n", $data);
+						$res  = array_pop($temparray);
+						$data = substr($data, 2);
+						break;
+
+					case "B" :
+						$temparray = unpack("C", $data);
+						$res  = array_pop($temparray);
+						$data = substr($data, 1);
+						break;
+
+					case "S" :
+						$temparray = unpack("n", $data);
+						$len  = array_pop($temparray);
+						$res  = substr($data, 2, $len);
+						$data = substr($data, 2 + $len);
+						break;
+
+					case "G" :
+						$res  = substr($data, 0, 5);
+						$data = substr($data, 5);
+						break;
+
+					case "i" :
+						$temparray = unpack("n", $data);
+						$len  = array_pop($temparray);
+						$res  = array_values(unpack("N" . $len, substr($data, 2)));
+						$data = substr($data, 2 + 4 * $len);
+						break;
+
+					case "s" :
+						$temparray = unpack("n", $data);
+						$len  = array_pop($temparray);
+						$data = substr($data, 2);
+						$res  = array();
+						while($len--)
+						{
+							$temparray = unpack("n", $data);
+							$slen  = array_pop($temparray);
+							$res[] = substr($data, 2, $slen);
+							$data  = substr($data, 2+$slen);
+						}
+						break;
+
+					default :
+						echo "Unknown argument type! (" . $sa . ")\n";
+						continue(2);
+				}
+				$this->args[] = $res;
+			}
+		}
+		else
+		{
+			if(!is_array($data))
+			{
+				$args = array($data);
+			}
+			else
+			{
+				$args = $data;
+			}
+			$data = "";
+
+			for($i=0; $i<strlen($pmap["args"]); $i++)
+			{
+				$sa = $pmap["args"][$i];
+				$it = array_shift($args);
+
+				if(is_null($it))
+				{
+					echo "Missing argument for packet (RPC-ID:$type)\n";
+					break;
+				}
+
+				switch($sa)
+				{
+					case "I" :
+						$data .= pack("N", $it);
+						break;
+
+					case "i" :
+						$data .= pack("n", $it);
+						break;
+
+					case "S" :
+						$data .= pack("n", strlen($it)) . $it;
+						break;
+
+					case "G" :
+						$data .= $it;
+						break;
+
+					case "s" :
+						$data .= pack("n", sizeof($it));
+						foreach($it as $it_elem)
+						$data .= pack("n", strlen($it_elem)) . $it_elem;
+						break;
+
+					default :
+						echo "Unknown argument type! (" . $sa . ")\n";
+						continue(2);
+				}
+			}
+
+			$this->data = $data;
+		}
+		return;
 	}
 }
 
