@@ -106,9 +106,23 @@ class ConfigMagik extends BasePassiveModule
 		if ( $section) $this->PROCESS_SECTIONS = true;
 		else           $this->PROCESS_SECTIONS = false;
 		// get requested value
-		if ( $this->PROCESS_SECTIONS) {
-			$value = $this->VARS[$section][$key];
-		}else{
+		if ($this->PROCESS_SECTIONS)
+		{
+			if (isset($this->VARS[$section][$key]))
+			{
+				$value = $this->VARS[$section][$key];
+			}
+			else if (isset($this->VARS[$key]))
+			{
+				$value = $this->VARS[$key];
+			}
+			else
+			{
+				return null;
+			}
+		}
+		else
+		{
 			$value = $this->VARS[$key];
 		}
 		// if value was not found (false), return NULL (FIX: 11/08/2004 BennyZaminga)

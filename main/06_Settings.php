@@ -124,6 +124,7 @@ class Settings_Core extends BasePassiveModule
 
 		$this -> callbacks = array();
 		$this -> change_user = "";
+		$this -> maintenance = FALSE;
 
 		if($this -> exists("Maintenance", "info") && $this -> get("Maintenance", "info") != "")
 		{
