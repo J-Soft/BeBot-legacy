@@ -1679,7 +1679,8 @@ class AOChat
 * M - mapping [see t.class in ao_nosign.jar] - unsupported
 *
 */
-if(strtolower($this -> game) == "ao")
+$game = AOCHAT_GAME;
+if($game == "ao")
 	$aocpdifs = array("IS", "IIS", "IS", "s");
 else
 	$aocpdifs = array("IIS", "IBBIB", "I", "ISS");

@@ -199,6 +199,8 @@ if(is_numeric($dimension))
 else
 	$game = "aoc";
 
+define('AOCHAT_GAME', $game);
+	
 require_once "./Sources/MySQL.php";
 require_once "./Sources/AOChat.php";
 require_once "./Sources/Bot.php";
