@@ -1149,6 +1149,7 @@ class AOChat
 
 	function lookup_group($arg, $type=0)
 	{
+		$is_gid = false;
 		if($type && ($is_gid = (strlen($arg) === 5 && (ord($arg[0])&~0x80) < 0x10)))
 		{
 			return $arg;
