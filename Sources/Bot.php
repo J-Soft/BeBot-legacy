@@ -613,7 +613,10 @@ class Bot
 				$this -> aoc -> send_group($guild, $msg);
 			}
 			else
+			{
 				$this -> core("chat_queue") -> into_queue($guild, $msg, "gc", $low);
+			}
+
 		}
 	}
 
@@ -846,7 +849,6 @@ class Bot
 		{
 			if ($group == $this -> guildname || ($this -> game == "aoc" && $group == "~Guild"))
 			{
-			echo "guildmessage..";
 				$group = "org";
 			}
 			$registered = $this -> commands[$channel][$group];
@@ -1369,6 +1371,7 @@ class Bot
 
 		if (isset($this -> commands["gmsg"][$group]) || $group == $this -> guildname || ($this -> game == "aoc" && $group == "~Guild"))
 		{
+
 			if($this -> game == "aoc" && $group == "~Guild")
 				$msg = "[" . $this -> guildname . "] ";
 			else
@@ -1424,7 +1427,6 @@ class Bot
 				}
 				unset($this -> command_error_text);
 			}
-
 			$found = $this -> hand_to_chat($found, $user, $args[2], "gmsg", $group);
 		}
 	}

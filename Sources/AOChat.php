@@ -1154,7 +1154,7 @@ class AOChat
 			return $arg;
 		}
 
-		if(!isset($is_gid))
+		if(!$is_gid)
 		{
 			$arg = strtolower($arg);
 		}
