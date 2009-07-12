@@ -116,53 +116,51 @@ class Raffle extends BaseActiveModule
 		$this -> bot -> core("security") -> check_access($name, "admin")))
 		{
 			$users = array_keys($this -> users);
+			for ($i = 0; $i < 5; $i++)
+			{
+				shuffle(&$users);
+			}
 
 			$usr_num = count($users);
-			$max = 10000 - $usr_num;
+			$max = 1000 * $usr_num - $usr_num;
+			if ($max > 29000)
+			{
+				$max = 30000 - $usr_num;
+			}
 
 			for ($i = 0; $i < $max; $i++)
 			{
-				$this -> users[$users[rand(0, ($usr_num - 1))]] += 1;
+				$this -> users[$users[$this->bot->core("tools")->my_rand(0, ($usr_num - 1))]] += 1;
 			}
-
-			natsort($this -> users);
-
+			
+			natsort($this->users);
 			$results = "##ao_ccheader##::::: Raffle Results :::::##end####lightyellow##\n\n";
-			$results .= "##highlight##" . $this -> admin . "##end## raffled ##highlight##" . $this -> item_blank;
-			$results .= "##end##. I rolled 10000 times. The results where:\n\n";
-
+			$results .= "##highlight##" . $this->admin . "##end## raffled ##highlight##" . $this->item_blank;
+			$results .= "##end##. I rolled $i times using " . $this->bot->core("tools")->randomsource . " for random numbers. The results where:\n\n";
 			$winner = "";
 			$res = "";
-			$count = count($this -> users);
-
-			foreach ($this -> users as $key => $points)
+			$count = count($this->users);
+			foreach ($this->users as $key => $points)
 			{
 				if ($count == 1)
-				$winner = $key;
-
-				$res = "##highlight##". $count . ".##end## $key ##highlight##" . $points . " points##end##\n" . $res;
-				$count--;
+					$winner = $key;
+				$res = "##highlight##" . $count . ".##end## $key ##highlight##" . $points . " points##end##\n" . $res;
+				$count --;
 			}
-
 			$results .= $res;
-
-			$this -> output("\n##raffle_highlight##--------------------------------------------------------##end##\n" .
-			"  ##raffle_highlight##" . $winner . "##end## has won the raffle for ##raffle_highlight##" .
-			$this -> item . "##end##! :: " . $this -> bot -> core("tools") -> make_blob("view results", $results) . "\n" .
-			"##raffle_highlight##----------------------------------------------------------##end##");
-
-			$this -> users = "";
-			$this -> item = "";
-			$this -> admin = "";
-			$this -> item_blank = "";
-			$this -> result = "Results from the last raffle: " . $this -> bot -> core("tools") -> make_blob("view results", $results);
+			$this->output("\n##raffle_highlight##--------------------------------------------------------##end##\n" . "  ##raffle_highlight##" . $winner . "##end## has won the raffle for ##raffle_highlight##" . $this->item . "##end##! :: " . $this->bot->core("tools")->make_blob("view results", $results) . "\n" . "##raffle_highlight##----------------------------------------------------------##end##");
+			$this->users = "";
+			$this->item = "";
+			$this->admin = "";
+			$this->item_blank = "";
+			$this->result = "Results from the last raffle: " . $this->bot->core("tools")->make_blob("view results", $results);
 		}
-		else if (empty($this -> item))
-		$this -> bot -> send_tell($name, "There is no raffle currently running.\n" . $this -> result);
-		else if (empty($this -> users))
-		$this -> bot -> send_tell($name, "Noone is in the raffle yet.");
+		else if (empty($this->item))
+			$this->bot->send_tell($name, "There is no raffle currently running.\n" . $this->result);
+		else if (empty($this->users))
+			$this->bot->send_tell($name, "Noone is in the raffle yet.");
 		else
-		$this -> bot -> send_tell($name, "You did not start the raffle nore are you bot administrator.");
+			$this->bot->send_tell($name, "You did not start the raffle nore are you bot administrator.");
 	}
 
 

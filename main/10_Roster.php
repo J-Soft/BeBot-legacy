@@ -543,7 +543,6 @@ class Roster_Core extends BasePassiveModule
 			{
 				$msg .= "::: " . $this -> removed . " members was found to have rerolled ";
 			}
-			
 			$this -> bot -> core("settings") -> save("members", "LastRosterUpdate", time());
 			$this -> bot -> log("ROSTER", "UPDATE", "Roster update complete. $msg",true);
 			$this -> bot -> send_gc("##normal##Roster update completed. $msg ##end##");

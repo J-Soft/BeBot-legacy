@@ -53,6 +53,8 @@ class tools extends BasePassiveModule
 		$this -> bot -> core("settings") -> create("tools", "get_site", "Sockets", "Should get_site use Sockets or Curl", "Sockets;Curl");
 
 		$this -> register_event("settings", array("module" => "tools", "setting" => "get_site"));
+
+		$this->randomsource = "";
 	}
 
 	function chatcmd($link, $title, $origin = FALSE)
@@ -418,6 +420,21 @@ class tools extends BasePassiveModule
 				$this -> bot -> send_tell($user, "Setting get_site for Module tools Changed to Sockets as cURL is not installed");
 			}
 		}
+	}
+	
+	function my_rand ($min = FALSE, $max = FALSE)
+	{
+		// For now we only support Mersienne Twister, but this can be changed.
+ 		$this->randomsource = "Mersenne Twister";
+		if (isset($min))
+		{
+			return mt_rand($min, $max);
+		}
+		else
+		{
+			return mt_rand();
+		}
+
 	}
 }
 ?>

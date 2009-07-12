@@ -659,9 +659,9 @@
 	"Chuck Norris digs graves with a shoe horn."
 	);
      // You can add more possible responses to the array above.
-       $dmg = rand(100,999);
-       $creds = rand(10000,9999999);
-       $returnstr = $chuck[rand(0,sizeof($chuck)-1)];
+		$dmg = $this->bot->core("tools")->my_rand(100, 999);
+		$creds = $this->bot->core("tools")->my_rand(10000, 9999999);
+		$returnstr = $chuck[$this->bot->core("tools")->my_rand(0, sizeof($chuck) - 1)];
        $returnstr = str_replace("*name*",$name,$returnstr);
        $returnstr = str_replace("*dmg*",$dmg,$returnstr);
        $returnstr = str_replace("*creds*",$dmg,$returnstr);
