@@ -55,6 +55,9 @@ class tools extends BasePassiveModule
 		$this -> register_event("settings", array("module" => "tools", "setting" => "get_site"));
 
 		$this->randomsource = "";
+		
+		$this->useragent = BOT_VERSION_NAME . "/" . BOT_VERSION . BOT_VERSION_INFO . " (Originating bot: " . $this->bot->botname . "; Dimension: " . $this->bot->dimension . ";)";
+		echo $this->useragent . "\n";
 	}
 
 	function chatcmd($link, $title, $origin = FALSE)
@@ -189,7 +192,7 @@ class tools extends BasePassiveModule
 		$in = "GET $url HTTP/1.0\r\n";
 		$in .= "Host: " . $get_url['host'] . "\r\n";
 		$in .= "Connection: Close\r\n";
-		$in .= "User-Agent: BeBot/$bot_version\r\n\r\n";
+		$in .= "User-Agent:" . $this->useragent . "\r\n\r\n";
 
 		$write_result = socket_write($socket, $in, strlen($in));
 
@@ -248,7 +251,7 @@ class tools extends BasePassiveModule
 	{
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
-
+		curl_setopt($ch, CURLOPT_USERAGENT, $this->useragent);
 		// Set your login and password for authentication
 		//curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
 		//curl_setopt($ch, CURLOPT_USERPWD, $user.':'.$pw);

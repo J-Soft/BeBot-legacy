@@ -188,6 +188,7 @@ class Bot
 		$this -> accessallbots = $accessallbots;
 
 		$this -> glob = array();
+		$this->vannounce = FALSE;
 	}
 
 
@@ -1329,6 +1330,32 @@ class Bot
 		{
 			$this -> guildname = $args[1];
 			$this -> log("CORE", "INC_GANNOUNCE", "Detected org name as: $args[1]");
+			if ($this->vannounce)
+			{
+				$this->send_gc($this->vannounce);
+			}
+		}
+	}
+	
+	/*
+	Incoming group announce
+	*/
+	function inc_vannounce($args)
+	{
+		if ($this -> game == "ao")
+		{
+			if ((stripos($args[1], "Welcome to Anarchy Online") !== FALSE) and $this->guildbot == TRUE)
+			{
+				$msg = BOT_VERSION_NAME . " v." . BOT_VERSION . BOT_VERSION_INFO . " online";
+				if (!empty($this->guildname))
+				{
+					$this->send_gc($msg);
+				}
+				else
+				{
+					$this->vannounce = $msg;
+				}
+			}
 		}
 	}
 

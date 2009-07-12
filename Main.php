@@ -35,7 +35,17 @@
 * Revision: $Id: Main.php 1963 2009-01-24 21:08:06Z alreadythere $
 */
 
-$bot_version = "0.6.4.dev";
+define('BOT_VERSION', "0.6.4");
+define('BOT_VERSION_INFO', ".bzr(snapshot)");
+define('BOT_VERSION_NAME', "BeBot");
+
+// Is this a development snapshot or a release?
+define('BOT_VERSION_SNAPSHOT', TRUE);
+
+// Workaround for backport to 0.6 branch
+$bot_version = BOT_VERSION . BOT_VERSION_INFO;
+$bot_version_name = BOT_VERSION_NAME;
+
 $php_version = phpversion();
 
 // Set the time zone to UTC
@@ -89,8 +99,8 @@ _/_/_/      _/_/_/  _/_/_/      _/_/        _/_/   \n
          An Anarchy Online Chat Automaton          \n
                      And                           \n
           An Age of Conan Chat Automaton           \n
-             v.$bot_version - PHP $php_version     \n
-			 OS: $os                               \n
+         v.$bot_version - PHP $php_version     \n
+		 OS: $os                               \n
 	Your operating system is detected as $osbit    \n
 ===================================================\n
 ";
@@ -491,6 +501,9 @@ function callback($type, $args)
 			break;
 		case AOCP_GROUP_ANNOUNCE:
 			$bot -> inc_gannounce($args);
+			break;
+		case AOCP_MSG_VICINITYA:
+			$bot -> inc_vannounce($args);
 			break;
 		default:
 			// $bot -> log ("MAIN", "TYPE", "Uhandeled packet type $type");
