@@ -78,6 +78,7 @@ class Roster_Core extends BasePassiveModule
 		$this -> bot -> core("settings") -> create("Members", "LastRosterUpdate", 1, "Last time we completed a Roster update", NULL, TRUE, 2);
 		$this -> bot -> core("settings") -> create('Members', 'Roster', 'XML', 'What should we use to look up organization information? (Fallback means that if XML fails the cache will be used)', 'XML;WhoisCache;Fallback');
 		$this -> bot -> core("settings") -> create("Members", "Update", TRUE, "Should the roster be updated automaticly?");
+		$this -> bot -> core("settings") -> create("Members", "QuietUpdate", false, "Do roster update quietly without spamming the guild channel?");		
 		$this -> startup = TRUE;
 		$this -> running = FALSE;
 	}
@@ -227,19 +228,23 @@ class Roster_Core extends BasePassiveModule
 		if (($this -> lastrun + (60 * 60 * 6)) >= time() && $force == false)
 		{
 			$this -> bot -> log("ROSTER", "UPDATE", "Roster update ran less than 6 hours ago, skipping!");
-			Return;
+			return;
 		}
 
 		if($this -> running)
 		{
-			$this -> bot -> send_gc("Roster update is Already Running");
-			Return("Roster update is Already Running");
+			if (!$this->bot->core("settings")->get("Members", "QuietUpdate"))
+			{
+				$this->bot->send_gc("Roster update is already running");
+			}
+			return;
 		}
-		$this -> running = TRUE;
-
-		$this -> bot -> log("ROSTER", "UPDATE", "Starting roster update for guild id: ".$this -> bot -> guildid." on RK".$this -> bot -> dimension);
-		$this -> bot -> send_gc("##normal##".$msg."Roster update starting ::: System busy##end##");
-
+		$this->running = TRUE;
+		$this->bot->log("ROSTER", "UPDATE", "Starting roster update for guild id: " . $this->bot->guildid . " on RK" . $this->bot->dimension);
+		if (!$this->bot->core("settings")->get("Members", "QuietUpdate"))
+		{
+			$this->bot->send_gc("##normal##" . $msg . "Roster update starting ::: System busy##end##");
+		}
 		// Get the guild roster
 		if($this -> bot -> game == "ao")
 		{
@@ -543,14 +548,20 @@ class Roster_Core extends BasePassiveModule
 			{
 				$msg .= "::: " . $this -> removed . " members was found to have rerolled ";
 			}
-			$this -> bot -> core("settings") -> save("members", "LastRosterUpdate", time());
-			$this -> bot -> log("ROSTER", "UPDATE", "Roster update complete. $msg",true);
-			$this -> bot -> send_gc("##normal##Roster update completed. $msg ##end##");
+			$this->bot->core("settings")->save("members", "LastRosterUpdate", time());
+			$this->bot->log("ROSTER", "UPDATE", "Roster update complete. $msg", true);
+			if (!$this->bot->core("settings")->get("Members", "QuietUpdate"))
+			{
+				$this->bot->send_gc("##normal##Roster update completed. $msg ##end##");
+			}
 		}
 		else
 		{
-			$this -> bot -> log("ROSTER", "UPDATE", "Roster update failed. Funcom XML returned 0 members.",true);
-			$this -> bot -> send_gc("##normal##Roster update failed! Funcom XML returned 0 members ##end##");
+			$this->bot->log("ROSTER", "UPDATE", "Roster update failed. Funcom XML returned 0 members.", true);
+			if (!$this->bot->core("settings")->get("Members", "QuietUpdate"))
+			{
+				$this->bot->send_gc("##normal##Roster update failed! Funcom XML returned 0 members ##end##");
+			}
 		}
 
 		$this -> bot -> core("notify") -> update_cache();
@@ -561,28 +572,33 @@ class Roster_Core extends BasePassiveModule
 	{
 		if($this -> running)
 		{
-			$this -> bot -> send_pgroup("Roster update is Already Running");
-			Return("Roster update is Already Running");
+			if (!$this->bot->core("settings")->get("Members", "QuietUpdate"))
+			{
+				$this->bot->send_pgroup("Roster update is already running");
+			}
+			return;
 		}
-		$this -> running = TRUE;
-
-		if ($this -> startup && !$force)
+		$this->running = TRUE;
+		/*** FIXME: This is not the right place to tell people that the bot went online!
+		if ($this->startup && ! $force)
 		{
 			$msg = "Bot is online ::: ";
 			$this -> startup = FALSE;
 		}
-		$this -> lastrun = $this -> bot -> core("settings") -> get("members", "LastRosterUpdate");
-		if (($this -> lastrun + (60 * 60 * 6)) >= time() && $force == false)
+		*/
+		$this->lastrun = $this->bot->core("settings")->get("members", "LastRosterUpdate");
+		if (($this->lastrun + (60 * 60 * 6)) >= time() && $force == false)
 		{
 			$this -> bot -> log("ROSTER", "UPDATE", "Roster update ran less than 6 hours ago, skipping!");
 		}
 		else
 		{
-			$this -> bot -> log("ROSTER", "UPDATE", "Starting roster update");
-			if($this -> bot -> game == "ao")
-				$this -> bot -> send_pgroup("##normal##".$msg."Roster update starting ::: System busy##end##");
-
-			$buddies = $this -> bot -> aoc -> buddies;
+			$this->bot->log("ROSTER", "UPDATE", "Starting roster update");
+			if (!$this->bot->core("settings")->get("Members", "QuietUpdate"))
+			{			
+				$this->bot->send_pgroup("##normal##" . $msg . "Roster update starting ::: System busy##end##");
+			}
+			$buddies = $this->bot->aoc->buddies;
 			$num = 0;
 			$this -> removed = 0;
 			$this -> rerolled = 0;
@@ -668,9 +684,12 @@ class Roster_Core extends BasePassiveModule
 				$this -> bot -> core("chat") -> buddy_remove($id);
 				$num++;
 			}
-			$this -> bot -> core("settings") -> save("members", "LastRosterUpdate", time());
-			$this -> bot -> log("CRON", "ROSTER", "Cleaning buddylist done. $num buddies removed.");
-			$this -> bot -> send_pgroup("##normal##Roster update completed ##end##");
+			$this->bot->core("settings")->save("members", "LastRosterUpdate", time());
+			$this->bot->log("CRON", "ROSTER", "Cleaning buddylist done. $num buddies removed.");
+			if (!$this->bot->core("settings")->get("Members", "QuietUpdate"))
+			{
+				$this->bot->send_pgroup("##normal##Roster update completed ##end##");
+			}
 		}
 		$this -> running = FALSE;
 	}
