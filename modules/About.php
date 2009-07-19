@@ -1,6 +1,6 @@
 <?php
 /*
-* About.php - Gives info about the bot.
+* About.php - Gives info about the bot and checks for version updates.
 *
 * BeBot - An Anarchy Online & Age of Conan Chat Automaton
 * Copyright (C) 2004 Jonas Jax
@@ -62,7 +62,8 @@ class About extends BaseActiveModule
 		$this->bot->core("settings")->create ("Version", "CheckUpdate", TRUE, "Should the bot periodically check if there are new updates available?", "On;Off", FALSE, 10);
 
 		$this -> help['description'] = "Shows information about the bot.";
-		$this -> help['command']['about'] = "See description";
+		$this -> help['command']['version'] = "Displays the bot version information.";
+		$this -> help['command']['version check'] = "Forces the bot to check if there is a new version available.";		
 		
 		$this->info = array();
 		$this->versiontype = "s";
@@ -91,7 +92,9 @@ class About extends BaseActiveModule
 			case 'version':
 				if (isset($vars[1]) and strtolower($vars[1]) == 'check')
 				{
-					return $this -> version_check($name);
+					$return = $this->version_check($name);
+					unset($this->info);
+					return $return;
 				}
 				return $this -> about_blob();
 				break;
@@ -100,10 +103,11 @@ class About extends BaseActiveModule
 		}
 	}
 
-	function buddy()
+	function buddy($name, $msg)
 	{
-		if ($this->updatewaiting)
+		if ((!empty($this->updatewaiting)) and ($msg == 1) and $this->bot->core("security")->check_access($name, "SUPERADMIN"))
 		{
+			$this->bot->send_tell($name, BOT_VERSION_NAME . " v." . $this->updatewaiting['version'] . " is available and was released " . $this->updatewaiting['date'] . " :: " . $this->bot->core("tools")-> make_blob("Details", $this->updatewaiting['window']));
 		}
 	}
 	
@@ -129,8 +133,10 @@ class About extends BaseActiveModule
 		$available = FALSE;
 		$newer = FALSE;
 		
-		// *** FIXME *** Check for permission.
-
+		if (!$this->bot->core("security")->check_access($name, "SUPERADMIN"))
+		{
+			return "You do not have the required access level to check for new versions.";
+		}
 
 		$this -> bot -> log("VERSION", "UPDATE", "Initiating version check");		
 		// Fetch version XML
@@ -245,6 +251,9 @@ class About extends BaseActiveModule
 				}
 				$this->set_update_time();
 				$this -> bot -> log("VERSION", "UPDATE", "Found new available version " . $this->info['upversionstring']);
+				$this->updatewaiting['version'] = $this->info['upversionstring'];
+				$this->updatewaiting['window'] = $window;
+				$this->updatewaiting['date'] = $this->info['date'];
 				if (!empty($name))
 				{
 					return BOT_VERSION_NAME . " v." . $this->info['upversionstring'] . " is available and was released " . $this->info['date'] . " :: " . $this->bot->core("tools")-> make_blob("Details", $window);
