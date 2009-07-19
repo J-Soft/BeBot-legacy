@@ -4,7 +4,7 @@
 *
 * BeBot - An Anarchy Online & Age of Conan Chat Automaton
 * Copyright (C) 2004 Jonas Jax
-* Copyright (C) 2005-2007 Thomas Juberg StensÃ¥s, ShadowRealm Creations and the BeBot development team.
+* Copyright (C) 2005-2007 Thomas Juberg Stensås, ShadowRealm Creations and the BeBot development team.
 *
 * Developed by:
 * - Alreadythere (RK2)
@@ -84,13 +84,11 @@ class MySQL
 			$table_prefix = str_ireplace("<botname>", strtolower($botname), $table_prefix);
 			$this -> table_prefix = $table_prefix;
 		}
-		if($nounderscore)
-			$this -> underscore = "";
-		else
-			$this -> underscore = "_";
-
-		$this -> connect(true);
-
+		if ($nounderscore)
+		{
+			$this->underscore = "";
+		}
+		$this->connect(true);
 		/*
 		Make sure we have the master table for tablenames that the bot cannot function without.
 		*/
