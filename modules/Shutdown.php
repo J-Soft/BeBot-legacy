@@ -53,6 +53,7 @@ class Shutdown extends BaseActiveModule
 		$this -> help['command']['shutdown']="Shuts down the bot.";
 		$this -> help['command']['restart'] = "Restarts the bot.";
 		$this -> help['notes'] = "If the bot is started in debug mode input _might_ be required in the console for the bot to restart.";
+		$this->bot->core("settings")->create("Shutdown", "QuietShutdown", false, "Do shutdown/restart quietly without spamming the guild channel?");
 	}
 
 
@@ -77,22 +78,24 @@ class Shutdown extends BaseActiveModule
 				$this -> stop($name, "is restarting.", $msg[1]);
 				Break;
 			Default:
-				Return "##error##Error: Shutdown Module Recieved Unknown Command ##highlight##$msg[0]##end####end##";
+				return "##error##Error: Shutdown Module Recieved Unknown Command ##highlight##$msg[0]##end####end##";
 		}
 		return false;
 	}
 
 	function stop($name, $text, $why)
 	{
-		if(!empty($why))
-			$why = " (".$why.")";
-		$this -> bot -> send_irc("", "", "The bot " . $text . $why);
-		$this -> bot -> send_gc("The bot " . $text . $why);
-		$this -> bot -> send_pgroup("The bot " . $text . $why);
-		$this -> bot -> send_tell($name, "The bot " . $text);
-
-		$this -> crontime = array (time() + 2, "The bot " . $text);
-		$this -> register_event("cron", "1sec");
+		if (! empty($why))
+			$why = " (" . $why . ")";
+		if (!$this->bot->core("settings")->get("Shutdown", "QuietShutdown"))
+		{
+			$this->bot->send_irc("", "", "The bot " . $text . $why);
+			$this->bot->send_gc("The bot " . $text . $why);
+			$this->bot->send_pgroup("The bot " . $text . $why);
+		}
+		$this->bot->send_tell($name, "The bot " . $text);
+		$this->crontime = array(time() + 2 , "The bot " . $text);
+		$this->register_event("cron", "1sec");
 	}
 
 	function cron()

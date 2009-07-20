@@ -22,6 +22,7 @@ Version 0.6.4
 - !roll should work properly now.
 - Improved !raffle logic slightly. Will now determine the number of times to do a roll depending on the number of people in the raffle.
 - Added setting Members->QuietUpdate to let the bot do roster updates quietly (default off).
+- Added setting Shutdown->QuietShutdown to let the bot do restart and shutdown quietly (default off).
 
 
 -------------
