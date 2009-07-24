@@ -167,6 +167,8 @@ define('RPC_UNIVERSE_CHALLENGE',		0 );
 define('RPC_UNIVERSE_ANSWERCHALLENGE',	1 );
 define('RPC_UNIVERSE_AUTHENTICATED',	1 );
 define('RPC_UNIVERSE_ERROR',			2 );
+define('RPC_UNIVERSE_INTERNAL_ERROR', 4);
+define('RPC_UNIVERSE_SETREGION', 5);
 
 define('RPC_TERRITORY_INIT',			0x9CB2CB03 );
 define('RPC_TERRITORY_INITACK',			0x5DC18991 );
@@ -175,6 +177,9 @@ define('RPC_TERRITORY_CHARACTERLIST',	0xC414C5EF );
 define('RPC_TERRITORY_LOGINCHARACTER',	0xEF616EB6 );
 define('RPC_TERRITORY_GETCHATSERVER',	0x23A632FA );
 define('RPC_TERRITORY_ERROR',			0xD4063CA0 );
+define('RPC_TERRITORY_DIMENSIONLIST', 0xF899B14C);
+define('RPC_TERRITORY_SETUPCOMPLETE', 0x4F91A58C);
+define('RPC_TERRITORY_CSREADY',	0x5AED2A60);
 
 class AOChat
 {
@@ -481,8 +486,8 @@ class AOChat
 		$head = $this->read_data(8);
 		if(strlen($head) != 8)
 		{
-			die("Error while reading rpc header. ($head)\n");
-			return "disconnected";
+			trigger_error("Error while reading rpc header. ($head)", E_USER_WARNING);
+			return 0;
 		}
 
 		// First header contains of the packetsize and checksum
@@ -490,7 +495,8 @@ class AOChat
 		$data = $this->read_data($packetsize-4);
 		if ( strlen($data) != $packetsize - 4 )
 		{
-			die("Error while reading rpc packet." . strlen($data) . ":" .$packetsize);
+			trigger_error("Error while reading rpc packet." . strlen($data) . ":" . $packetsize, E_USER_WARNING);
+			return 0;
 		}
 
 		// Skip the caller id
@@ -530,19 +536,16 @@ class AOChat
 				break;
 				
 			case RPC_UNIVERSE_AUTHENTICATED:
-				$this->accountid				= $packet->args[2];
-				$this->serverseed 				= $packet->args[4];
-
+				$this->accountid     = $packet->args[2];
+				$this->serverseed    = $packet->args[4];
+				$this->ServerAddress = "";
+				$this->ServerPort    = 0;
+								
 				// Split the server address up from address:port
 				$serverAddressString 			= $packet->args[3];
 				if ( strlen( $serverAddressString ) != 0 )
 				{
-					list($server,$port) = split( ":", $serverAddressString );
-					if ( strlen( $server ) != 0 && $port != 0 )
-					{
-						$this->ServerAddress	= $server;
-						$this->ServerPort 		= $port;
-					}
+					list($this->ServerAddress,$this->ServerPort) = split(":", $serverAddressString);
 				}
 				break;
 		
@@ -693,7 +696,7 @@ class AOChat
 		{
 			// Send the authenticate packet to the universe
 			case RPC_UNIVERSE_CHALLENGE:
-				if (strlen($this->serverseed) == 0 || strlen($this->username) == 0 || strlen($this->password) == 0)
+				if (strlen($this->serverseed) == NULL || strlen($this->username) == 0 || strlen($this->password) == 0)
 				{
 					trigger_error("RPC_UNIVERSE_CHALLENGE: Error in logininfo, [ServerSeed:".$this->serverseed."] [Username:".$this->username."] [Password:". strlen($this->password)."]",E_USER_WARNING);
 					return -1;
@@ -708,6 +711,24 @@ class AOChat
 				break;
 
 			case RPC_UNIVERSE_AUTHENTICATED:
+				// Special case for -1
+				if ( $this->accountid == -1 || $this->serverseed == -1 )
+				{
+					trigger_error("RPC_UNIVERSE_AUTHENTICATED: Failed to authenticate. Server rejected our seed",E_USER_WARNING);
+					return -1;
+				}
+				
+				if ( $this->accountid == 0  )
+				{
+					trigger_error("RPC_UNIVERSE_AUTHENTICATED: Error with accountid [".$this->accountid."]",E_USER_WARNING);
+					return -1;
+				}
+				if ( $this->serverseed == NULL  || $this->serverseed == 0 )
+				{
+					trigger_error("RPC_UNIVERSE_AUTHENTICATED: Error with serverseed [".$this->serverseed."]",E_USER_WARNING);
+					return -1;
+				}
+				// Verify that we got the address to the territory server
 				if ( strlen( $this->ServerAddress ) == 0 || $this->ServerPort == 0 )
 				{
 					trigger_error("RPC_UNIVERSE_AUTHENTICATED: Error in serveraddress, [Ip:".$this->ServerAddress.":".$this->ServerPort."]",E_USER_WARNING);
@@ -745,14 +766,20 @@ class AOChat
 				$outPacket = new RPCPacket("out", RPC_TERRITORY_LOGINCHARACTER, array($this->char["id"], "", $lang) );
 				$this->send_rpcpacket($outPacket);
 				break;
+			
+			case RPC_UNIVERSE_INTERNAL_ERROR:
+				trigger_error("RPC_UNIVERSE_INTERNAL_ERROR: Internal error", E_USER_WARNING);
+				return -1;
 				
 			case RPC_UNIVERSE_ERROR:
 				trigger_error("RPC_UNIVERSE_ERROR: Error while authenticating to universe [Err:".$this->displayConanError($packet->args[0])."]",E_USER_WARNING);
 				return -1;
+
 				
 			case RPC_TERRITORY_ERROR:
 				trigger_error("RPC_UNIVERSE_ERROR: Error while authenticating to territory [Err:".$this->displayConanError($packet->args[0])."]",E_USER_WARNING);
 				return -1;
+
 				
 			default:
 				// Ignore unhandled packets
@@ -769,8 +796,8 @@ class AOChat
 	*/
 	function authenticateConan($username, $password, $character)
 	{
-		$this->accountid				= 0;	
-		$this->serverseed				= 0;
+		$this->accountid     			= 0;
+		$this->serverseed 				= NULL;
 		$this->ServerAddress	 		= "";
 		$this->ServerPort 				= 0;
 		$this->username 				= $username;
@@ -794,10 +821,8 @@ class AOChat
 			// We received an errorcode we cannot continue with
 			if ( $ret == -1 )
 			{
-				echo "disconnect\n";
-				return false;			
+				return false;
 			}
-			
 		} while ( $ret != 1 );
 		
 		// Disconnect from the universeserver
@@ -816,12 +841,17 @@ class AOChat
 			$this->disconnect();
 			return false;
 		}
-
 		// Reset this
 		$this->ServerAddress	= "";
 		$this->ServerPort 		= 0;
 
 		// Log the player on to the territory server
+		if ( $this->accountid == 0 || $this->serverseed == NULL || $this->serverseed == 0 )
+		{
+			trigger_error("Broken accountid or serverseed. (Should be trapped earlier): ", E_USER_WARNING);
+			return false;
+		}
+
 		$territoryInitPacket = new RPCPacket("out", RPC_TERRITORY_INIT, array($this->accountid, $this->serverseed ) );
 		$this->send_rpcpacket($territoryInitPacket);
 		
@@ -2121,9 +2151,13 @@ $GLOBALS["aochat-rpcpacketmap"] = array(
 	(string)RPC_UNIVERSE_CHALLENGE			=> array("name"=>"Login Challenge",				"args"=>"S"),
 	(string)RPC_UNIVERSE_AUTHENTICATED		=> array("name"=>"Login Authenticated",			"args"=>"IIISII"),
 	(string)RPC_UNIVERSE_ERROR				=> array("name"=>"Login Error",					"args"=>"I"),
+	(string)RPC_UNIVERSE_SETREGION			=> array("name"=>"Region Settings",				"args"=>""),
 	(string)RPC_TERRITORY_INITACK			=> array("name"=>"Player Authenticated",		"args"=>"S"),
 	(string)RPC_TERRITORY_CHARACTERLIST		=> array("name"=>"Player Characterlist",		"args"=>"II"),
 	(string)RPC_TERRITORY_GETCHATSERVER		=> array("name"=>"Receive Chatserver",			"args"=>"InIII"),
+	(string)RPC_TERRITORY_DIMENSIONLIST		=> array("name"=>"Dimension List",				"args"=>""),
+	(string)RPC_TERRITORY_SETUPCOMPLETE		=> array("name"=>"Setup complete",				"args"=>""),
+	(string)RPC_TERRITORY_CSREADY			=> array("name"=>"CS Server Ready",				"args"=>""),
 	(string)RPC_TERRITORY_ERROR				=> array("name"=>"Error while logging in",		"args"=>"I")),
 "out" => array(
 	(string)RPC_UNIVERSE_INIT				=> array("name"=>"Login Init",					"args"=>"SSI"),
@@ -2252,7 +2286,7 @@ class RPCPacket
 
 				if(is_null($it))
 				{
-					echo "Missing argument for packet (RPC-ID:$type)\n";
+					echo "Missing argument for packet (RPC-ID:$type) arguments='" . $pmap["args"] . "' name='" . $pmap["name"] . "'\n";
 					break;
 				}
 
