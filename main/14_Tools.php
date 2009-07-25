@@ -57,7 +57,6 @@ class tools extends BasePassiveModule
 		$this->randomsource = "";
 		
 		$this->useragent = BOT_VERSION_NAME . "/" . BOT_VERSION . BOT_VERSION_INFO . " (Originating bot: " . $this->bot->botname . "; Dimension: " . $this->bot->dimension . ";)";
-		echo $this->useragent . "\n";
 	}
 
 	function chatcmd($link, $title, $origin = FALSE)
