@@ -84,6 +84,10 @@ class Logon extends BaseActiveModule
 
 	function update_table()
 	{
+		if ($this->bot->db->get_version("logon") == 2)
+		{
+			return;
+		}
 		switch ($this->bot->db->get_version("logon"))
 		{
 			case 1:

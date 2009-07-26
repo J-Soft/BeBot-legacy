@@ -45,7 +45,7 @@ class Roster_Core extends BasePassiveModule
 
 		$this -> bot -> db -> query("CREATE TABLE IF NOT EXISTS " . $this -> bot -> db -> define_tablename("users", "true") . "
 					(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-					char_id INT NOT NULL UNIQUE,
+					char_id BIGINT NOT NULL UNIQUE,
 					nickname VARCHAR(25) UNIQUE,
 					password VARCHAR(64),
 					password_salt VARCHAR(5),
@@ -85,6 +85,11 @@ class Roster_Core extends BasePassiveModule
 
 	function update_user_table()
 	{
+		if ($this->bot->db->get_version("users") == 7)
+		{
+			return;
+		}
+
 		if($this -> bot -> core("settings") -> exists("members", "schemaversion"))
 		{
 			$this -> bot -> db -> set_version("users",
@@ -157,9 +162,10 @@ class Roster_Core extends BasePassiveModule
 					$this -> bot -> core("settings") -> del("members", "Receiveinvite");
 				}
 			case 6:
+				$this->bot->db->update_table("users", "char_id", "alter", "ALTER TABLE #___users CHANGE `char_id` BIGINT NOT NULL");
 			default:
 		}
-		$this -> bot -> db -> set_version("users", 6);
+		$this->bot->db->set_version("users", 7);
 	}
 
 	function connect()
