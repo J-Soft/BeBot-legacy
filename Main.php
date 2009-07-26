@@ -207,7 +207,7 @@ if(empty($ao_password) || $ao_password == "")
 	fwrite($fp, "");
 	fclose($fp);
 }
-if(is_numeric($dimension))
+if(is_numeric($dimension) || strcasecmp($dimension, "Atlantean") == 0 || strcasecmp($dimension, "Rimor") == 0 || strcasecmp($dimension, "Die neue welt") == 0)
 	$game = "ao";
 else
 	$game = "aoc";
