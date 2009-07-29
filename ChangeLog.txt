@@ -24,6 +24,9 @@ Version 0.6.4
 - Added setting Members->QuietUpdate to let the bot do roster updates quietly (default off).
 - Added setting Shutdown->QuietShutdown to let the bot do restart and shutdown quietly (default off).
 - Fixed a bug causing the bot to malfunction for Anarchy Online if one did not use the numeric dimension representations.
+- The bot now checks online to see if a newer version is available. This behaviour can be disabled using "!set version checkupdate off" if desired.
+- !version is now an alias of !about.
+- !version check can now be used by superadmins and above (hardcoded in 0.6 branch) to force a version check.
 
 API Changes:
 make_item no longer accepts the optional fifth argument. It will now properly deal with item names containing ' automatically.
