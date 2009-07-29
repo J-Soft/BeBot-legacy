@@ -329,7 +329,7 @@ class About extends BaseActiveModule
 		$inside .= "Auno for writing and maintaining the PHP AOChat library\n";
 		$inside .= "And last but not least, the greatest MMORPG community in existence.\n\n";
 
-		$return = "$version ::: " . $this->bot->core("tools")->make_blob('More details', $inside);
+		return "$version ::: " . $this->bot->core("tools")->make_blob('More details', $inside);
 	}
 	
 	/*
