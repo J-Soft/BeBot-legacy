@@ -296,10 +296,11 @@ class About extends BaseActiveModule
 	*/
 	function about_blob()
 	{
+		$version = BOT_VERSION_NAME . " v." . BOT_VERSION;
 		$inside = "##blob_title##::: About :::##end##\n\n";
 
 		$inside .= "##blob_text##Bot Client:##end##\n";
-		$inside .= $this -> bot -> botversionname . " v" . $this -> bot -> botversion . "\n\n";
+		$inside .= "$version\n\n";
 
 		$inside .= "##blob_text##Download URL:##end##\n";
 		$inside .= $this -> bot -> core("tools") -> chatcmd("http://bebot.shadow-realm.org", "http://bebot.shadow-realm.org", "start")."\n\n";
@@ -328,7 +329,7 @@ class About extends BaseActiveModule
 		$inside .= "Auno for writing and maintaining the PHP AOChat library\n";
 		$inside .= "And last but not least, the greatest MMORPG community in existence.\n\n";
 
-		return $this -> bot -> core("tools") -> make_blob("About", $inside);
+		$return = "$version ::: " . $this->bot->core("tools")->make_blob('More details', $inside);
 	}
 	
 	/*
