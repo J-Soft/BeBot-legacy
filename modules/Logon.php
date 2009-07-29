@@ -50,7 +50,7 @@ class Logon extends BaseActiveModule
 		parent::__construct(&$bot, get_class($this));
 
 		$this -> bot -> db -> query("CREATE TABLE IF NOT EXISTS " . $this -> bot -> db -> define_tablename("logon", "true") . "
-				(ID BIGINT NOT NULL PRIMARY KEY,
+				(id BIGINT NOT NULL PRIMARY KEY,
 				message VARCHAR(255))");
 
 		$this -> last_log = array();
@@ -91,7 +91,7 @@ class Logon extends BaseActiveModule
 		switch ($this->bot->db->get_version("logon"))
 		{
 			case 1:
-				$this->bot->db->update_table("logon", "ID", "alter", "ALTER TABLE #___logon MODIFY ID BIGINT NOT NULL");
+				$this->bot->db->update_table("logon", "id", "alter", "ALTER TABLE #___logon MODIFY id BIGINT NOT NULL");
 				$this->bot->db->set_version("logon", 2);
 				$this->update_table();
 			default:
