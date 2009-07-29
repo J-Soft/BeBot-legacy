@@ -133,7 +133,7 @@ class About extends BaseActiveModule
 		$available = FALSE;
 		$newer = FALSE;
 		
-		if (!$this->bot->core("security")->check_access($name, "SUPERADMIN"))
+		if ($name != FALSE and !$this->bot->core("security")->check_access($name, "SUPERADMIN"))
 		{
 			return "You do not have the required access level to check for new versions.";
 		}
