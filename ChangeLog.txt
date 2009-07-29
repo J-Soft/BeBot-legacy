@@ -25,6 +25,8 @@ Version 0.6.4
 - Added setting Shutdown->QuietShutdown to let the bot do restart and shutdown quietly (default off).
 - Fixed a bug causing the bot to malfunction for Anarchy Online if one did not use the numeric dimension representations.
 
+API Changes:
+make_item no longer accepts the optional fifth argument. It will now properly deal with item names containing ' automatically.
 
 -------------
 Version 0.6.3

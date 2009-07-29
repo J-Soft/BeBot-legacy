@@ -314,14 +314,12 @@ class tools extends BasePassiveModule
 	}
 
 	/*
-	Creates a text blob.  Alternate uses ' instead of ".
+	Creates a text blob.
 	*/
-	function make_item($lowid, $highid, $ql, $name, $alternate = false)
+	function make_item($lowid, $highid, $ql, $name)
 	{
-		if($alternate)
-			return "<a href='itemref://" . $lowid . "/" . $highid . "/" . $ql . "'>" . $name . "</a>";
-		else
-			return "<a href=\"itemref://" . $lowid . "/" . $highid . "/" . $ql . "\">" . $name . "</a>";
+		$name = str_replace("'", "&#039;", $name);
+		return "<a href='itemref://$lowid/$highid/$ql'>$name</a>";
 	}
 
 	/*
