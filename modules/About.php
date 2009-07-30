@@ -166,6 +166,20 @@ class About extends BaseActiveModule
 			}
 			$this->info['date'] = $this -> bot -> core("tools") -> xmlparse($xml["content"], $this->versiontype . "rel");
 			$this->info['upversionstring'] = $this -> bot -> core("tools") -> xmlparse($xml["content"], $this->versiontype . "ver");
+			
+			if (empty($this->info['upversionstring']))
+			{
+				if (!empty($name))
+				{
+					return "XML Error. Version string was empty.";
+				}
+				else
+				{
+					return;
+				}
+			}
+			
+			
 			$this->info['upversion'] = explode(".", $this->info['upversionstring']);
 			$this->info['myversion'] = explode(".", BOT_VERSION);
 			
