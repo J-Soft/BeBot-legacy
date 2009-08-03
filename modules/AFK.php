@@ -269,7 +269,7 @@ Class AFK extends BaseActiveModule
 
 	function acheck($name)
 	{
-		if($this -> afk[$name])
+		if(isset($this -> afk[$name]))
 		{
 			return true;
 		}

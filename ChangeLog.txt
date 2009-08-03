@@ -1,4 +1,12 @@
 -------------
+Version 0.6.5
+-------------
+- Fixed date format for !whois -> last online (aoc only)
+- Added missing version info in !about (not currently used for stable release versions)
+- Backported some more fixes for various PHP notices when running with higher error reporting levels enabled.
+
+
+-------------
 Version 0.6.4
 -------------
 - Modified the network protocol to work with AoC 1.05

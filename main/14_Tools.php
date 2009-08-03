@@ -116,7 +116,7 @@ class tools extends BasePassiveModule
 	{
 		$return = $this -> get_site_data($url,$strip_headers,$server_timeout,$read_timeout);
 
-		if ($return["error"] && $this -> use_proxy_server && !empty($this -> proxy_server_address))
+		if (!isset($return["error"]) && $this -> use_proxy_server && !empty($this -> proxy_server_address))
 		{
 			echo "We're using a proxy\n";
 			foreach ($this -> proxy_server_address as $proxy)
@@ -124,7 +124,7 @@ class tools extends BasePassiveModule
 				echo "Trying proxy: ".$proxy."\n";
 				$return = $this -> get_site_data($url,$strip_headers,$server_timeout,$read_timeout,$proxy);
 
-				if (!($return["error"]))
+				if (!isset($return["error"]))
 					break;
 			}
 		}

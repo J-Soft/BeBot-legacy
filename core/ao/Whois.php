@@ -364,7 +364,7 @@ class Whois_Core extends BasePassiveModule
 		/*
 		We got a result.
 		*/
-		if ($result["error"] == false)
+		if (!isset($result["error"]))
 		{
 			$who["id"] = $uid;
 			$who["nickname"] = $this -> bot -> core("tools") -> xmlparse($result["content"], "nick");
@@ -459,7 +459,7 @@ class Whois_Core extends BasePassiveModule
 		if ($this -> bot -> core("settings") -> get("Statistics", "Enabled"))
 			$this -> bot -> core("statistics") -> capture_statistic("Whois","Lookup",$site1NAME);
 
-		if ($xml["error"] && $site2NAME)
+		if (isset($xml["error"]) && $site2NAME)
 		{
 			$xml = $this -> bot -> core("tools") -> get_site($site2URL);
 			$xml = $this -> check_xml($xml);
@@ -467,7 +467,7 @@ class Whois_Core extends BasePassiveModule
 			if ($this -> bot -> core("settings") -> get("Statistics", "Enabled"))
 				$this -> bot -> core("statistics") -> capture_statistic("Whois","Lookup",$site2NAME);
 		}
-		if ($xml["error"])
+		if (isset($xml["error"]))
 		{
 			// If we get here, both Auno and FunCom XML lookups have failed.
 			// Rewrite the error message to reflect this before returning.
@@ -485,7 +485,7 @@ class Whois_Core extends BasePassiveModule
 	*/
 	function check_xml($xml)
 	{ // Start function check_xml()
-		if ($xml["error"])
+		if (isset($xml["error"]))
 		return $xml; // The XML is bad to start with, no more checking needed.
 		$nickname = $this -> bot -> core("tools") -> xmlparse($xml["content"], "nick");
 		/*

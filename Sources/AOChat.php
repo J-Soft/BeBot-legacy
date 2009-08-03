@@ -2090,7 +2090,7 @@ class AOExtMsg
 
 		$args = array();
 
-		foreach(split("/", $enc) as $eone)
+		foreach(explode("/", $enc) as $eone)
 		{
 			$ename = substr($eone, 1);
 			$msg = substr($msg, 1); // skip the data type id

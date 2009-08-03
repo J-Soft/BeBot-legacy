@@ -225,7 +225,7 @@ class About extends BaseActiveModule
 				$this -> bot -> log("VERSION", "UPDATE", "Running newer version already. (Running: " . BOT_VERSION . " Reported newest: " . $this->info['upversionstring'] . ")");
 				if (!empty($name))
 				{
-					return "You are running " . BOT_VERSION_NAME . " v." . BOT_VERSION . " " . BOT_VERSION_INFO . " which is newer than " . $this->info['upversionstring'];
+					return "You are running " . BOT_VERSION_NAME . " v." . BOT_VERSION . BOT_VERSION_INFO . " which is newer than " . $this->info['upversionstring'];
 				}
 				else
 				{
@@ -310,7 +310,7 @@ class About extends BaseActiveModule
 	*/
 	function about_blob()
 	{
-		$version = BOT_VERSION_NAME . " v." . BOT_VERSION;
+		$version = BOT_VERSION_NAME . " v." . BOT_VERSION . BOT_VERSION_INFO;
 		$inside = "##blob_title##::: About :::##end##\n\n";
 
 		$inside .= "##blob_text##Bot Client:##end##\n";
