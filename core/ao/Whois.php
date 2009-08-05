@@ -126,7 +126,7 @@ class Whois_Core extends BasePassiveModule
 
 	function update_table()
 	{
-		if ($this->bot->db->get_version("whois") == 5)
+		if ($this -> bot -> db -> get_version("whois") == 5)
 		{
 			return;
 		}
@@ -135,25 +135,13 @@ class Whois_Core extends BasePassiveModule
 		{
 			case 1: // Update Table version to prevent repeat update calls
 				//was an update for a setting
-				$this->bot->db->set_version("whois", 2);
-				$this->update_table();
-				return;
 			case 2:
-				$this->bot->db->set_version("whois", 3);
-				$this->update_table();
-				return;
 			case 3:
-				$this->bot->db->set_version("whois", 4);
-				$this->update_table();
-				return;
 			case 4:
 				$this->bot->db->update_table("whois", "ID", "alter", "ALTER TABLE #___whois MODIFY ID BIGINT NOT NULL");
-				$this->bot->db->set_version("whois", 5);
-				$this->update_table();
-				return;
 			default:
 		}
-
+		$this -> bot -> db -> set_version("whois", 5);
 	}
 
 	function create_name_cache()
