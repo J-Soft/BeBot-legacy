@@ -104,14 +104,8 @@ class Whois_Core extends BasePassiveModule
 					"ALTER IGNORE TABLE #___whois modify `class1` enum('','Alchemist','Architect','Armorsmith','Gemcutter','Weaponsmith','None') NOT NULL");
 				$this -> bot -> db -> update_table("whois", "class2", "modify",
 					"ALTER IGNORE TABLE #___whois modify `class2` enum('','Alchemist','Architect','Armorsmith','Gemcutter','Weaponsmith','None') NOT NULL");
-				$this -> bot -> db -> set_version("whois", 4);
-				$this->update_table();
-				return;
 			case 4:
 				$this->bot->db->update_table("whois", "ID", "alter", "ALTER TABLE #___whois MODIFY ID BIGINT NOT NULL");
-				$this -> bot -> db -> set_version("whois", 5);
-				$this->update_table();
-				break;
 			default:
 		}
 		$this -> bot -> db -> set_version("whois", 5);
