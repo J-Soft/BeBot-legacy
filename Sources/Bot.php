@@ -541,12 +541,29 @@ class Bot
 		$send = true;
 		if($checksize)
 		{
-			if (preg_match("/<a href=\"(.+)\">/isU", $msg, $info))
-				if (strlen($info[1]) > $this -> maxsize)
+			if(strlen($msg) < 100000)
+			{
+				if (preg_match("/<a href=\"(.+)\">/isU", $msg, $info))
 				{
-					$this -> cut_size($msg, "pgroup", $group);
-					$send = false;
+					if (strlen($info[1]) > $this -> maxsize)
+					{
+						$this -> cut_size($msg, "pgroup", $group);
+						$send = false;
+					}
 				}
+			}
+			else
+			{
+				$info = explode('<a href="', $msg, 2);
+				if(count($info) > 1)
+				{
+					if (strlen($msg) > $this -> maxsize)
+					{
+						$this -> cut_size($msg, "pgroup", $group);
+						$send = false;
+					}
+				}
+			}
 		}
 
 		if ($send)
@@ -586,12 +603,29 @@ class Bot
 		$send = true;
 		if($checksize)
 		{
-			if (preg_match("/<a href=\"(.+)\">/isU", $msg, $info))
-				if (strlen($info[1]) > $this -> maxsize)
+			if(strlen($msg) < 100000)
+			{
+				if (preg_match("/<a href=\"(.+)\">/isU", $msg, $info))
 				{
-					$this -> cut_size($msg, "gc", "", $low);
-					$send = false;
+					if (strlen($info[1]) > $this -> maxsize)
+					{
+						$this -> cut_size($msg, "gc", "", $low);
+						$send = false;
+					}
 				}
+			}
+			else
+			{
+				$info = explode('<a href="', $msg, 2);
+				if(count($info) > 1)
+				{
+					if (strlen($msg) > $this -> maxsize)
+					{
+						$this -> cut_size($msg, "gc", "", $low);
+						$send = false;
+					}
+				}
+			}
 		}
 
 		if ($send)
