@@ -1033,7 +1033,7 @@ class Raid extends BaseActiveModule
 				Return ("##highlight##0##end## Active and ##highlight##0##end## Inactive Users in Raid");
 		}
 		else
-			return "You must be a " . $this -> bot -> core("settings") -> get('Raid', 'Command') . " to change Raid type";
+			return "You must be a " . $this -> bot -> core("settings") -> get('Raid', 'Command') . " to view the Raid List";
 	}
 
 	function save()
