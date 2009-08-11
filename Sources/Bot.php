@@ -1840,7 +1840,10 @@ class Bot
 			}
 			elseif($event == 'cron')
 			{
-				$time = strtotime($target, 0);
+				if(!is_numeric($target))
+					$time = strtotime($target, 0);
+				else
+					$time = $target;
 
 				if($time > 0)
 				{
