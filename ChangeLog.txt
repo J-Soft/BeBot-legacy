@@ -5,6 +5,10 @@ Version 0.6.5
 - Added missing version info in !about (not currently used for stable release versions)
 - Backported some more fixes for various PHP notices when running with higher error reporting levels enabled.
 - Fixed a bug causing the internal buddylist count to be off, which in turn meant roster updates would run every hour for busy bots.
+- Fix the bug causing !list output for the AO loot module to not have clickable item references.
+
+API Changes:
+- make_item again accepts the optional fifth argument for alternative quoting.
 
 
 -------------
@@ -38,7 +42,7 @@ Version 0.6.4
 - !version check can now be used by superadmins and above (hardcoded in 0.6 branch) to force a version check.
 
 API Changes:
-make_item no longer accepts the optional fifth argument. It will now properly deal with item names containing ' automatically.
+- make_item no longer accepts the optional fifth argument. It will now properly deal with item names containing ' automatically.
 
 -------------
 Version 0.6.3

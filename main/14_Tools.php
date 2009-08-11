@@ -309,7 +309,12 @@ class tools extends BasePassiveModule
 
 	function make_blob($title, $content)
 	{
-		$content = str_replace("\"", "&quot;", $content);
+		// Using " inside a blob will end the blob.
+		// Convert opening and closing tags with " to '
+		// Convert any other " to HTML entities.
+		$content = str_replace("=\"", "='", $content);
+		$content = str_replace("\">", "'>", $content);
+		$content = str_replace("\"", "&quot;", $content);		
 
 		return "<a href=\"text://" . $content . "\">" . $title . "</a>";
 	}
@@ -317,10 +322,15 @@ class tools extends BasePassiveModule
 	/*
 	Creates a text blob.
 	*/
-	function make_item($lowid, $highid, $ql, $name)
+	function make_item($lowid, $highid, $ql, $name, $alt = FALSE)
 	{
+		$quote = '"';
+		if ($alt)
+		{
+			$quote = '\'';
+		}
 		$name = str_replace("'", "&#039;", $name);
-		return "<a href='itemref://$lowid/$highid/$ql'>$name</a>";
+		return "<a href=".$quote."itemref://$lowid/$highid/$ql".$quote.">$name</a>";
 	}
 
 	/*
