@@ -325,7 +325,7 @@ class Points extends BaseActiveModule
 				$stat = TRUE;
 				$txt = "enabled";
 			}
-			if ($toggle == "check")
+			elseif ($toggle == "check")
 			{
 				if(!$this -> bot -> core("settings") -> get("Points", "To_main"))
 				{
