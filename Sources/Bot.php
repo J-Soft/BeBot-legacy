@@ -236,7 +236,7 @@ class Bot
 			die("Unknown dimension " . $this -> dimension);
 
 		// Open connection
-		$this -> log("LOGIN", "STATUS", "Connecting");
+		$this -> log("LOGIN", "STATUS", "Connecting to $this->game server $server:$port");
 		if (!$this -> aoc -> connect($server, $port, $this -> sixtyfourbit))
 		{
 			$this -> cron_activated = false;
