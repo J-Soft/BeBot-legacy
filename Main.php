@@ -465,13 +465,13 @@ function callback($type, $args)
 
 	switch ($type)
 	{
-		case 5:
+		case AOCP_LOGIN_OK:
 			$bot -> log("LOGIN", "RESULT", "OK");
 			break;
-		case 6:
+		case AOCP_LOGIN_ERROR:
 			$bot -> log("LOGIN", "RESULT", "Error");
 			break;
-		case 20:
+		case AOCP_CLIENT_NAME:
 			// Silently ignore for now (AOCP_CLIENT_NAME)
 			break;
 		case AOCP_MSG_PRIVATE:
