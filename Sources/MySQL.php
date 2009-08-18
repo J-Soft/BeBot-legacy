@@ -161,7 +161,7 @@ class MySQL
 	{
 		$msg = mysql_error();
 		$this -> error_count++;
-		$this -> bot -> log("MySQL", "ERROR", "(# " . $this -> error_count . ") on query: $text\n$msg", TRUE);
+		echo "MySQL ERROR(# " . $this -> error_count . ") on query: $text\n$msg";
 
 		// If this error is occuring while we are trying to first connect to the database when starting
 		// rthe bot its a fatal error.
@@ -393,7 +393,7 @@ class MySQL
 	{
 		if(!is_numeric($version))
 		{
-			$this -> bot -> log("DB", "ERROR", "Trying to set version: " . $version . " for table " . $table . "!");
+			echo "DB ERROR Trying to set version: " . $version . " for table " . $table . "!";
 		}
 		else
 		{
