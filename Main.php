@@ -36,7 +36,7 @@
 */
 
 define('BOT_VERSION', "0.6.5");
-define('BOT_VERSION_INFO', ".(snapshot: $Revision-Id$)");
+define('BOT_VERSION_INFO', ".(snapshot)");
 define('BOT_VERSION_NAME', "BeBot");
 
 // Is this a development snapshot from BZR?
