@@ -35,7 +35,7 @@
 * Revision: $Id: About.php 1936 2008-12-23 01:49:51Z temar $
 */
 
-$about = new About($bot);
+$about = new About($bot, $owner);
 
 /*
 The Class itself...
@@ -46,7 +46,7 @@ class About extends BaseActiveModule
 	Constructor:
 	Hands over a referance to the "Bot" class.
 	*/
-	function __construct(&$bot)
+	function __construct(&$bot, $owner)
 	{
 		parent::__construct(&$bot, get_class($this));
 
@@ -69,6 +69,7 @@ class About extends BaseActiveModule
 		$this->versiontype = "s";
 		$this->updatewaiting = FALSE;
 		$this->lastrun = FALSE;
+		$this->owner = $owner;
 
 	}
 
@@ -196,7 +197,13 @@ class About extends BaseActiveModule
 				}
 				
 			}
-			elseif ($this->info['myversion'][1] != $this->info['upversion'][1])
+			elseif (BOT_VERSION_SNAPSHOT == TRUE)
+			{
+				$available = TRUE;
+			}
+			
+			// Check minor version
+			if ($this->info['myversion'][1] != $this->info['upversion'][1])
 			{
 				if ($this->info['myversion'][1] < $this->info['upversion'][1])
 				{
@@ -207,7 +214,13 @@ class About extends BaseActiveModule
 					$newer = TRUE;
 				}
 			}
-			elseif ($this->info['myversion'][2] != $this->info['upversion'][2])
+			elseif (BOT_VERSION_SNAPSHOT == TRUE)
+			{
+				$available = TRUE;
+			}
+			
+			// Check patch version
+			if ($this->info['myversion'][2] != $this->info['upversion'][2])
 			{
 				if ($this->info['myversion'][2] < $this->info['upversion'][2])
 				{
@@ -217,6 +230,10 @@ class About extends BaseActiveModule
 				{
 					$newer = TRUE;
 				}
+			}
+			elseif (BOT_VERSION_SNAPSHOT == TRUE)
+			{
+				$available = TRUE;
 			}
 			
 			if ($newer == TRUE)
@@ -264,7 +281,7 @@ class About extends BaseActiveModule
 					}
 				}
 				$this->set_update_time();
-				$this -> bot -> log("VERSION", "UPDATE", "Found new available version " . $this->info['upversionstring']);
+				$this->bot->log("VERSION", "UPDATE", "Found new available version " . $this->info['upversionstring']);
 				$this->updatewaiting['version'] = $this->info['upversionstring'];
 				$this->updatewaiting['window'] = $window;
 				$this->updatewaiting['date'] = $this->info['date'];
@@ -311,23 +328,26 @@ class About extends BaseActiveModule
 	function about_blob()
 	{
 		$version = BOT_VERSION_NAME . " v." . BOT_VERSION . BOT_VERSION_INFO;
-		$inside = "##blob_title##::: About :::##end##\n\n";
-
-		$inside .= "##blob_text##Bot Client:##end##\n";
-		$inside .= "$version\n\n";
-
+		$inside = "##blob_title##::: About :::##end##\n";
+		$inside .= "\n";
+		$inside .= "##blob_text##Bot version:##end## $version\n";
+		$inside .= "##blob_text##Bot owner:##end## $this->owner\n";
+		$inside .= "\n";
 		$inside .= "##blob_text##Download URL:##end##\n";
-		$inside .= $this -> bot -> core("tools") -> chatcmd("http://bebot.shadow-realm.org", "http://bebot.shadow-realm.org", "start")."\n\n";
-
-		$inside .= "##blob_text##Developers:##end##\n";
+		$inside .= $this -> bot -> core("tools") -> chatcmd("http://bebot.shadow-realm.org", "http://bebot.shadow-realm.org", "start")."\n";
+		$inside .= "\n";
+		$inside .= "##blob_text##Core developers:##end##\n";
 		$inside .= "Alreadythere (RK2)\n";
+		$inside .= "DJKrose (Mitra)\n";
+		$inside .= "Khalem (RK1)\n";
+		$inside .= "Temar (RK1 / Doomsayer)\n";
+		$inside .= "\n";
+		$inside .= "##blob_text##Inactive developers:##end##\n";
 		$inside .= "Blondengy (RK1)\n";
 		$inside .= "Blueeagl3 (RK1)\n";
 		$inside .= "Glarawyn (RK1)\n";
-		$inside .= "Khalem (RK1)\n";
 		$inside .= "Naturalistic (RK1)\n";
-		$inside .= "Temar (RK1 / Doomsayer)\n\n";
-
+		$inside .= "\n";
 		$inside .= "##blob_text##Special thanks to:##end##\n";
 		$inside .= "Akarah (RK1)\n";
 		$inside .= "Bigburtha (RK2) aka Craized\n";
@@ -345,6 +365,12 @@ class About extends BaseActiveModule
 
 		return "$version ::: " . $this->bot->core("tools")->make_blob('More details', $inside);
 	}
+
+	/*
+	* Make the credits-blob
+	*/
+	
+	
 	
 	/*
 	* Update the last update time
