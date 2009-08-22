@@ -1047,7 +1047,7 @@ class IRC extends BaseActiveModule
 
 	function irc_nick(&$irc, &$data)
 	{
-		if (($data->nick != $this->bot->core("settings")->get("Irc", "Nick")) && (strtolower($this->bot->core("settings")->get("Irc", "AnnounceTo")) != "none"))
+		if ($data->nick != $this->bot->core("settings")->get("Irc", "Nick"))
 		{
 			unset($this -> irconline[strtolower($data -> nick)]);
 			$this -> irconline[strtolower($data -> message)] = strtolower($data -> message);
@@ -1055,7 +1055,10 @@ class IRC extends BaseActiveModule
 
 		$txt = "##irc_group##" . $this -> bot -> core("settings") -> get("Irc", "Guildprefix") . "##end## ##irc_user##" . $data -> nick . "##end####irc_text## is known as##end## ##irc_user##" . $data -> message . "##end##";
 
-		$this -> bot -> send_output("", $txt, $this -> bot -> core("settings") -> get("Irc", "Chat"));
+		if (strtolower($this->bot->core("settings")->get("Irc", "AnnounceTo")) != "none")
+		{
+			$this->bot->send_output("", $txt, $this->bot->core("settings")->get("Irc", "AnnounceTo"));
+		}
 
 		if ($this -> bot -> core("settings") -> get("Irc", "Useguildrelay") && $this -> bot -> core("settings") -> get("Relay", "Relay"))
 		{
