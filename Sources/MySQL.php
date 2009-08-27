@@ -130,12 +130,12 @@ class MySQL
 
 		if (!$conn)
 		{
-			$this->error("Cannot connect to the database server!", $initial);
+			$this->error("Cannot connect to the database server at " . $this -> SERVER . " as user " . $this -> USER ."!", $initial);
 			return false;
 		}
 		if(!mysql_select_db($this -> DBASE, $conn))
 		{
-			$this->error("Database not found or insufficient priviledges!", $initial);
+			$this->error("Unable to select database " . $this -> DBASE . " Database not found or insufficient priviledges!", $initial);
 			return false;
 		}
 
