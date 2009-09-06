@@ -1,4 +1,10 @@
 -------------
+Version 0.6.6
+-------------
+- Add detection of missing config file and try to detect if config file was not read properly.
+
+
+-------------
 Version 0.6.5
 -------------
 - Fixed date format for !whois -> last online (aoc only)

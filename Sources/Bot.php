@@ -233,7 +233,7 @@ class Bot
 			$port = $server_list['aoc'][$dimension]['port'];
 		}
 		else
-			die("Unknown dimension " . $this -> dimension);
+			die("Unknown dimension (" . $this -> dimension . ")");
 
 		// Open connection
 		$this -> log("LOGIN", "STATUS", "Connecting to $this->game server $server:$port");

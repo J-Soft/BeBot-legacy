@@ -197,15 +197,34 @@ MySQL.php: Used to communicate with the MySQL database
 AOChat.php: Interface to communicate with AO chat servers
 Bot.php: The actual bot itself.
 */
-require_once "./conf/" . $conffile;
+if (file_exists("./conf/" . $conffile))
+{
+	require_once "./conf/" . $conffile;
+}
+else
+{
+	die("Could not read config file ./conf/" . $conffile);
+}
+
+/*
+* Why was this added? Is it documented anywhere?
+* - Khalem
+*/
 if(empty($ao_password) || $ao_password == "")
 {
 	$fp = fopen('./conf/pw', 'r');
-	$ao_password = fread($fp, filesize('./conf/pw'));
-	fclose($fp);
-	$fp = fopen('./conf/pw', 'w');
-	fwrite($fp, "");
-	fclose($fp);
+	if ($fp)
+	{
+		$ao_password = fread($fp, filesize('./conf/pw'));
+		fclose($fp);
+		$fp = fopen('./conf/pw', 'w');
+		fwrite($fp, "");
+		fclose($fp);
+	}
+	else if(empty($ao_password) || $ao_password == "")
+	{
+		die("No password set in either ./conf/" . $conffile . " or in ./conf/pw");
+	}
 }
 if(is_numeric($dimension) || strcasecmp($dimension, "Atlantean") == 0 || strcasecmp($dimension, "Rimor") == 0 || strcasecmp($dimension, "Die neue welt") == 0)
 	$game = "ao";
