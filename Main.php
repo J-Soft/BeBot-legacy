@@ -221,7 +221,7 @@ if(empty($ao_password) || $ao_password == "")
 		fwrite($fp, "");
 		fclose($fp);
 	}
-	else
+	if(empty($ao_password) || $ao_password == "")
 	{
 		die("No password set in either ./conf/" . $conffile . " or in ./conf/pw");
 	}
