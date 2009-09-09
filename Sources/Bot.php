@@ -720,16 +720,11 @@ class Bot
 		}
 
 		$perc = $this -> core("settings") -> get("Core", "SimilarMinimum");
-		foreach($this -> commands[$channel] as $compare_cmd => $value)
+		foreach($this -> commands[$channel] as $c => $v)
 		{
-			similar_text($cmd, $compare_cmd, $percentage);
-			if ($percentage >= $perc
-			&& $percentage > $use[0])
-			{
-				$use = array($percentage, $compare_cmd);
-			}
+			$commands[] = $c;
 		}
-		return $use;
+		return $this -> core("tools") -> best_match($cmd, $commands, $perc);
 	}
 
 

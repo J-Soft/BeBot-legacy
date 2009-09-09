@@ -314,7 +314,7 @@ class tools extends BasePassiveModule
 		// Convert any other " to HTML entities.
 		$content = str_replace("=\"", "='", $content);
 		$content = str_replace("\">", "'>", $content);
-		$content = str_replace("\"", "&quot;", $content);		
+		$content = str_replace("\"", "&quot;", $content);
 
 		return "<a href=\"text://" . $content . "\">" . $title . "</a>";
 	}
@@ -445,7 +445,26 @@ class tools extends BasePassiveModule
 		{
 			return mt_rand();
 		}
+	}
 
+	function best_match($find, $in, $perc=0)
+	{
+		$use = array(0);
+		$percentage = 0;
+
+		if(!empty($in))
+		{
+			foreach($in as $compare)
+			{
+				similar_text($find, $compare, $percentage);
+				if ($percentage >= $perc
+				&& $percentage > $use[0])
+				{
+					$use = array($percentage, $compare);
+				}
+			}
+		}
+		return $use;
 	}
 }
 ?>
