@@ -92,10 +92,9 @@ class Logon extends BaseActiveModule
 		{
 			case 1:
 				$this->bot->db->update_table("logon", "id", "alter", "ALTER TABLE #___logon MODIFY id BIGINT NOT NULL");
-				$this->bot->db->set_version("logon", 2);
-				$this->update_table();
 			default:
 		}
+		$this->bot->db->set_version("logon", 2);
 	}
 	
 	function command_handler($name, $msg, $origin)
