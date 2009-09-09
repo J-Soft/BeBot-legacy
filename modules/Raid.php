@@ -83,6 +83,7 @@ class Raid extends BaseActiveModule
 		$this -> bot -> core("settings") -> create("Raid", "Points", 0.1, "How Many points should a User get Every minuite while in Raid");
 		$this -> bot -> core("settings") -> create("Raid", "minlevel", 1, "Whats the Default min level to join Raid.");
 		$this -> bot -> core("settings") -> create("Raid", "raidinfo", "", "Raid info.", NULL, TRUE, 2);
+		$this -> bot -> core("settings") -> create("Raid", "raidtypes", "", "List of Raid Types to show in raid control, use ; to seperate");
 
 		$this -> help['description'] = 'Module to manage and announce raids.';
 		$this -> help['command']['raid start <description>']="Starts a raid with optional description.";
@@ -127,7 +128,11 @@ class Raid extends BaseActiveModule
 				switch(strtolower($var[1]))
 				{
 					case 'start':
-						Return $this -> start_raid($name, $var[2], $var[3]);
+						if(!empty($var[3]))
+							$desc = $var[2]." ".$var[3];
+						else
+							$desc = $var[2];
+						Return $this -> start_raid($name, $desc);
 					case 'stop':
 					case 'end':
 						Return $this -> end_raid($name);
@@ -156,18 +161,19 @@ class Raid extends BaseActiveModule
 						return $this -> addto_raid($name, $var[2], $type);
 					case 'reward':
 					case 'give':
-						$this -> add_point($name, $var[2], $var[3]);
+						$this -> add_point($name, $var[2]);
 						Break;
 					case 'punish':
 					case 'take':
-						$this -> rem_point($name, $var[2], $var[3]);
+						$this -> rem_point($name, $var[2]);
 						Break;
 					case 'pause':
-						Return $this -> pause(TRUE);
+						Return $this -> pause($name, TRUE);
 					case 'unpause':
-						Return $this -> pause(FALSE);
+						Return $this -> pause($name, FALSE);
 					case 'announce':
 						Return $this -> set_announce($name, $var[2]);
+					case 'desc':
 					case 'description':
 						if(!empty($var[3]))
 							$desc = $var[2]." ".$var[3];
@@ -312,7 +318,7 @@ class Raid extends BaseActiveModule
 				$this -> points = array();
 				$this -> start = time();
 				$this -> bot -> send_output($name, "##highlight##$name##end## has started the raid :: " . $this -> clickjoin(), "both");
-				$this -> pause(TRUE);
+				$this -> pause($name, TRUE);
 				$this -> save();	
 				$this -> register_event("cron", "1min");
 				return "Raid started. :: ".$this -> control();
@@ -402,35 +408,16 @@ class Raid extends BaseActiveModule
 	}
 
 
-	function rem_point($name, $points, $type = FALSE)
+	function rem_point($name, $points)
 	{ //fix me! - fixed addto_raid so that raiders are added correctly
 		if (!$this -> raid)
 			$this -> bot -> send_tell($name, "No raid in progress");
-		if(!is_numeric($points) && !is_numeric($type))
+		if(!is_numeric($points))
 		{
 			$this -> bot -> send_tell($name, "Invalid Points Amount");
 		}
 		elseif ($this -> bot -> core("security") -> check_access($name, $this -> bot -> core("settings") -> get('Raid', 'Command')))
 		{
-			if(!is_numeric($points))
-			{
-				$temp = $type;
-				$type = $points;
-				$points = $temp;
-			}
-			$type = strtolower($type);
-			if($type == "z" || $type == "zod" || $type == "zods")
-			{
-				$type = "zods";
-			}
-			elseif($type == "b" || $type == "beast")
-			{
-				$type = "beast";
-			}
-			else
-			{
-				$type = $this -> type;
-			}
 			$users = $this -> bot -> db -> select("SELECT raidingas FROM #___raid_points WHERE raiding = 1 ORDER BY raidingas");
 			if(!empty($users))
 			{
@@ -749,53 +736,66 @@ class Raid extends BaseActiveModule
 	*/
 	function cron()
 	{
-		if(!$this -> paused)
+		if ($this -> raid)
 		{
-			$points = $this -> bot -> core("settings") -> get('Raid', 'Points');
-			if(!is_numeric($points))
+			if(!$this -> paused)
 			{
-				$this -> bot -> send_output("", "##error##Error: Invalid Amount set for Points in Settings (must be a number)", "both");
-				$this -> pause(TRUE);
-			}
-			else
-			{
-				$users = $this -> bot -> db -> select("SELECT raidingas FROM #___raid_points WHERE raiding = 1 ORDER BY raidingas");
-				if(!empty($users))
+				$points = $this -> bot -> core("settings") -> get('Raid', 'Points');
+				if(!is_numeric($points))
 				{
-					//$inside = " :: $points Given to all Raiders ::\n\n";
-					foreach($users as $user)
-					{
-						$count++;
-						$user = $user[0];
-						$this -> points[$user] += $points;
-						$userp = isset($this -> points[$user]) ? $this -> points[$user] : 0;
-						$this -> bot -> db -> query("INSERT INTO #___raid_log (name, points, time) VALUES ('".$user."', $userp, ".$this -> start.") ON DUPLICATE KEY UPDATE points = points + ".$points);
-					}
+					$this -> bot -> send_output("", "##error##Error: Invalid Amount set for Points in Settings (must be a number)", "both");
+					$this -> pause("#internal", TRUE);
 				}
-				$this -> bot -> db -> query("UPDATE #___raid_points SET points = points + ".$points." WHERE raiding = 1");
+				else
+				{
+					$users = $this -> bot -> db -> select("SELECT raidingas FROM #___raid_points WHERE raiding = 1 ORDER BY raidingas");
+					if(!empty($users))
+					{
+						//$inside = " :: $points Given to all Raiders ::\n\n";
+						foreach($users as $user)
+						{
+							$count++;
+							$user = $user[0];
+							$this -> points[$user] += $points;
+							$userp = isset($this -> points[$user]) ? $this -> points[$user] : 0;
+							$this -> bot -> db -> query("INSERT INTO #___raid_log (name, points, time) VALUES ('".$user."', $userp, ".$this -> start.") ON DUPLICATE KEY UPDATE points = points + ".$points);
+						}
+					}
+					$this -> bot -> db -> query("UPDATE #___raid_points SET points = points + ".$points." WHERE raiding = 1");
+				}
 			}
-		}
 
-		if ($this -> announce && $this -> announcel < (time() + 45))
-		{
-			if($this -> move > time())
+			if ($this -> announce && $this -> announcel < (time() + 45))
 			{
-				$move = $this -> move - time();
-				$move = ", Move in ##highlight##" . $this -> bot -> core("time") -> format_seconds($move) . " ##end##";
+				if($this -> move > time())
+				{
+					$move = $this -> move - time();
+					$move = ", Move in ##highlight##" . $this -> bot -> core("time") -> format_seconds($move) . " ##end##";
+				}
+				$this -> bot -> send_output("", "Raid is running: ##highlight##".$this -> description."##end##".$move, "both");
+				$this -> announcel = time();
 			}
-			$this -> bot -> send_output("", "Raid is running: ##highlight##".$this -> description."##end##".$move, "both");
-			$this -> announcel = time();
 		}
 	}
 
-	function pause($paused)
+	function pause($name, $paused)
 	{
-		if($paused)
-			$this -> bot -> send_output("", "Raid Point Ticker Paused", "both");
+		if ($name == "#internal" || $this -> bot -> core("security") -> check_access($name, $this -> bot -> core("settings") -> get('Raid', 'Command')))
+		{
+			if ($this -> raid)
+			{
+				if($paused)
+					$this -> bot -> send_output("", "Raid Point Ticker Paused", "both");
+				else
+					$this -> bot -> send_output("", "Raid Point Ticker Unpaused", "both");
+				$this -> paused = $paused;
+				return $this -> control();
+			}
+			else
+				Return("Error There isnt a Raid Running.");
+		}
 		else
-			$this -> bot -> send_output("", "Raid Point Ticker Unpaused", "both");
-		$this -> paused = $paused;
-		return $this -> control();
+			return "You must be a " . $this -> bot -> core("settings") -> get('Raid', 'Command') . " to pause/unpause points ticker";
 	}
 
 	function change_level($name, $level)
@@ -844,7 +844,7 @@ class Raid extends BaseActiveModule
 					{
 						if(!isset($this -> user[ucfirst(strtolower($notin[0]))]))
 						{
-							$this -> bot -> send_tell($notin[0], "##error##Warning##end##: you are not in the current raid");
+							$this -> bot -> send_tell($notin[0], "##error##Warning##end##: you are not in the current raid " . $this -> clickjoin());
 							$count++;
 						}
 					}
@@ -872,7 +872,7 @@ class Raid extends BaseActiveModule
 				Return("Error There isnt a Raid Running.");
 		}
 		else
-			return "You must be a " . $this -> bot -> core("settings") -> get('Raid', 'Command') . " to send warnings";
+			return "You must be a " . $this -> bot -> core("settings") -> get('Raid', 'Command') . " to set move";
 	}
 
 	function set_announce($name, $set)
@@ -945,8 +945,20 @@ class Raid extends BaseActiveModule
 		else
 		{
 			$info= "Not Running";
-			$link = "Start: ".$this -> bot -> core("tools") -> chatcmd("raid start beast", "Beast")."|".
-					$this -> bot -> core("tools") -> chatcmd("raid start zods", "Zods");
+			$types = $this -> bot -> core("settings") -> get("Raid", "raidtypes");
+			if($types != "")
+			{
+				$types = explode(";", $types);
+				foreach($types as $type)
+				{
+					$type = trim($type);
+					$list[] = $this -> bot -> core("tools") -> chatcmd("raid start ".$type, $type);
+				}
+				$list = implode("|", $list);
+			}
+			else
+				$list = $this -> bot -> core("tools") -> chatcmd("raid start", "Start");
+			$link = "Start: ".$list;
 		}
 		$inside .= "\nRaid Status: ##highlight##$info##end##  [$link]";
 		if($this -> raid)
