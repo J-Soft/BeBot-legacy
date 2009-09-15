@@ -2,6 +2,9 @@
 Version 0.6.6
 -------------
 - Add detection of missing config file and try to detect if config file was not read properly.
+- Added setting for what raid types to show in raid control start raid links
+- Added a best match function to tools module
+- Added waypoint support to rally
 
 
 -------------

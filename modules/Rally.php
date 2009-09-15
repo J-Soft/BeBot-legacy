@@ -50,7 +50,7 @@ class Rally extends BaseActiveModule
 	{
 		parent::__construct(&$bot, get_class($this));
 
-		$this -> rallyinfo = "No rally point has been set.";
+		$this -> rallyinfo = FALSE;
 
 		$this -> register_command('all', 'rally', 'MEMBER');
 
@@ -65,16 +65,24 @@ class Rally extends BaseActiveModule
 
 	function command_handler($name, $msg, $origin)
 	{
-		if (preg_match("/^rally$/i", $msg))
-			return $this -> rallyinfo;
-		else if (preg_match("/^rally (rem|del|clear)$/i", $msg, $info))
+		$msg = explode(" ", $msg, 2);
+		if(strtolower($msg[0]) != "rally")
+			Return("Error Unknown Command ##highlight##$msg[0]##end## in Rally Module");
+		$msg = trim($msg[1]);
+		if (!$msg || $msg == "")
+			return $this -> get_rally();
+		else if (preg_match("/^(rem|del|clear)$/i", $msg, $info))
 			return $this -> del_rally($name);
-		else if (preg_match("/^rally ([a-zA-Z0-9]+) ([0-9]+) ([0-9]+)$/i", $msg, $info))
+		else if (preg_match("/^([ a-zA-Z0-9]+) ([0-9]+) ([0-9]+)$/i", $msg, $info))
 			return $this -> set_rally($info[1], $info[2], $info[3], "");
-		else if (preg_match("/^rally ([a-zA-Z0-9]+) ([0-9]+) ([0-9]+) (.*)$/i", $msg, $info))
+		else if (preg_match("/^([ a-zA-Z0-9]+) ([0-9]+) ([0-9]+) (.*)$/i", $msg, $info))
 			return $this -> set_rally($info[1], $info[2], $info[3], $info[4]);
+		else if (preg_match("/^- ([0-9].+), ([0-9].+), ([0-9].+) \(([0-9].+) ([0-9].+) y ([0-9].+) ([0-9]+)\)$/i", $msg, $info))
+			return $this -> set_rally($info[7], $info[1], $info[2], "");
+		else if (preg_match("/^- ([0-9].+), ([0-9].+), ([0-9].+) \(([0-9].+) ([0-9].+) y ([0-9].+) ([0-9]+)\) (.*)$/i", $msg, $info))
+			return $this -> set_rally($info[7], $info[1], $info[2], $info[8]);
 		else
-			return("To set Rally: <pre>rally &lt;playfield&gt; &lt;x-coord&gt; &lt;y-coord&gt; &lt;notes&gt");
+			return("To set Rally: <pre>rally &lt;playfield&gt; &lt;x-coord&gt; &lt;y-coord&gt; &lt;notes&gt;");
 	}
 
 
@@ -84,13 +92,54 @@ class Rally extends BaseActiveModule
 	*/
 	function set_rally($zone, $x, $y, $note)
 	{
-		$this -> rallyinfo = "Rally info: [<font color=#ffffff>Zone:</font> <font color=#ffff00>$zone</font>] " .
-		"[<font color=#ffffff>Coords:</font> <font color=#ffff00>$x, $y</font>] " .
-		"[<font color=#ffffff>Note:</font><font color=#ffff00> $note</font>]";
-		return "Rally point has been set.";
+		if(is_numeric($zone))
+		{
+			$zonenum = $this -> bot -> db -> select("SELECT area FROM #___land_control_zones WHERE zoneid = $zone");
+			if(!empty($zonenum))
+			{
+				$zonenum = $zone;
+				$zone = $zonenum[0][0];
+				$e = "and Way";
+			}
+			else
+				$zonenum = FALSE;
+		}
+		else
+		{
+			$zonenum = $this -> bot -> db -> select("SELECT zoneid FROM #___land_control_zones WHERE area = '".mysql_real_escape_string($zone)."' OR short = '".mysql_real_escape_string($zone)."'");
+			if(!empty($zonenum))
+			{
+				$zonenum = $zonenum[0][0];
+				$e = "and Way";
+			}
+			else
+				$zonenum = FALSE;
+		}
+		$this -> rallyinfo = array($zone, $x, $y, $note, $zonenum);
+		return "Rally ".$e."point has been set.";
 	}
 
-
+	function get_rally()
+	{
+		$rally = $this -> rallyinfo;
+		if($rally)
+		{
+			$return = "Rally info: [<font color=#ffffff>Zone:</font> <font color=#ffff00>$rally[0]</font>] " .
+			"[<font color=#ffffff>Coords:</font> <font color=#ffff00>$rally[1], $rally[2]</font>] " .
+			"[<font color=#ffffff>Note:</font><font color=#ffff00> $rally[3]</font>]";
+			if($rally[4])
+			{
+				$inside = " :: Rally info::<br><font color=#ffffff>Zone:</font> <font color=#ffff00>$rally[0]</font><Br>" .
+				"<font color=#ffffff>Coords:</font> <font color=#ffff00>$rally[1], $rally[2]</font><br>" .
+				"<font color=#ffffff>Note:</font><font color=#ffff00> $rally[3]</font><br><br>".
+				$this -> bot -> core("tools") -> chatcmd($rally[1]." ".$rally[2]." ".$rally[4], "Set Waypoint", "waypoint");
+				$return .= " :: ".$this -> bot -> core("tools") -> make_blob("Click for Waypoint", $inside);
+			}
+			Return($return);
+		}
+		else
+			Return "No rally point has been set.";
+	}
 
 	/*
 	Remove the rally info
@@ -99,11 +148,11 @@ class Rally extends BaseActiveModule
 	{
 		if ($this -> bot -> core("security") -> check_access($name, "LEADER"))
 		{
-			$this -> rallyinfo = "No rally point has been set.";
+			$this -> rallyinfo = FALSE;
 			return "Rally has been cleared.";
 		}
 		else
-		return "You must be a LEADER or higher to clear the rally point.";
+			return "You must be a LEADER or higher to clear the rally point.";
 	}
 }
 ?>
