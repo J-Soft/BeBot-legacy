@@ -49,6 +49,7 @@ class MassMsg extends BaseActiveModule
 
 		$this -> register_command('all', 'announce', 'LEADER');
 		$this -> register_command('all', 'massinv', 'LEADER');
+		$this -> bot -> core("queue") -> register($this, "invite", 0.2, 5);
 
 		$this -> help['description'] = 'Sends out mass messages and invites.';
 		$this -> help['command']['announce <message>']="Sends out announcement <message> as tells to all online members.";
@@ -58,7 +59,7 @@ class MassMsg extends BaseActiveModule
 		$this -> bot -> core("settings") -> create('MassMsg', 'MinAccess', 'GUEST', 'Which access level must characters online have to receive mass messages and invites?', 'ANONYMOUS;GUEST;MEMBER;LEADER;ADMIN;SUPERADMIN;OWNER');
 		$this -> bot -> core("settings") -> create('MassMsg', 'IncludePrefLink', TRUE, 'Should a link to preferences be included in the messages/invites?');
 		$this -> bot -> core("settings") -> create('MassMsg', 'tell_to_PG_users', FALSE, 'Should Bot Send message to users in PG instead of just Outputing to PG and ignoreing them');
-		
+
 		$this -> bot -> core('prefs') -> create('MassMsg', 'recieve_message', 'Do you want to recieve mass-messages?', 'Yes', 'Yes;No');
 		$this -> bot -> core('prefs') -> create('MassMsg', 'recieve_invites', 'Do you want to recieve mass-invites?', 'Yes', 'No;Yes');
 
@@ -86,7 +87,7 @@ class MassMsg extends BaseActiveModule
 				$this->bot->send_help($name);
 		}
 	}
-	
+
 	function mass_msg($sender, $msg, $type)
 	{
 		//get a list of online users in the configured channel.
@@ -156,7 +157,7 @@ class MassMsg extends BaseActiveModule
 			{
 				$status[$recipient]['sent']=false;
 			}
-			
+
 			//If type is an invite and they want invites, they will recieve both a message and an invite regardless of recieve_message setting
 			if($type=='Invite')
 			{
@@ -175,7 +176,10 @@ class MassMsg extends BaseActiveModule
 							$this->bot->send_tell($recipient, $message, 0, FALSE, TRUE, FALSE);
 							$status[$recipient]['sent']=true;
 						}
-						$this->bot->core('chat')->pgroup_invite($recipient);
+						if($this -> bot -> core("queue") -> check_queue("invite"))
+							$this->bot->core('chat')->pgroup_invite($recipient);
+						else
+							$this -> bot -> core("queue") -> into_queue("invite", $recipient);
 						$status[$recipient]['invited']=true;
 					}
 				}
@@ -185,7 +189,7 @@ class MassMsg extends BaseActiveModule
 				}
 			}
 		}
-		
+
 		return("Mass messages complete. ".$this->make_status_blob($status));
 	}
 	
