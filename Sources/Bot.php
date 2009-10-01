@@ -293,7 +293,9 @@ class Bot
 		$this -> core("settings") -> create("Core", "CommandErrorExtPgMsg", FALSE, "Should the bot output an Access Level Error if a user tries to use a command in an external private group he doesn't have access to?");
 		$this -> core("settings") -> create("Core", "CommandDisabledError", FALSE, "Should the bot output a Disabled Error if they try to use a command that is Disabled?");
 		$this -> core("settings") -> create("Core", "DisableGC", FALSE, "Should the Bot output into and reactions to commands in the guildchat be disabled?");
+		$this -> core("settings") -> create("Core", "DisableGCchat", FALSE, "Should the Bot read none command chat in GC?");
 		$this -> core("settings") -> create("Core", "DisablePGMSG", $dispg, "Should the Bot output into and reactions to commands in it's own private group be disabled?");
+		$this -> core("settings") -> create("Core", "DisablePGMSGchat", $dispg, "Should the Bot read none command chat in it's own private group?");
 		$this -> core("settings") -> create("Core", "ColorizeTells", TRUE, "Should tells going out be colorized on default? Notice: Modules can set a nocolor flag before sending out tells.");
 		$this -> core("settings") -> create("Core", "ColorizeGC", TRUE, "Should output to guild chat be colorized using the current theme?");
 		$this -> core("settings") -> create("Core", "ColorizePGMSG", TRUE, "Should output to private group be colorized using the current theme?");
@@ -1307,7 +1309,9 @@ class Bot
 		if (empty($pgname) || $pgname == "")
 		$pgname = $this -> botname;
 
-		if ($pgname == $this -> botname && $this -> core("settings") -> get("Core", "DisablePGMSG"))
+		$dispgmsg = $this -> core("settings") -> get("Core", "DisablePGMSG");
+		$dispgmsgchat = $this -> core("settings") -> get("Core", "DisablePGMSGchat");
+		if ($pgname == $this -> botname && $dispgmsg && $dispgmsgchat)
 		{
 			return FALSE;
 		}
@@ -1334,8 +1338,10 @@ class Bot
 		{
 			if (strtolower($pgname) == strtolower($this -> botname))
 			{
-				$found = $this -> handle_command_input($user, $args[2], "pgmsg");
-				$found = $this -> hand_to_chat($found, $user, $args[2], "privgroup");
+				if(!$dispgmsg)
+					$found = $this -> handle_command_input($user, $args[2], "pgmsg");
+				if(!$dispgmsgchat)
+					$found = $this -> hand_to_chat($found, $user, $args[2], "privgroup");
 			}
 			else
 			{
@@ -1444,7 +1450,9 @@ class Bot
 			return FALSE;
 		}
 
-		if (($group == $this -> guildname || ($this -> game == "aoc" && $group == "~Guild")) && $this -> core("settings") -> get("Core", "DisableGC"))
+		$disgc = $this -> core("settings") -> get("Core", "DisableGC");
+		$disgcchat = $this -> core("settings") -> get("Core", "DisableGCchat");
+		if (($group == $this -> guildname || ($this -> game == "aoc" && $group == "~Guild")) && $disgc && $disgcchat)
 		{
 			Return FALSE;
 		}
@@ -1475,7 +1483,8 @@ class Bot
 		{
 			if ($group == $this -> guildname || ($this -> game == "aoc" && $group == "~Guild"))
 			{
-				$found = $this -> handle_command_input($user, $args[2], "gc");
+				if(!$disgc)
+					$found = $this -> handle_command_input($user, $args[2], "gc");
 
 				if($this -> command_error_text)
 				{
@@ -1483,7 +1492,8 @@ class Bot
 				}
 				unset($this -> command_error_text);
 			}
-			$found = $this -> hand_to_chat($found, $user, $args[2], "gmsg", $group);
+			if(!$disgcchat)
+				$found = $this -> hand_to_chat($found, $user, $args[2], "gmsg", $group);
 		}
 	}
 
