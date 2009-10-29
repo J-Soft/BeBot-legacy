@@ -6,6 +6,7 @@ Version 0.6.6
 - Added a best match function to tools module
 - Added waypoint support to rally
 - Added a General queue module Changed chatqueue buddy_queue and masmsg (invites) to use
+- Fixed login in AoC after patch 1.05.6
 
 
 -------------
