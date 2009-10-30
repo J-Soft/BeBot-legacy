@@ -35,8 +35,8 @@
 * Revision: $Id: Main.php 1963 2009-01-24 21:08:06Z alreadythere $
 */
 
-define('BOT_VERSION', "0.6.6");
-define('BOT_VERSION_INFO', "");
+define('BOT_VERSION', "0.6.7");
+define('BOT_VERSION_INFO', ".(SNAPSHOT)");
 define('BOT_VERSION_NAME', "BeBot");
 
 // Is this a development snapshot from BZR?

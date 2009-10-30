@@ -151,7 +151,7 @@ class Bot
 	{
 		$this -> username = $uname;
 		$this -> password = $pwd;
-		$this -> botname = $botname;
+		$this -> botname = ucfirst(strtolower($botname));
 		$this -> dimension = ucfirst(strtolower($dim));
 		$this -> botversion = $botversion;
 		$this -> botversionname = $botversionname;
