@@ -1,7 +1,9 @@
 -------------
 Version 0.6.7
 -------------
- - Improved the cURL get_site function to support POST and Login
+- Improved the cURL get_site function to support POST and Login.
+- Added a Link for turning LFT on in click to join blob, can be disabled under settings.
+- Autoinvites users who apear to have LD during a Raid.
 
 
 -------------
