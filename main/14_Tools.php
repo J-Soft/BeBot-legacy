@@ -247,14 +247,17 @@ class tools extends BasePassiveModule
 
 	}
 
-	function get_site_curl($url, $strip_headers, $timeout = 10)
+	function get_site_curl($url, $strip_headers = 0, $post = NULL, $login = NULL, $timeout = 10) // login should be username:password
 	{
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_USERAGENT, $this->useragent);
 		// Set your login and password for authentication
-		//curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-		//curl_setopt($ch, CURLOPT_USERPWD, $user.':'.$pw);
+		if(!empty($login))
+		{
+			curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+			curl_setopt($ch, CURLOPT_USERPWD, $login);
+		}
 
 		// You can use CURLAUTH_BASIC, CURLAUTH_DIGEST, CURLAUTH_GSSNEGOTIATE,
 		// CURLAUTH_NTLM, CURLAUTH_ANY, and CURLAUTH_ANYSAFE
@@ -269,6 +272,12 @@ class tools extends BasePassiveModule
 		// CURLAUTH_NTLM
 		//
 		// Personally I prefer CURLAUTH_ANY as it covers all bases
+
+		if(!empty($post))
+		{
+			curl_setopt($ch, CURLOPT_POST      ,1);
+			curl_setopt ($ch, CURLOPT_POSTFIELDS, $post);
+		}
 
 		// This is occassionally required to stop CURL from verifying the peer's certificate.
 		// CURLOPT_SSL_VERIFYHOST may also need to be TRUE or FALSE if

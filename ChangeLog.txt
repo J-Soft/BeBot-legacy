@@ -1,7 +1,7 @@
 -------------
 Version 0.6.7
 -------------
-
+ - Improved the cURL get_site function to support POST and Login
 
 
 -------------

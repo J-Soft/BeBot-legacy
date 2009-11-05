@@ -40,7 +40,7 @@ define('BOT_VERSION_INFO', ".(SNAPSHOT)");
 define('BOT_VERSION_NAME', "BeBot");
 
 // Is this a development snapshot from BZR?
-define('BOT_VERSION_SNAPSHOT', FALSE);
+define('BOT_VERSION_SNAPSHOT', TRUE);
 
 // Is this a stable release or a development release?
 define('BOT_VERSION_STABLE', TRUE);
