@@ -101,7 +101,7 @@ class tools extends BasePassiveModule
 		}
 		else
 		{
-			Return $this->get_site_curl($url, $strip_headers);
+			Return $this->get_site_curl($url, $strip_headers, $read_timeout);
 		}
 	}
 
@@ -243,7 +243,7 @@ class tools extends BasePassiveModule
 
 	}
 
-	function get_site_curl($url, $strip_headers = 0, $post = NULL, $login = NULL, $timeout = 10) // login should be username:password
+	function get_site_curl($url, $strip_headers = 0, $timeout = 10, $post = NULL, $login = NULL) // login should be username:password
 	{
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
