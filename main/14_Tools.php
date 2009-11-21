@@ -52,8 +52,6 @@ class tools extends BasePassiveModule
 
 		$this->bot->core("settings")->create("tools", "force_sockets", FALSE, "Should we force the usage of Sockets in get_site() even if Curl is available?");
 
-		$this -> register_event("settings", array("module" => "tools", "setting" => "get_site"));
-
 		$this->randomsource = "";
 		
 		$this->useragent = BOT_VERSION_NAME . "/" . BOT_VERSION . BOT_VERSION_INFO . " (Originating bot: " . $this->bot->botname . "; Dimension: " . $this->bot->dimension . ";)";
@@ -424,18 +422,6 @@ class tools extends BasePassiveModule
 			}
 		}
 		return($name);
-	}
-
-	function settings($user, $module, $setting, $new, $old)
-	{
-		if($new == "curl" && !function_exists('curl_init'))
-		{
-			$this -> bot -> core("settings") -> save($module, $setting, "Sockets");
-			if ($user != "")
-			{
-				$this -> bot -> send_tell($user, "Setting get_site for Module tools Changed to Sockets as cURL is not installed");
-			}
-		}
 	}
 	
 	function my_rand ($min = FALSE, $max = FALSE)
