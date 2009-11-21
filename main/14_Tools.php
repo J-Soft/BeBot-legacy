@@ -50,7 +50,7 @@ class tools extends BasePassiveModule
 
 		$this -> register_module("tools");
 
-		$this -> bot -> core("settings") -> create("tools", "get_site", "Sockets", "Should get_site use Sockets or Curl", "Sockets;Curl");
+		$this->bot->core("settings")->create("tools", "force_sockets", FALSE, "Should we force the usage of Sockets in get_site() even if Curl is available?");
 
 		$this -> register_event("settings", array("module" => "tools", "setting" => "get_site"));
 
@@ -93,22 +93,15 @@ class tools extends BasePassiveModule
 		Return ('<a href=\'chatcmd:///'.$chatcmd.$link . '\'>' . $title . '</a>');
 	}
 
-	function get_site($url, $strip_headers = 0, $server_timeout = 25, $read_timeout = 30)
+	function get_site($url, $strip_headers = 0, $server_timeout = 5, $read_timeout = 10)
 	{
-		if(strtolower($this -> bot -> core("settings") -> get("tools", "get_site")) == "curl")
+		if (! function_exists('curl_init') || ($this->bot->core("settings")->get("tools", "force_sockets") == TRUE))
 		{
-			if(!function_exists('curl_init'))
-			{
-				$this -> bot -> core("settings") -> save($module, $setting, "Sockets");
-				$this -> bot -> send_tell($this -> bot -> core("security") -> owner, "Setting get_site for Module tools Changed to Sockets as cURL is not installed");
-				Return $this -> get_site_sock($url, $strip_headers, $server_timeout, $read_timeout);
-			}
-			else
-				Return $this -> get_site_curl($url, $strip_headers);
+			Return $this->get_site_sock($url, $strip_headers, $server_timeout, $read_timeout);
 		}
 		else
 		{
-			Return $this -> get_site_sock($url, $strip_headers, $server_timeout, $read_timeout);
+			Return $this->get_site_curl($url, $strip_headers);
 		}
 	}
 
@@ -167,7 +160,10 @@ class tools extends BasePassiveModule
 
 			return $return;
 		}
-
+		
+		// Set some sane read timeouts to prevent the bot from hanging forever.
+		socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array("sec" => $read_timeout, "usec" => 0));
+		
 		$connect_result = socket_connect($socket, $address, $service_port);
 
 		// Make sure we have a connection

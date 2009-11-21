@@ -5,6 +5,10 @@ Version 0.6.7
 - Added a Link for turning LFT on in click to join blob, can be disabled under settings.
 - Autoinvites users who apear to have LD during a Raid.
 - rally's can now be saved and loaded
+- The bot will now automatically use cURL if it is available. The previous get_site setting has been removed
+  and a new setting added to allow disabling cURL.
+- The socket method used for get_site should now properly time out instead of waiting for the default
+  socket timeout which is 60 seconds for most installs.
 
 
 -------------
