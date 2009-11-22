@@ -9,6 +9,7 @@ Version 0.6.7
   and a new setting added to allow disabling cURL.
 - The socket method used for get_site should now properly time out instead of waiting for the default
   socket timeout which is 60 seconds for most installs.
+- Removed a bug where cron jobs sometimes didn't execute right on time.
 
 
 -------------
