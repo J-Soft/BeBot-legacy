@@ -121,6 +121,11 @@ class tools extends BasePassiveModule
 		}
 */
 
+		if ($return['error'])
+		{
+			$this -> bot -> log("ERROR", "tools", $return['errordesc'] . " Reason (" . $return['content'] . ")");
+		}
+
 		return $return;
 	}
 
@@ -153,7 +158,7 @@ class tools extends BasePassiveModule
 		// Check to see if the socket failed to create.
 		if ($socket === false) {
 			$return["error"] = true;
-			$return["errordesc"] = "Socket failed to create.";
+			$return["errordesc"] = "Failed to create a socket";
 			$return["content"] = socket_strerror(socket_last_error());
 
 			return $return;
@@ -162,13 +167,13 @@ class tools extends BasePassiveModule
 		// Set some sane read timeouts to prevent the bot from hanging forever.
 		socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array("sec" => $read_timeout, "usec" => 0));
 		
-		$connect_result = socket_connect($socket, $address, $service_port);
+		$connect_result = @socket_connect($socket, $address, $service_port);
 
 		// Make sure we have a connection
 		if ($connect_result === false)
 		{
 			$return["error"] = true;
-			$return["errordesc"] = "Failed to connect to server";
+			$return["errordesc"] = "Coult not connect to server " . $address . ":" . $service_port . " (" . $url . ")";
 			$return["content"] = socket_strerror(socket_last_error());
 			
 			return $return;
@@ -188,37 +193,37 @@ class tools extends BasePassiveModule
 		$in .= "Connection: Close\r\n";
 		$in .= "User-Agent:" . $this->useragent . "\r\n\r\n";
 
-		$write_result = socket_write($socket, $in, strlen($in));
+		$write_result = @socket_write($socket, $in, strlen($in));
 
 		// Make sure we wrote to the server okay.
 		if ($write_result === false)
 		{
 			$return["error"] = true;
-			$return["errordesc"] = "Failed to write to server";
+			$return["errordesc"] = "Coult not write to server";
 			$return["content"] = socket_strerror(socket_last_error());
 			
 			return $return;
 		}
 
 		$return["content"] = "";
-		$read_result = socket_read($socket, 2048);
+		$read_result = @socket_read($socket, 2048);
 		while ($read_result != "" && $read_result !== false)
 		{
 			$return["content"] .= $read_result;
-			$read_result = socket_read($socket, 2048);
+			$read_result = @socket_read($socket, 2048);
 		}
 
 		// Make sure we got a response back from the server.
 		if ($read_result === false)
 		{
 			$return["error"] = true;
-			$return["errordesc"] = "Failed to read response";
+			$return["errordesc"] = "Server returned no data";
 			$return["content"] = socket_strerror(socket_last_error());
 			
 			return $return;
 		}
 
-		$close_result = socket_close($socket);
+		$close_result = @socket_close($socket);
 
 		// Make sure we closed our socket properly.  Open sockets are bad!
 		if ($close_result === false)
