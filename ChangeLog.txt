@@ -11,6 +11,9 @@ Version 0.6.7
   socket timeout which is 60 seconds for most installs.
 - Removed a bug where cron jobs sometimes didn't execute right on time.
 
+New Modules:
+- Added AdminsUI Module to allow members to easily see the admin list, which also shows alts and status
+
 
 -------------
 Version 0.6.6
