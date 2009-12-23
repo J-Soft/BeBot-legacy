@@ -10,6 +10,10 @@ Version 0.6.7
 - The socket method used for get_site should now properly time out instead of waiting for the default
   socket timeout which is 60 seconds for most installs.
 - Removed a bug where cron jobs sometimes didn't execute right on time.
+- Added Tank and Caller Info to Raid Spam.
+- Added Ability to kick all users in PG that arnt in Raid.
+- Some Bug Fixes and Spelling Corrections in Raid mod.
+- Make it so you goto be in PG to join Raid, can be disable in settings and only applies to AO game.
 
 New Modules:
 - Added AdminsUI Module to allow members to easily see the admin list, which also shows alts and status
