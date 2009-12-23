@@ -248,7 +248,23 @@ class Roster_Core extends BasePassiveModule
 		// Get the guild roster
 		if($this -> bot -> game == "ao")
 		{
-			$members = $this -> parse_org($this -> bot -> dimension, $this -> bot -> guildid);
+			$dimension = $this -> bot -> dimension;
+			switch(strtolower($dimension))
+			{
+				case "testlive":
+					$dimension = "0";
+					break;
+				case "atlantean";
+					$dimension = "1";
+					break;
+				case "rimor":
+					$dimension = "2";
+					break;
+				case "die neue welt":
+					$dimension = "3";
+					break;
+			}
+			$members = $this -> parse_org($dimension, $this -> bot -> guildid);
 		}
 
 		/*

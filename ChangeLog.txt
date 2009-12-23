@@ -14,6 +14,7 @@ Version 0.6.7
 - Added Ability to kick all users in PG that arnt in Raid.
 - Some Bug Fixes and Spelling Corrections in Raid mod.
 - Make it so you goto be in PG to join Raid, can be disable in settings and only applies to AO game.
+- Roster Module now Supports use of dimension name for AO
 
 New Modules:
 - Added AdminsUI Module to allow members to easily see the admin list, which also shows alts and status
