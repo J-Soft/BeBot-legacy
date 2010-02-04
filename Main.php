@@ -43,7 +43,7 @@ define('BOT_VERSION_NAME', "BeBot");
 define('BOT_VERSION_SNAPSHOT', FALSE);
 
 // Is this a stable release or a development release?
-define('BOT_VERSION_STABLE', FALSE);
+define('BOT_VERSION_STABLE', TRUE);
 
 // Workaround for backport to 0.6 branch
 $bot_version = BOT_VERSION . BOT_VERSION_INFO;
