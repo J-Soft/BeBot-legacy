@@ -36,14 +36,14 @@
 */
 
 define('BOT_VERSION', "0.6.7");
-define('BOT_VERSION_INFO', ".(SNAPSHOT)");
+define('BOT_VERSION_INFO', "");
 define('BOT_VERSION_NAME', "BeBot");
 
 // Is this a development snapshot from BZR?
-define('BOT_VERSION_SNAPSHOT', TRUE);
+define('BOT_VERSION_SNAPSHOT', FALSE);
 
 // Is this a stable release or a development release?
-define('BOT_VERSION_STABLE', TRUE);
+define('BOT_VERSION_STABLE', FALSE);
 
 // Workaround for backport to 0.6 branch
 $bot_version = BOT_VERSION . BOT_VERSION_INFO;
