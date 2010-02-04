@@ -16,6 +16,7 @@ Version 0.6.7
 - Make it so you goto be in PG to join Raid, can be disable in settings and only applies to AO game.
 - Roster Module now Supports use of dimension name for AO
 - Fixed login procedure for AoC patch 1.06
+- Changed name of AoC Testlive server so that it doesn't get confused with AO Testlive
 
 New Modules:
 - Added AdminsUI Module to allow members to easily see the admin list, which also shows alts and status
