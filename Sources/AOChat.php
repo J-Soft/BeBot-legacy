@@ -383,6 +383,14 @@ class AOChat
 				list($id, $name) = $packet->args;
 				$id   = "" . $id;
 				$name = ucfirst(strtolower($name));
+				
+				// *** FIXME ***
+				// This is an ugly workaround for now to deal with overflowing 32bit int in Age of Conan
+				if ($id == 4294967295)
+				{
+					$id = -1;
+				}
+				
 				$this->id[$id]   = $name;
 				$this->id[$name] = $id;
 				break;
