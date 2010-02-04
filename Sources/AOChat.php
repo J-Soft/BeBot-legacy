@@ -451,7 +451,7 @@ class AOChat
 
 					//echo "Resending auth to chatserver [Character:" . $this->char["name"] . ", id:" . $this->char["id"] . "]\n";
 					$this->state = "connected";
-					$loginCharacterPacket = new AOChatPacket("out", AOCP_LOGIN_CHARID, array(0,$this->char["id"],$this->serverseed) );
+					$loginCharacterPacket = new AOChatPacket("out", AOCP_LOGIN_CHARID, array(1,$this->char["id"],$this->serverseed) );
 					$this->send_packet($loginCharacterPacket);	
 				}
 				break;
@@ -852,7 +852,7 @@ class AOChat
 			return false;
 		}
 
-		$territoryInitPacket = new RPCPacket("out", RPC_TERRITORY_INIT, array($this->accountid, $this->serverseed ) );
+		$territoryInitPacket = new RPCPacket("out", RPC_TERRITORY_INIT, array($this->accountid, $this->serverseed, 1 ) );
 		$this->send_rpcpacket($territoryInitPacket);
 		
 		// Start handling all Territorypackets
@@ -888,7 +888,7 @@ class AOChat
 		{
 			$this->login_num++;
 
-			$loginCharacterPacket = new AOChatPacket("out", AOCP_LOGIN_CHARID, array(0,$this->char["id"],$this->serverseed) );
+			$loginCharacterPacket = new AOChatPacket("out", AOCP_LOGIN_CHARID, array(1,$this->char["id"],$this->serverseed) );
 			$this->send_packet($loginCharacterPacket);
 			$this->state = "connected";
 			return true;
@@ -2162,7 +2162,7 @@ $GLOBALS["aochat-rpcpacketmap"] = array(
 	(string)RPC_UNIVERSE_INIT				=> array("name"=>"Login Init",					"args"=>"SSI"),
 	(string)RPC_UNIVERSE_ANSWERCHALLENGE	=> array("name"=>"Login Answer Challenge",		"args"=>"S"),
 //	(string)RPC_UNIVERSE_ACCOUNT			=> array("name"=>"Login Player Account",		"args"=>"II"),
-	(string)RPC_TERRITORY_INIT				=> array("name"=>"Player Init",					"args"=>"II"),
+	(string)RPC_TERRITORY_INIT				=> array("name"=>"Player Init",					"args"=>"III"),
 	(string)RPC_TERRITORY_STARTUP			=> array("name"=>"Player Startup",				"args"=>""),
 	(string)RPC_TERRITORY_LOGINCHARACTER	=> array("name"=>"Login Character",				"args"=>"ISSIII"))
 );
