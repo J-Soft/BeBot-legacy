@@ -441,10 +441,11 @@ class OnlineDisplay extends BaseActiveModule
 		$countonline = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level >= 1");
 
 		$count1 = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level < 100");
-		$count2 = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level < 190 AND t2.level > 99");
-		$count3 = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level < 205 AND t2.level > 189");
-		$count4 = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level < 220 AND t2.level > 204");
-		$count5 = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level = 220");
+		$count2 = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level < 150 AND t2.level > 99");
+		$count3 = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level < 175 AND t2.level > 149");
+		$count4 = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level < 208 AND t2.level > 174");
+		$count5 = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level < 220 AND t2.level > 207");
+		$count6 = $this -> bot -> db -> select("SELECT count(DISTINCT t1.nickname) FROM " . $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level = 220");
 
 		if($this -> bot -> game == "ao")
 		{
@@ -453,16 +454,17 @@ class OnlineDisplay extends BaseActiveModule
 
 		$online = $this -> bot -> db -> select("SELECT DISTINCT(t1.nickname), t2.level, ".$this -> cp.$ex1.", org_name FROM "
 		. $this -> bot -> core("online") -> full_tablename() . " WHERE t2.level >= 1"
-		. " ORDER BY t1.nickname ASC, ".$this -> cp." ASC, t2.level DESC");
+		. " ORDER BY t1.nickname ASC, ".$this -> cp." ASC, t2.level DESC, defender_rank_id DESC");
 
 
 		$count = 0;
 		$msg = $this -> bot -> core("colors") -> colorize("highlight", "Chatlist\n\n");
 		$msg .= $this -> bot -> core("colors") -> colorize("online_characters", "Players (1-99): ") . $count1[0][0] . "\n";
-		$msg .= $this -> bot -> core("colors") -> colorize("online_characters", "Players (100-189): ") . $count2[0][0] . "\n";
-		$msg .= $this -> bot -> core("colors") -> colorize("online_characters", "Players (190-204): ") . $count3[0][0] . "\n";
-		$msg .= $this -> bot -> core("colors") -> colorize("online_characters", "Players (205-219): ") . $count4[0][0] . "\n";
-		$msg .= $this -> bot -> core("colors") -> colorize("online_characters", "Players (220): ") . $count5[0][0] . "\n\n";
+		$msg .= $this -> bot -> core("colors") -> colorize("online_characters", "Players (100-149): ") . $count2[0][0] . "\n";
+		$msg .= $this -> bot -> core("colors") -> colorize("online_characters", "Players (150-174): ") . $count3[0][0] . "\n";
+		$msg .= $this -> bot -> core("colors") -> colorize("online_characters", "Players (175-207): ") . $count4[0][0] . "\n";
+		$msg .= $this -> bot -> core("colors") -> colorize("online_characters", "Players (208-219): ") . $count5[0][0] . "\n";
+		$msg .= $this -> bot -> core("colors") -> colorize("online_characters", "Players (220): ") . $count6[0][0] . "\n\n";
 
 
 		if (!empty($online))

@@ -21,6 +21,7 @@ Version 0.6.7
 - Xyphos items database now used by default for AO. Please report issues at http://www.xyphos.com/viewforum.php?f=7
 - Changed order of the all link so 1st added is last on 1st, giving it priority
 - Privgroup command Help no longer shows for AoC
+- Fixed Several Bugs in the bid info blob
 
 New Modules:
 - Added AdminsUI Module to allow members to easily see the admin list, which also shows alts and status
