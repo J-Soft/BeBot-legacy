@@ -347,19 +347,20 @@ class Points extends BaseActiveModule
 
 			$add = "";
 
-			//if ($stat || $check)
+			if ($stat || $check)
 			{
 				$result = $this -> bot -> db -> select("SELECT id, nickname, points FROM #___raid_points WHERE points > 0");
 				foreach ($result as $res)
 				{
-					if ($res[0] != $this -> points_to($res[1]))
+					$main = $this -> bot -> core("alts") -> main($res[1]);
+					if(ucfirst(strtolower($res[1])) != $main)
+						$check[$main] = TRUE;
+				}
+				if(!empty($check))
+				{
+					foreach($check as $main => $v)
 					{
-						$this -> bot -> db -> query("UPDATE #___raid_points SET points = 0 WHERE id = " . $res[0]);
-						$resu = $this -> bot -> db -> select("SELECT nickname, points FROM #___raid_points WHERE id = " . $this -> points_to($res[1]));
-						if (empty($resu))
-							$this -> bot -> db -> query("INSERT INTO #___raid_points (id, nickname, points, raiding) VALUES (" . $this -> points_to($res[1]) . ", '".$this -> points_to_name($res[1])."', " . $res[2] . ", 0)");
-						else
-							$this -> bot -> db -> query("UPDATE #___raid_points SET points = " . ($res[2] + $resu[0][1]) . " WHERE id = " . $this -> points_to($res[0]));
+						$this -> check_alts($main);
 					}
 				}
 				$add = " All points have been transfered.";
@@ -374,7 +375,7 @@ class Points extends BaseActiveModule
 		//$this -> bot -> send_tell($name, "You must be a superadmin to do this");
 	}
 	
-	function check_alts($main)
+	function check_alts($main, $name=FALSE)
 	{
 		$alts = $this -> bot -> core("alts") -> get_alts($main);
 		if(!empty($alts))
@@ -389,17 +390,22 @@ class Points extends BaseActiveModule
 					{
 						$resu = $this -> bot -> db -> select("SELECT nickname, points FROM #___raid_points WHERE id = " . $this -> points_to($res[1]));
 						if (empty($resu))
-							$this -> bot -> db -> query("INSERT INTO #___raid_points (id, nickname, points, raiding) VALUES (" . $this -> points_to($res[1]) . ", '".$this -> points_to_name($res[1])."', " . $res[2] . ", 0)");
-						else
-							$this -> bot -> db -> query("UPDATE #___raid_points SET points = " . ($res[2] + $resu[0][1]) . " WHERE id = " . $this -> points_to($res[0]));
-						$check = $this -> bot -> db -> select("SELECT nickname, points FROM #___raid_points WHERE id = " . $this -> points_to($res[1]));
-						if(!empty($check) && ($check[0][1] != ($res[2] + $resu[0][1])))
 						{
-							echo "Error With Transfering Points from Alt $alt to $main";
+							$this -> bot -> db -> query("INSERT INTO #___raid_points (id, nickname, points, raiding) VALUES (" . $this -> points_to($res[1]) . ", '".$this -> points_to_name($res[1])."', " . $res[2] . ", 0)");
+							$resu = $this -> bot -> db -> select("SELECT nickname, points FROM #___raid_points WHERE id = " . $this -> points_to($res[1]));
+						}
+						else
+							$this -> bot -> db -> query("UPDATE #___raid_points SET points = " . ($res[2] + $resu[0][1]) . " WHERE id = " . $this -> points_to($res[1]));
+						$check = $this -> bot -> db -> select("SELECT nickname, points FROM #___raid_points WHERE id = " . $this -> points_to($res[1]));
+						if(!empty($check) && (($check[0][1] * 100) != (($res[2] * 100) + ($resu[0][1] * 100))))
+						{
+							$this -> bot -> log("Points", "Error", "Error With Transfering Points from Alt $alt (".$res[2].") to $main (".$resu[0][1].") Check = ".$check[0][1], TRUE);
 						}
 						else
 						{
 							$this -> bot -> db -> query("UPDATE #___raid_points SET points = 0 WHERE id = " . $res[0]);
+							$string = $res[1].": ".$this -> round($res[2])." + ".$resu[0][0].": ".$this -> round($resu[0][1])." = ".$resu[0][0].": ".$this -> round($res[2] + $resu[0][1]);
+							$this -> bot -> log("Points", "Transfer", $string, TRUE);
 						}
 					}
 				}
@@ -609,14 +615,13 @@ class Points extends BaseActiveModule
 		{
 			if(is_numeric($timeorname))
 			{
-				return("point logs view by time disabled");
 				//if(!empty($time2))
 				//{
 				//	if(!is_numeric($time2))
 				//		Return("Error: 2nd time
 				//}
 				$field = "time";
-				$value = "> ".time() - ($timeorname * 60 * 60);
+				$value = "> ".(time() - ($timeorname * 60 * 60));
 				$for = "last $timeorname hours";
 			}
 			else
