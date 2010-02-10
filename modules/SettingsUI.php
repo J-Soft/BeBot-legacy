@@ -176,7 +176,7 @@ class SetConf extends BaseActiveModule
 			}
 			else // Normal Setting Display.
 			{
-				$inside .= "##ao_infoheadline##".$setting[0].":##end##  ##ao_infotextbold##".$setting[1]."##end##\n";
+				$inside .= "##ao_infoheadline##".$setting[0].":##end## ##ao_infotextbold## ".$setting[1]."##end##\n";
 			}
 
 			$inside .= "  ##ao_infotextbold##Description:##end## ##ao_infotext##".$longdesc."##end##\n";
