@@ -180,24 +180,24 @@ class Bid extends BaseActiveModule
 	/*
 	Place a bid
 	*/
-	function place_bid($name, $ammount)
+	function place_bid($name, $amount)
 	{
 		$update = true;
 
-		if(strtolower($ammount) == "all")
+		if(strtolower($amount) == "all")
 		{
-			$ammount = $this -> bot -> db -> select("SELECT ".$this -> type."_points FROM #___raid_points WHERE id = " . $this -> points_to($name));
-			if(!empty($ammount))
-				$ammount = $ammount[0][0];
+			$amount = $this -> bot -> db -> select("SELECT ".$this -> type."_points FROM #___raid_points WHERE id = " . $this -> points_to($name));
+			if(!empty($amount))
+				$amount = $amount[0][0];
 			else
-				$ammount = 0;
+				$amount = 0;
 		}
 		if (empty($this -> bid))
 		{
 			$this -> bot -> send_tell($name, "No auction in progress.");
 			return false;
 		}
-		else if ($ammount < 1)
+		else if ($amount < 1)
 		{
 			$this -> bot -> send_tell($name, "Min bid is set to ####highlight##1##end## raidpoints.");
 			return false;
@@ -223,25 +223,25 @@ class Bid extends BaseActiveModule
 		$currenthigh = (($this -> maxbid == $this -> secondbid) ? ($this -> maxbid) : ($this -> secondbid + 1));
 		$currenthighb = $this -> highestbidder;
 
-		if ($result < $ammount)
+		if ($result < $amount)
 		$this -> bot -> send_tell($name, "You only have ##highlight##" . $result .
 		"##end## raidpoints. Please place bid again.");
 		else if ($this -> highestbidder == $name)
 		{
-			if($this -> maxbid < $ammount)
+			if($this -> maxbid < $amount)
 			{
 				if($this -> secondbid == $this -> maxbid)
 					$this -> secondbid -= 1;
-				$this -> maxbid = $ammount;
-				$this -> bot -> send_tell($name, "Max bid Changed to ##highlight##$ammount##end##.");
+				$this -> maxbid = $amount;
+				$this -> bot -> send_tell($name, "Max bid Changed to ##highlight##$amount##end##.");
 				return false;
 			}
 		}
-		else if ($this -> maxbid == $ammount)
+		else if ($this -> maxbid == $amount)
 		{
-			$this -> secondbid = $ammount;
+			$this -> secondbid = $amount;
 		}
-		else if ($this -> maxbid < $ammount)
+		else if ($this -> maxbid < $amount)
 		{
 			if ($name != $this -> highestbidder)
 			{
@@ -249,12 +249,12 @@ class Bid extends BaseActiveModule
 				$this -> highestbidder = $name;
 			}
 
-			$this -> maxbid = $ammount;
+			$this -> maxbid = $amount;
 		}
-		else if ($currenthigh < $ammount)
+		else if ($currenthigh < $amount)
 		{
 			if ($name != $this -> highestbidder)
-			$this -> secondbid = $ammount;
+			$this -> secondbid = $amount;
 		}
 
 		$highest = (($this -> maxbid == $this -> secondbid) ? ($this -> maxbid) : ($this -> secondbid + 1));
@@ -270,7 +270,7 @@ class Bid extends BaseActiveModule
 			}
 			if($this -> highestbidder == $currenthighb)
 			{
-				$obb = "##highlight##$name##end## tried to outbid with ##highlight##$ammount##end##, ";
+				$obb = "##highlight##$name##end## tried to outbid with ##highlight##$amount##end##, ";
 			}
 
 			$this -> bot -> send_output("", $obb."##highlight##" . $this -> highestbidder . "##end## leads with " .
@@ -350,20 +350,23 @@ class Bid extends BaseActiveModule
 	function info()
 	{
 		$inside = "##blob_title##::::: Auction :::::##end##\n\n";
-		$inside .= "##darkorange##".$this -> highestbidder . "##end## Leading bid" . "##highlight## [ " . $this -> maxbid . " ]##end##" . " for = [ " . $this -> bid . " ]" . "\n\n" ;
-		$ammounts = array(2, 10, 20, 50, 70, "nl", 100, 150, 170, 200, 300, "nl", 400, 500, 600, 700, 1000);
 		$highest = (($this -> maxbid == $this -> secondbid) ? ($this -> maxbid) : ($this -> secondbid + 1));
-		foreach($ammounts as $am)
+		$inside .= "##darkorange##".$this -> highestbidder . "##end## Leading bid" . "##highlight## [ " . $highest . " ]##end##" . " for = [ " . $this -> bid . " ]" . "\n\n" ;
+		$amounts = array(2, 10, 20, 50, 70, "nl", 100, 150, 170, 200, 300, "nl", 400, 500, 600, 700, 1000);
+		foreach($amounts as $am)
 		{
 			if($am == "nl")
+			{
+				$inside = substr($inside, 0, -3);
 				$inside .= "\n";
+			}
 			elseif($am < $highest)
 			{
-				$inside .= "[ Bid 2 ] | ";
+				$inside .= "[ Bid $am ] | ";
 			}
 			else
 			{
-				$inside .= $this -> bot -> core("tools") -> chatcmd("bid 2", "[ Bid 2 ]")." | ";
+				$inside .= $this -> bot -> core("tools") -> chatcmd("bid ".$am, "[ Bid $am ]")." | ";
 			}
 		}
 		$inside = substr($inside, 0, -3);
