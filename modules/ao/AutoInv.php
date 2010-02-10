@@ -73,13 +73,10 @@ class AutoInv extends BaseActiveModule
 		{
 			case '':
 				return($this->get_status($name));
-				break;
 			case 'on':
 				return($this->enable_invite($name));
-				break;
 			case 'off':
 				return($this->disable_invite($name));
-				break;
 			default:
 				$this->bot->send_help($name, 'autoinvite');
 		}
@@ -87,17 +84,21 @@ class AutoInv extends BaseActiveModule
 
 	function get_status($name)
 	{
-		return($this->bot->core('prefs')->get($name, 'AutoInv', 'recieve_auto_invite'));
+		return(strtolowr($this->bot->core('prefs')->get($name, 'AutoInv', 'recieve_auto_invite')));
 	}
 	
 	function enable_invite($name)
 	{
+		if($this -> get_status($name) == "on")
+			Return('Autoinvite is already enabled');
 		$this->bot->core('prefs')->change($name, 'AutoInv', 'recieve_auto_invite', 'On');
 		return('Autoinvite has been enabled');
 	}
 	
 	function disable_invite($name)
 	{
+		if($this -> get_status($name) == "off")
+			Return('Autoinvite is already disabled');
 		$this->bot->core('prefs')->change($name, 'AutoInv', 'recieve_auto_invite', 'Off');
 		return('Autoinvite has been disabled');
 	}
@@ -137,7 +138,7 @@ class AutoInv extends BaseActiveModule
 			Return;
 		if ($this -> bot -> core("settings") -> get("Autoinv", "Activated"))
 		{
-			if ($this->bot->core('prefs')->get($user, 'AutoInv', 'recieve_auto_invite')=='On'
+			if ($this -> get_status($user) == 'on'
 			&& $this -> check_access($user) && !($this -> bot -> core("online") -> in_chat($user)))
 			{
 				if ($this -> bot -> core("settings") -> get("AutoInv", "ShowInfo"))
