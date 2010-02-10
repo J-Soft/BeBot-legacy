@@ -45,13 +45,13 @@ class Roll extends BaseActiveModule
 	var $bot;
 	var $roll_info;
 	/*
-	    $roll_info is a two-dimentional indexed/associative array with these fields
-	    $roll_info[$index]['name'] == the name of the person performing the roll
-	    $roll_info[$index]['time'] == the time at which the roll was performed
-	    $roll_info[$index]['min'] == the highest possible result of the roll		
-	    $roll_info[$index]['max'] == the highest possible result of the roll
-	    $roll_info[$index]['result'] == The result of the roll
-	    $roll_info[$index]['info'] == Everything appended after <limit> or after the !flip command
+		$roll_info is a two-dimentional indexed/associative array with these fields
+		$roll_info[$index]['name'] == the name of the person performing the roll
+		$roll_info[$index]['time'] == the time at which the roll was performed
+		$roll_info[$index]['min'] == the highest possible result of the roll
+		$roll_info[$index]['max'] == the highest possible result of the roll
+		$roll_info[$index]['result'] == The result of the roll
+		$roll_info[$index]['info'] == Everything appended after <limit> or after the !flip command
 	*/
 	var $lastroll;
 
@@ -83,7 +83,7 @@ class Roll extends BaseActiveModule
 		$com = $this->parse_com($msg, array("com", "args"));
 		switch($com['com'])
 		{
-		    case 'roll':
+			case 'roll':
 				$args = $this->parse_com($com['args'], array('min' , 'max', 'item'));
 				if (!isset($args['max']))
 				{
@@ -93,17 +93,14 @@ class Roll extends BaseActiveModule
 				if (!isset($args['item']))
 				{
 					$args['item'] = ""; 
-				}				
+				}
 				return ($this->do_roll($name, $args['min'], $args['max'],  $args['item']));
-			break;
-		    case 'flip':
-			return ($this->do_flip($name, $com['args']));
-			break;
-		    case 'verify':
-			return ($this->verify($com['args']));
-			break;
-		    case 'default':
-			$this->bot->send_help($name);
+			case 'flip':
+				return ($this->do_flip($name, $com['args']));
+			case 'verify':
+				return ($this->verify($com['args']));
+			case 'default':
+				$this->bot->send_help($name);
 		}
 	}
 
@@ -118,29 +115,28 @@ class Roll extends BaseActiveModule
 		}
 		if ($num < 0 || $num > count($this->roll_info))
 		{
-		    $this->error->set("Invalid verification ID");
-		    return($this->error);
+			$this->error->set("Invalid verification ID");
+			return($this->error);
 		}
 		else
 		{
 			$roll = $this->roll_info[$num - 1];
-		    $name = "##highlight##{$roll['name']}##end##";
+			$name = "##highlight##{$roll['name']}##end##";
 			if (! empty($roll['item']))
 				$item = "Target: ##highlight##'{$roll['item']}'##end##\n";
-		    $time = time() - $roll['time'];
-		    $window = "##blob_title##::: Roll verification: $num :::##end##\n\n";
-		    $window.= "Roller: ##highlight##{$name}##end##\n";
-		    $window.= "Time: ##highlight##$time seconds ago##end##\n";
+			$time = time() - $roll['time'];
+			$window = "##blob_title##::: Roll verification: $num :::##end##\n\n";
+			$window.= "Roller: ##highlight##{$name}##end##\n";
+			$window.= "Time: ##highlight##$time seconds ago##end##\n";
 			$window .= $item;
-		    $window.= "-----------------\n";
+			$window.= "-----------------\n";
 			$window .= "Range: {$roll['range']}\n";
-		    $window.= "Result: {$roll['result']}\n";
-		    $window.= "-----------------\n";
-		    $blob = $this->bot->core('tools')->make_blob("Roll result: {$roll['result']}. Verify id: $num", $window);
-		    return($blob);
+			$window.= "Result: {$roll['result']}\n";
+			$window.= "-----------------\n";
+			$blob = $this->bot->core('tools')->make_blob("Roll result: {$roll['result']}. Verify id: $num", $window);
+			return($blob);
 		}
 	}
-
 
 
 	/*
@@ -162,8 +158,8 @@ class Roll extends BaseActiveModule
 			}
 			if ($max < 2)
 			{
-			    $this->error->set("There is no point in rolling for less than one person.");
-			    return($this->error);
+				$this->error->set("There is no point in rolling for less than one person.");
+				return($this->error);
 			}
 			$result['name'] = $name;
 			$result['time'] = time();
