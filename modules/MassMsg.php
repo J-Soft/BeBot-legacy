@@ -77,11 +77,11 @@ class MassMsg extends BaseActiveModule
 		{
 			case 'announce':
 				$this -> bot -> send_output($name, "Mass message being sent. Please stand by...", $origin);
-				return($this->mass_msg($name, $com['args'], 'Message'));
+				return($this->mass_msg($name, $com['args'], 'Message', $source));
 				break;
 			case 'massinv':
 				$this -> bot -> send_output($name, "Mass invite being sent. Please stand by...", $origin);
-				return($this->mass_msg($name, $com['args'], 'Invite'));
+				return($this->mass_msg($name, $com['args'], 'Invite', $source));
 				break;
 			default:
 				$this->bot->send_help($name);
@@ -90,27 +90,36 @@ class MassMsg extends BaseActiveModule
 
 	function mass_msg($sender, $msg, $type)
 	{
+		if($msg == "")
+		{
+			Return("##error##Error: Message to Announce Required##end##");
+		}
+
 		//get a list of online users in the configured channel.
 		$users = $this->bot->core('online')->list_users($this->bot->core('settings')->get('MassMsg', 'MassMsg'));
 		if($users instanceof BotError)
 		{
 			return($users);
 		}
-		
-		$msg = "##massmsg_type##$type from##end## ##highlight##$sender##end##: ##massmsg_msg##$msg##end##";
-		
+
+		$format = $this -> bot -> core("settings") -> get('MassMsg', 'msgFormat');
+		$msg = str_ireplace("##msg##", $msg, $format);
+		$msg = str_ireplace("##type##", $type, $msg);
+		$msg = str_ireplace("##name##", $sender, $msg);
+
 		$msg = $this -> bot -> core("colors") -> parse($msg);
 
 		$inchattell = $this -> bot -> core('settings') -> get('MassMsg', 'tell_to_PG_users');
 		if(!$inchattell)
 		{
 			//Send to PG and ignore all in PG
-			$this -> bot -> send_pgroup("\n".$msg, NULL, TRUE, FALSE);
+			$pgmsg = str_ireplace("##disable##", "", $msg);
+			$this -> bot -> send_pgroup("\n".$pgmsg, NULL, TRUE, FALSE);
 		}
 		if($this->bot->core('settings')->get('MassMsg', 'IncludePrefLink'))
 		{
-			$msg = $msg."\n##massmsg_disable##You can disable reciept of mass messages and invites in the ##end##";
-			$msg = $this -> bot -> core("colors") -> parse($msg);
+			$dis = $msg."\n##massmsg_disable##You can disable reciept of mass messages and invites in the ##end##";
+			$dis = $this -> bot -> core("colors") -> parse($dis);
 		}
 		$msg = $this -> bot -> core("colors") -> colorize("normal", $msg);
 
@@ -135,10 +144,12 @@ class MassMsg extends BaseActiveModule
 					$blob = $this -> bot -> core("colors") -> colorize("normal", $blob);
 					$blobs[(int)$massmsg][(int)$massinv] = $blob;
 				}
-				$message = $msg.$blobs[(int)$massmsg][(int)$massinv];
+				$dis = $dis.$blobs[(int)$massmsg][(int)$massinv];
 			}
 			else
-				$message = $msg;
+				$dis = "";
+
+			$message = str_ireplace("##disable##", $dis, $msg);
 			//If they want messages they will get them regardless of type
 			if($massmsg)
 			{
@@ -190,7 +201,13 @@ class MassMsg extends BaseActiveModule
 			}
 		}
 
-		return("Mass messages complete. ".$this->make_status_blob($status));
+		if($source == "tell")
+			return("Mass messages complete. ".$this->make_status_blob($status));
+		else
+		{
+			$this -> bot -> send_tell($sender, "Sending Mass messages complete.");
+			return("Sending Mass messages. ".$this->make_status_blob($status));
+		}
 	}
 	
 	function make_status_blob($status_array)
@@ -226,6 +243,11 @@ class MassMsg extends BaseActiveModule
 			}
 		}
 		return($this->bot->core('tools')->make_blob('report', $window));
+	}
+
+	function queue($name, $recipient)
+	{
+		$this->bot->core('chat')->pgroup_invite($recipient);
 	}
 }
 ?>
