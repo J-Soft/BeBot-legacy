@@ -154,10 +154,15 @@ class Callers extends BaseActiveModule
 			$list = "##AO_INFOHEADLINE##::: List of callers :::##END##\n\n";
 			foreach ($call as $player)
 			{
+				$list .= " - $player: [<a href='chatcmd:///macro $player /assist $player'>Create Macro</a>] [<a href='chatcmd:///assist $player'>Assist</a>]\n";
+			}
+			$call = array_reverse($call);
+			ksort($call); 
+			foreach ($call as $player)
+			{
 				if ($count>=1)
 					$batch .= " \\n ";
 				$count++;
-				$list .= " - $player: [<a href='chatcmd:///macro $player /assist $player'>Create Macro</a>] [<a href='chatcmd:///assist $player'>Assist</a>]\n";
 				$batch .= "/assist ".$player;
 			}
 			$list .= "\n";
