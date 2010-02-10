@@ -66,29 +66,6 @@ class BotHelp_Core extends BaseActiveModule
 	}
 
 
-	/*
-	This gets called on a tell with the command
-	*/
-	function tell($name, $msg)
-	{
-		$reply = $this -> command_handler($name, $msg, "tell");
-		if ($reply != FALSE)
-			$this -> bot -> send_tell($name, $reply);
-	}
-
-	function gc($name, $msg)
-	{
-		//Reply in tells as the output is dependant of the access level of the person issuing the command
-		$this -> tell($name, $msg); 
-	}
-
-	function pgmsg($name, $msg)
-	{
-		//Reply in tells as the output is dependant of the access level of the person issuing the command
-		$this -> tell($name, $msg);
-	}
-
-
 	function command_handler($name, $msg, $origin)
 	{
 		$vars = explode(' ', $msg);
@@ -117,7 +94,8 @@ class BotHelp_Core extends BaseActiveModule
 			case 'all':
 				$window = $this -> get_commands($name, 'tell');
 				$window .= "<br><br>" . $this -> get_commands($name, 'gc');
-				$window .= "<br><br>" . $this -> get_commands($name, 'pgmsg');
+				if($this -> bot -> game == "ao")
+					$window .= "<br><br>" . $this -> get_commands($name, 'pgmsg');
 				return($this -> bot -> core("tools") -> make_blob('Help', $window));
 				break;
 			default:
