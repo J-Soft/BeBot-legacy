@@ -35,12 +35,12 @@
 * Revision: $Id: Main.php 1963 2009-01-24 21:08:06Z alreadythere $
 */
 
-define('BOT_VERSION', "0.6.7");
-define('BOT_VERSION_INFO', "");
+define('BOT_VERSION', "0.6.8");
+define('BOT_VERSION_INFO', ".(Snapshot)");
 define('BOT_VERSION_NAME', "BeBot");
 
 // Is this a development snapshot from BZR?
-define('BOT_VERSION_SNAPSHOT', FALSE);
+define('BOT_VERSION_SNAPSHOT', TRUE);
 
 // Is this a stable release or a development release?
 define('BOT_VERSION_STABLE', TRUE);
