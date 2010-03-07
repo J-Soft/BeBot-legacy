@@ -6,6 +6,11 @@ Version 0.6.8
 - Fixed Several Bugs in the bid info blob
 - Fixed some issues with adding alt with points, the merge process should work better now
 - Raid announce delay is now configurable via Settings.
+- Fixed crash issue when invalid security group is setup for relay
+- Fixed removal of old relay entries in the table
+
+New Modules:
+- Added ItemHistory Module which Shows you auction history of specified items
 
 
 -------------
