@@ -59,6 +59,7 @@ class MassMsg extends BaseActiveModule
 		$this -> bot -> core("settings") -> create('MassMsg', 'MinAccess', 'GUEST', 'Which access level must characters online have to receive mass messages and invites?', 'ANONYMOUS;GUEST;MEMBER;LEADER;ADMIN;SUPERADMIN;OWNER');
 		$this -> bot -> core("settings") -> create('MassMsg', 'IncludePrefLink', TRUE, 'Should a link to preferences be included in the messages/invites?');
 		$this -> bot -> core("settings") -> create('MassMsg', 'tell_to_PG_users', FALSE, 'Should Bot Send message to users in PG instead of just Outputing to PG and ignoreing them');
+		$this -> bot -> core("settings") -> create('MassMsg', 'msgFormat', '##massmsg_type####type## from##end## ##highlight####name####end##: ##massmsg_msg####msg####end####disable##', 'What format should Mass message be, use ##type##, ##msg##, ##name## and ##disable## disable being the line telling user how to disable if enabled.');
 
 		$this -> bot -> core('prefs') -> create('MassMsg', 'recieve_message', 'Do you want to recieve mass-messages?', 'Yes', 'Yes;No');
 		$this -> bot -> core('prefs') -> create('MassMsg', 'recieve_invites', 'Do you want to recieve mass-invites?', 'Yes', 'No;Yes');
