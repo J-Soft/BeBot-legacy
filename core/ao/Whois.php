@@ -30,9 +30,6 @@
 *  along with this program; if not, write to the Free Software
 *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 *  USA
-*
-* File last changed at $LastChangedDate: 2008-12-21 06:39:27 +0100 (Sun, 21 Dec 2008) $
-* Revision: $Id: Whois.php 1933 2008-12-21 05:39:27Z temar $
 */
 
 /*

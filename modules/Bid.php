@@ -30,15 +30,9 @@
 *  along with this program; if not, write to the Free Software
 *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 *  USA
-*
-* File last changed at $LastChangedDate: 2008-11-30 23:09:06 +0100 (Sun, 30 Nov 2008) $
-* Revision: $Id: Bid.php 1833 2008-11-30 22:09:06Z alreadythere $
 */
 
-
 $bid = new Bid($bot);
-
-
 
 /*
 The Class itself...
@@ -53,8 +47,6 @@ class Bid extends BaseActiveModule
 	var $announce;
 	var $announced;
 	var $end;
-
-
 
 	/*
 	Constructor:
@@ -79,8 +71,6 @@ class Bid extends BaseActiveModule
 		$this -> bot -> core("settings") -> create("bid", "timer", 60, "How Long shold a Auction Last?");
 		$this -> bot -> core("settings") -> create("bid", "raid_locked", FALSE, "Should Auction be Locked to Users in Raid?");
 	}
-
-
 
 	/*
 	This gets called on a tell with the command
@@ -116,8 +106,6 @@ class Bid extends BaseActiveModule
 					$this -> bot -> send_help($name, "bid");
 		}
 	}
-
-
 
 	/*
 	Starts the bidding
@@ -183,7 +171,6 @@ class Bid extends BaseActiveModule
 	function place_bid($name, $amount)
 	{
 		$update = true;
-
 		if(strtolower($amount) == "all")
 		{
 			$amount = $this -> bot -> db -> select("SELECT ".$this -> type."_points FROM #___raid_points WHERE id = " . $this -> points_to($name));
@@ -224,8 +211,7 @@ class Bid extends BaseActiveModule
 		$currenthighb = $this -> highestbidder;
 
 		if ($result < $amount)
-		$this -> bot -> send_tell($name, "You only have ##highlight##" . $result .
-		"##end## raidpoints. Please place bid again.");
+		$this -> bot -> send_tell($name, "You only have ##highlight##" . $result . "##end## raidpoints. Please place bid again.");
 		else if ($this -> highestbidder == $name)
 		{
 			if($this -> maxbid < $amount)
@@ -279,8 +265,6 @@ class Bid extends BaseActiveModule
 		}
 	}
 
-
-
 	/*
 	Gets called on a cronjob...
 	*/
@@ -301,7 +285,7 @@ class Bid extends BaseActiveModule
 			}
 			if (empty($this -> highestbidder))
 			{
-				$this -> bot -> send_output("", "Auction is over. No bids where placed. Item is FFA.", "both");
+				$this -> bot -> send_output("", "Auction is over. No bids where placed.", "both");
 				$this -> history[] = array(time(), $this -> bid, FALSE);
 			}
 			else
@@ -318,8 +302,6 @@ class Bid extends BaseActiveModule
 			$this -> unregister_event("cron", "2sec");
 		}
 	}
-
-
 
 	/*
 	Show info about bidding
@@ -342,7 +324,6 @@ class Bid extends BaseActiveModule
 		$inside .= "to correct later on.\n";
 		$this -> bot -> send_tell ($name, "Infomation about bidding :: " . $this -> bot -> core("tools") -> make_blob("click for info", $inside));
 	}
-
 
 	/*
 	Show info about bidding
@@ -377,7 +358,6 @@ class Bid extends BaseActiveModule
 		$inside .= "(Replace &lt;points&gt; with the number of points you would like to bid)\n";
 		Return $this -> bot -> core("tools") -> make_blob(":: Enter Auction ::", $inside);
 	}
-
 
 	function lock($name, $lock)
 	{

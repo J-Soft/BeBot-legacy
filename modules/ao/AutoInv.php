@@ -1,7 +1,7 @@
 <?php
 /*
- * AutoInv.php - Module to auto invite members.
- *
+* AutoInv.php - Module to auto invite members.
+*
 * BeBot - An Anarchy Online & Age of Conan Chat Automaton
 * Copyright (C) 2004 Jonas Jax
 * Copyright (C) 2005-2010 Thomas Juberg, ShadowRealm Creations and the BeBot development team.
@@ -30,9 +30,6 @@
 *  along with this program; if not, write to the Free Software
 *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 *  USA
-*
-* File last changed at $LastChangedDate: 2008-11-30 23:09:06 +0100 (Sun, 30 Nov 2008) $
-* Revision: $Id: AutoInv.php 1833 2008-11-30 22:09:06Z alreadythere $
  */
 
 $autoinv = new AutoInv($bot);
@@ -86,7 +83,7 @@ class AutoInv extends BaseActiveModule
 	{
 		return(strtolowr($this->bot->core('prefs')->get($name, 'AutoInv', 'recieve_auto_invite')));
 	}
-	
+
 	function enable_invite($name)
 	{
 		if($this -> get_status($name) == "on")
@@ -94,7 +91,7 @@ class AutoInv extends BaseActiveModule
 		$this->bot->core('prefs')->change($name, 'AutoInv', 'recieve_auto_invite', 'On');
 		return('Autoinvite has been enabled');
 	}
-	
+
 	function disable_invite($name)
 	{
 		if($this -> get_status($name) == "off")

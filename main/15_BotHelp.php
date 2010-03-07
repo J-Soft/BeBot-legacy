@@ -30,15 +30,9 @@
 *  along with this program; if not, write to the Free Software
 *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 *  USA
-*
-* File last changed at $LastChangedDate: 2008-11-30 23:09:06 +0100 (Sun, 30 Nov 2008) $
-* Revision: $Id: 15_BotHelp.php 1833 2008-11-30 22:09:06Z alreadythere $
 */
 
-
 $bothelp_core = new BotHelp_Core($bot);
-
-
 
 /*
 The Class itself...
@@ -64,7 +58,6 @@ class BotHelp_Core extends BaseActiveModule
 
 		$this -> update_cache();
 	}
-
 
 	function command_handler($name, $msg, $origin)
 	{
@@ -113,9 +106,7 @@ class BotHelp_Core extends BaseActiveModule
 	{
 		$channel = strtolower($channel);
 		$lvl = $this -> bot -> core("security") -> get_access_name($this -> bot -> core("security") -> get_access_level($name));
-
 		$window = "-- Commands usable in $channel --<br>" . $this -> help_cache[$channel][$lvl];
-
 		return $window;
 	}
 
@@ -125,7 +116,6 @@ class BotHelp_Core extends BaseActiveModule
 		$this -> make_help_blobs("pgmsg");
 		$this -> make_help_blobs("gc");
 	}
-
 
 	function make_help_blobs($channel)
 	{
@@ -173,7 +163,6 @@ class BotHelp_Core extends BaseActiveModule
 		}
 	}
 
-
 	function show_help($name, $command)
 	{
 		if (!$this -> bot -> core("access_control") -> check_for_access($name, $command))
@@ -196,7 +185,6 @@ class BotHelp_Core extends BaseActiveModule
 		{
 			return("##highlight##$command##end## does not exist or you do not have access to it.");
 		}
-		
 		$window = "##blob_title## ::::: HELP ON " . strtoupper($command) . " :::::##end##<br><br>";
 		if (isset($com -> help))
 		{
