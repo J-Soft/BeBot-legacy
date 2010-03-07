@@ -30,9 +30,6 @@
 *  along with this program; if not, write to the Free Software
 *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
 *  USA
-*
-* File last changed at $LastChangedDate: 2008-12-02 19:16:14 +0100 (Tue, 02 Dec 2008) $
-* Revision: $Id: Relay.php 1870 2008-12-02 18:16:14Z temar $
 */
 
 $relay = new Relay($bot);
@@ -455,9 +452,9 @@ class Relay extends BaseActiveModule
 						}
 					}
 				}
-				$old = time() - 300;
-				$this -> bot -> db -> query("DELETE FROM #___relay WHERE time < ".$old);
 			}
+			$old = time() - 300;
+			$this -> bot -> db -> query("DELETE FROM #___relay WHERE time < ".$old);
 		}
 		elseif($cron == 2)
 		{
@@ -502,7 +499,7 @@ class Relay extends BaseActiveModule
 			{
 				$security_groups_gid = $this -> bot -> db -> select("SELECT gid,name FROM #___security_groups WHERE name = '$security_group'");
 
-				if($security_groups_gid[0][0])
+				if(!empty($security_groups_gid))
 				{
 						$relayedbots_gid = $security_groups_gid[0][0];
 						$thisbotname = $this -> bot -> botname;
