@@ -242,7 +242,7 @@ class User_Core extends BasePassiveModule
 		$return["content"] = '';
 		$name = ucfirst(strtolower($name));
 
-		if (!ctype_alnum($name))
+		if (empty($name))
 		{
 			$return["error"] = true;
 			$return["errordesc"] = "You have to give a character to be deleted.";
@@ -352,7 +352,7 @@ class User_Core extends BasePassiveModule
 		$return["errordesc"] = '';
 		$return["content"] = '';
 
-		if (!ctype_alnum($name))
+		if (empty($name))
 		{
 			$return["error"] = true;
 			$return["errordesc"] = "You have to give a character name to be erased.";
