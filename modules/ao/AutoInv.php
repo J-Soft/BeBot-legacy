@@ -81,7 +81,7 @@ class AutoInv extends BaseActiveModule
 
 	function get_status($name)
 	{
-		return(strtolowr($this->bot->core('prefs')->get($name, 'AutoInv', 'recieve_auto_invite')));
+		return(strtolower($this->bot->core('prefs')->get($name, 'AutoInv', 'recieve_auto_invite')));
 	}
 
 	function enable_invite($name)
