@@ -162,13 +162,13 @@ define('AOEM_AI_HQ_REMOVE',           0x36);
 
 
 /* RPC Packet type definitions - so we won't have to use the number IDs */
-define('RPC_UNIVERSE_INIT',				0 );
-define('RPC_UNIVERSE_CHALLENGE',		0 );
-define('RPC_UNIVERSE_ANSWERCHALLENGE',	1 );
-define('RPC_UNIVERSE_AUTHENTICATED',	1 );
-define('RPC_UNIVERSE_ERROR',			2 );
-define('RPC_UNIVERSE_INTERNAL_ERROR', 4);
-define('RPC_UNIVERSE_SETREGION', 5);
+define('RPC_UNIVERSE_INIT',             0 );
+define('RPC_UNIVERSE_CHALLENGE',        0 );
+define('RPC_UNIVERSE_ANSWERCHALLENGE',  1 );
+define('RPC_UNIVERSE_AUTHENTICATED',    1 );
+define('RPC_UNIVERSE_ERROR',            2 );
+define('RPC_UNIVERSE_INTERNAL_ERROR', 	4 );
+define('RPC_UNIVERSE_SETREGION',        5 );
 
 define('RPC_TERRITORY_INIT',			0x9CB2CB03 );
 define('RPC_TERRITORY_INITACK',			0x5DC18991 );
@@ -177,9 +177,15 @@ define('RPC_TERRITORY_CHARACTERLIST',	0xC414C5EF );
 define('RPC_TERRITORY_LOGINCHARACTER',	0xEF616EB6 );
 define('RPC_TERRITORY_GETCHATSERVER',	0x23A632FA );
 define('RPC_TERRITORY_ERROR',			0xD4063CA0 );
-define('RPC_TERRITORY_DIMENSIONLIST', 0xF899B14C);
-define('RPC_TERRITORY_SETUPCOMPLETE', 0x4F91A58C);
-define('RPC_TERRITORY_CSREADY',	0x5AED2A60);
+define('RPC_TERRITORY_DIMENSIONLIST', 	0xF899B14C);
+define('RPC_TERRITORY_SETUPCOMPLETE', 	0x4F91A58C);
+define('RPC_TERRITORY_CSREADY',			0x5AED2A60);
+
+// Patch 1.07.0 methods
+define('RPC_TERRITORY_CHECKSUMMAP',			0x0C09CA25);
+define('RPC_TERRITORY_SENDCHECKSUMMAP',		0xDFD8518E);
+define('RPC_TERRITORY_RECEIVEDCHARSETTINGS',0x233605B9);
+define('RPC_TERRITORY_SENDCHARSETTINGS',	0x3C7C926C);
 
 class AOChat
 {
@@ -536,6 +542,8 @@ class AOChat
 			fwrite($this->debug, "\n=====\n");
 		}
 	
+		echo "Received RPC Packet:" . $type . "\n";
+		
 		$packet = new RPCPacket("in", $type, $data);
 		switch($type)
 		{
@@ -628,6 +636,17 @@ class AOChat
 					$temparray 	= unpack("N",$data);
 					$blocked	= array_pop($temparray);
 					$data		= substr($data, 4);
+
+					// ??
+					$temparray 	= unpack("N",$data);
+					$offlinelvl	= array_pop($temparray);
+					$data		= substr($data, 4);
+
+					// ??
+					$temparray 	= unpack("n",$data);
+					$strlen		= array_pop($temparray);
+					$date		= substr($data, 2, $strlen);
+					$data		= substr($data, 2 + $strlen);
 					
 					$this->chars[] = array(
 					"id"     	=> $characterid,
@@ -660,10 +679,16 @@ class AOChat
 			case RPC_TERRITORY_INIT:
 			case RPC_TERRITORY_STARTUP:
 			case RPC_TERRITORY_LOGINCHARACTER:
+			case RPC_TERRITORY_SENDCHECKSUMMAP:
+			case RPC_TERRITORY_SENDCHARSETTINGS:
 				$callername		= "PlayerInterface";
 				$endpointname	= "PlayerAgent";
 				$instance		= $this->accountid;
 				break;
+				
+			default:
+				trigger_error("send_rpcpacket: Unknown packettype " . $packet->type,E_USER_WARNING);
+				return;
 		}
 
 		// Create the RPC header
@@ -687,7 +712,8 @@ class AOChat
 			fwrite($this->debug, $data);
 			fwrite($this->debug, "\n=====\n");
 		}
-				
+
+		echo "Sending RPCPacket:" . $packet->type . "\n";
 		socket_write($this->socket, $data, strlen($data));
 		return true;
 	}
@@ -753,7 +779,7 @@ class AOChat
 				return 1;
 
 			case RPC_TERRITORY_INITACK:
-				$territoryStartupPacket = new RPCPacket("out", RPC_TERRITORY_STARTUP, array() );
+				$territoryStartupPacket = new RPCPacket("out", RPC_TERRITORY_STARTUP, array("") );
 				$this->send_rpcpacket($territoryStartupPacket);
 				break;
 
@@ -771,10 +797,20 @@ class AOChat
 					$lang="en";
 				}
 				
-				$outPacket = new RPCPacket("out", RPC_TERRITORY_LOGINCHARACTER, array($this->char["id"], "", $lang, 0, 0, 0) );
+				$outPacket = new RPCPacket("out", RPC_TERRITORY_LOGINCHARACTER, array($this->char["id"], 1009, $lang, 0, 0, 0,0) );
 				$this->send_rpcpacket($outPacket);
 				break;
-			
+
+			case RPC_TERRITORY_CHECKSUMMAP:
+				$outPacket = new RPCPacket("out", RPC_TERRITORY_SENDCHECKSUMMAP, array(1009) );
+				$this->send_rpcpacket($outPacket);			
+				break;
+
+			case RPC_TERRITORY_RECEIVEDCHARSETTINGS:
+				$outPacket = new RPCPacket("out", RPC_TERRITORY_SENDCHARSETTINGS, array(1009) );
+				$this->send_rpcpacket($outPacket);			
+				break;
+				
 			case RPC_UNIVERSE_INTERNAL_ERROR:
 				trigger_error("RPC_UNIVERSE_INTERNAL_ERROR: Internal error", E_USER_WARNING);
 				return -1;
@@ -2165,14 +2201,18 @@ $GLOBALS["aochat-rpcpacketmap"] = array(
 	(string)RPC_TERRITORY_DIMENSIONLIST		=> array("name"=>"Dimension List",				"args"=>""),
 	(string)RPC_TERRITORY_SETUPCOMPLETE		=> array("name"=>"Setup complete",				"args"=>""),
 	(string)RPC_TERRITORY_CSREADY			=> array("name"=>"CS Server Ready",				"args"=>""),
+	(string)RPC_TERRITORY_CHECKSUMMAP			=> array("name"=>"Request Send Checksummap",	"args"=>""),
+	(string)RPC_TERRITORY_RECEIVEDCHARSETTINGS	=> array("name"=>"Received Character Settings",	"args"=>""),
 	(string)RPC_TERRITORY_ERROR				=> array("name"=>"Error while logging in",		"args"=>"I")),
 "out" => array(
 	(string)RPC_UNIVERSE_INIT				=> array("name"=>"Login Init",					"args"=>"SSI"),
 	(string)RPC_UNIVERSE_ANSWERCHALLENGE	=> array("name"=>"Login Answer Challenge",		"args"=>"S"),
 //	(string)RPC_UNIVERSE_ACCOUNT			=> array("name"=>"Login Player Account",		"args"=>"II"),
 	(string)RPC_TERRITORY_INIT				=> array("name"=>"Player Init",					"args"=>"III"),
-	(string)RPC_TERRITORY_STARTUP			=> array("name"=>"Player Startup",				"args"=>""),
-	(string)RPC_TERRITORY_LOGINCHARACTER	=> array("name"=>"Login Character",				"args"=>"ISSIII"))
+	(string)RPC_TERRITORY_STARTUP			=> array("name"=>"Player Startup",				"args"=>"S"),
+	(string)RPC_TERRITORY_SENDCHECKSUMMAP	=> array("name"=>"Send Checksummap",			"args"=>"I"),
+	(string)RPC_TERRITORY_SENDCHARSETTINGS	=> array("name"=>"Send Character Setting",		"args"=>"I"),
+	(string)RPC_TERRITORY_LOGINCHARACTER   	=> array("name"=>"Login Character",             "args"=>"IISIIIB"))
 );
 
 /****************************************************
@@ -2307,6 +2347,10 @@ class RPCPacket
 						$data .= pack("n", $it);
 						break;
 
+					case "B" :
+						$data .= pack("C", $it);
+						break;
+						
 					case "S" :
 						$data .= pack("n", strlen($it)) . $it;
 						break;
