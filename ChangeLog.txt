@@ -8,6 +8,7 @@ Version 0.6.8
 - Raid announce delay is now configurable via Settings.
 - Fixed crash issue when invalid security group is setup for relay
 - Fixed removal of old relay entries in the table
+- Added support for Rise of the godslayer expansion for AoC, courtesy of Chaoz.
 
 
 -------------
