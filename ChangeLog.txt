@@ -9,6 +9,7 @@ Version 0.6.8
 - Fixed crash issue when invalid security group is setup for relay
 - Fixed removal of old relay entries in the table
 - Added support for Rise of the godslayer expansion for AoC, courtesy of Chaoz.
+- !help now only displays help for the channel it is called from unless another channel is specifically requested.
 
 
 -------------
