@@ -81,6 +81,7 @@ class BotHelp_Core extends BaseActiveModule
 					break;
 			}
 		}
+	}
 
 
 	function show_help_menu($name, $section = 'source', $origin = FALSE)
