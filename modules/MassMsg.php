@@ -145,12 +145,12 @@ class MassMsg extends BaseActiveModule
 					$blob = $this -> bot -> core("colors") -> colorize("normal", $blob);
 					$blobs[(int)$massmsg][(int)$massinv] = $blob;
 				}
-				$dis = $dis.$blobs[(int)$massmsg][(int)$massinv];
+				$addlink = $dis.$blobs[(int)$massmsg][(int)$massinv];
 			}
 			else
-				$dis = "";
+				$addlink = "";
 
-			$message = str_ireplace("##disable##", $dis, $msg);
+			$message = str_ireplace("##disable##", $addlink, $msg);
 			//If they want messages they will get them regardless of type
 			if($massmsg)
 			{
