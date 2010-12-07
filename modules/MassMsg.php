@@ -119,7 +119,7 @@ class MassMsg extends BaseActiveModule
 		}
 		if($this->bot->core('settings')->get('MassMsg', 'IncludePrefLink'))
 		{
-			$dis = $msg."\n##massmsg_disable##You can disable reciept of mass messages and invites in the ##end##";
+			$dis = "\n##massmsg_disable##You can disable reciept of mass messages and invites in the ##end##";
 			$dis = $this -> bot -> core("colors") -> parse($dis);
 		}
 		$msg = $this -> bot -> core("colors") -> colorize("normal", $msg);
