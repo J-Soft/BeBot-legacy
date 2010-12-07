@@ -61,9 +61,6 @@ class Raffle extends BaseActiveModule
 	{
 		parent::__construct(&$bot, get_class($this));
 
-		$this -> output = "group";
-		$this -> result = "";
-
 		$this -> register_command("all", "raffle", "GUEST");
 
 		$this -> help['description'] = 'Module to handle item lotteries';
@@ -78,7 +75,11 @@ class Raffle extends BaseActiveModule
 		$this -> help['notes'] = "Notes for the help goes in here.";
 
 		$this -> bot -> core("settings") -> create("Raffle", "timer", 0, "How Long shold a Raffle Last? 0 = disabled");
+		$this -> bot -> core("settings") -> create("Raffle", "Output", "Group", "Default Output setting", 'Guild;Group;Both');
 		$this -> bot -> core("colors") -> define_scheme("raffle", "highlight", "yellow");
+
+		$this -> output = $this->bot->core('settings')->get('Raffle', 'Output');
+		$this -> result = "";
 	}
 
 
@@ -421,10 +422,16 @@ class Raffle extends BaseActiveModule
 	*/
 	function output($msg, $low=0)
 	{
-		if (($this -> output == "guild") || ($this -> output == "both"))
-		$this -> bot -> send_gc($msg, $low);
-		if (($this -> output == "group") || ($this -> output == "both"))
-		$this -> bot -> send_pgroup($msg);
+		Switch(strtolower($this -> output))
+		{
+			case 'both':
+				$this -> bot -> send_pgroup($msg);
+			case 'guild':
+				$this -> bot -> send_gc($msg, $low);
+				Break;
+			case 'group':
+				$this -> bot -> send_pgroup($msg);
+		}
 	}
 
 	function cron()
