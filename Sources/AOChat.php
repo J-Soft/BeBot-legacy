@@ -932,7 +932,7 @@ class AOChat
 		{
 			$this->login_num++;
 
-			$loginCharacterPacket = new AOChatPacket("out", AOCP_LOGIN_CHARID, array(1,$this->char["id"],$this->serverseed) );
+			$loginCharacterPacket = new AOChatPacket("out", AOCP_LOGIN_CHARID, array(1,$this->char["id"],$this->serverseed, "en") );
 			$this->send_packet($loginCharacterPacket);
 			$this->state = "connected";
 			return true;
