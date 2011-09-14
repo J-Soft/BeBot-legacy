@@ -465,7 +465,7 @@ class AOChat
 
 					//echo "Resending auth to chatserver [Character:" . $this->char["name"] . ", id:" . $this->char["id"] . "]\n";
 					$this->state = "connected";
-					$loginCharacterPacket = new AOChatPacket("out", AOCP_LOGIN_CHARID, array(1,$this->char["id"],$this->serverseed) );
+					$loginCharacterPacket = new AOChatPacket("out", AOCP_LOGIN_CHARID, array(1,$this->char["id"],$this->serverseed, "en") );
 					$this->send_packet($loginCharacterPacket);	
 				}
 				break;
@@ -1788,7 +1788,7 @@ AOCP_PING		=> array("name"=>"Pong",			"args"=>"S"),
 AOCP_FORWARD	=> array("name"=>"Forward",			"args"=>"IM"),
 AOCP_ADM_MUX_INFO	=> array("name"=>"Adm Mux Info",		"args"=>"iii")),
 "out" => array(
-AOCP_LOGIN_CHARID	=> array("name"=>"Login CharacterID",			"args"=>"III"),
+AOCP_LOGIN_CHARID	=> array("name"=>"Login CharacterID",			"args"=>"IIIS"),
 AOCP_LOGIN_REQUEST	=> array("name"=>"Login Response GetCharLst",	"args"=>"ISS"),
 AOCP_LOGIN_SELECT	=> array("name"=>"Login Select Character",	"args"=>"I"),
 AOCP_CLIENT_LOOKUP	=> array("name"=>"Name Lookup",			"args"=>"S"),
