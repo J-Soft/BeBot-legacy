@@ -36,131 +36,153 @@
 */
 define("MAXMEM", 6);
 
-class Team {
-	var $teamMembers;
-	var $teamName;
-	var $numMembers;
-	var $leader;
+class Team
+{
+  var $teamMembers;
+  var $teamName;
+  var $numMembers;
+  var $leader;
 
-	function Team(&$teamMember,$teamName) {
-		$this->teamMembers = array();
-		$this->teamName = $teamName;
-		$this->numMembers = 0;
-		$this->AddMember(&$teamMember);
-	}
+  function Team(&$teamMember, $teamName)
+  {
+    $this->teamMembers = array();
+    $this->teamName = $teamName;
+    $this->numMembers = 0;
+    $this->AddMember(&$teamMember);
+  }
 
-	function SetLeader(&$teamMember) {
-		$this->leader = &$teamMember;
-	}
+  function SetLeader(&$teamMember)
+  {
+    $this->leader = &$teamMember;
+  }
 
-	function AddMember(&$teamMember) {
-		if(count($this->teamMembers) < MAXMEM) {
-			$this->numMembers++;
-			return array_push($this->teamMembers,&$teamMember);
-		}
-		else {
-			return false;
-		}
-	}
+  function AddMember(&$teamMember)
+  {
+    if (count($this->teamMembers) < MAXMEM) {
+      $this->numMembers++;
+      return array_push($this->teamMembers, &$teamMember);
+    }
+    else {
+      return false;
+    }
+  }
 
-	function DelMember($name) {
-		$offset = $this->GetMemberOffset($name);
-		if(!is_bool($offset)) {
-			unset($this->teamMembers[$offset]);
-			$this->teamMembers = array_values($this->teamMembers);
-			$this->numMembers--;
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+  function DelMember($name)
+  {
+    $offset = $this->GetMemberOffset($name);
+    if (!is_bool($offset)) {
+      unset($this->teamMembers[$offset]);
+      $this->teamMembers = array_values($this->teamMembers);
+      $this->numMembers--;
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
 
-	function GetMemberOffset($name) {
-		for($i=0;$i<count($this->teamMembers);$i++) {
-			if($this->teamMembers[$i]->GetName() == $name) {
-				return $i;
-			}
-		}
-		return false;
-	}
-	function &GetMember($name) {
-		for($i=0;$i<count($this->teamMembers);$i++) {
-			print_r(get_object_vars($this->teamMembers[$i]));
-			if($this->teamMembers[$i]->GetName() == $name) {
-				return $this->teamMembers[$i];
-			}
-		}
-		return false;
-	}
+  function GetMemberOffset($name)
+  {
+    for ($i = 0; $i < count($this->teamMembers); $i++) {
+      if ($this->teamMembers[$i]->GetName() == $name) {
+        return $i;
+      }
+    }
+    return false;
+  }
 
-	function Count() {
-		return $this->numMembers;
-	}
+  function &GetMember($name)
+  {
+    for ($i = 0; $i < count($this->teamMembers); $i++) {
+      print_r(get_object_vars($this->teamMembers[$i]));
+      if ($this->teamMembers[$i]->GetName() == $name) {
+        return $this->teamMembers[$i];
+      }
+    }
+    return false;
+  }
 
-	function Clear() {
-		for($i=0;$i<count($this->teamMembers);$i++) {
-			$this->teamMembers[$i]->DelMember();
-		}
-	}
+  function Count()
+  {
+    return $this->numMembers;
+  }
 
-	function ClearLeader() {
-		for($i=0;$i<count($this->teamMembers);$i++) {
-			$this->teamMembers[$i]->SetLeader(false);
-		}
-	}
+  function Clear()
+  {
+    for ($i = 0; $i < count($this->teamMembers); $i++) {
+      $this->teamMembers[$i]->DelMember();
+    }
+  }
 
-	function GetName() {
-		return $this->teamName;
-	}
+  function ClearLeader()
+  {
+    for ($i = 0; $i < count($this->teamMembers); $i++) {
+      $this->teamMembers[$i]->SetLeader(false);
+    }
+  }
 
-	function &GetTeamMembers() {
-		return $this->teamMembers;
-	}
+  function GetName()
+  {
+    return $this->teamName;
+  }
 
-	function SetName($name) {
-		$this->teamName = $name;
-	}
+  function &GetTeamMembers()
+  {
+    return $this->teamMembers;
+  }
+
+  function SetName($name)
+  {
+    $this->teamName = $name;
+  }
 }
 
-class TeamMember {
-	var $name;
-	var $level;
-	var $profession;
-	var $guild;
-	var $leader;
+class TeamMember
+{
+  var $name;
+  var $level;
+  var $profession;
+  var $guild;
+  var $leader;
 
-	function TeamMember($name,$level,$profession,$guild,$leader=false) {
-		$this->name = $name;
-		$this->level = $level;
-		$this->profession = $profession;
-		$this->guild = $guild;
-		$this->leader = $leader;
-	}
+  function TeamMember($name, $level, $profession, $guild, $leader = false)
+  {
+    $this->name = $name;
+    $this->level = $level;
+    $this->profession = $profession;
+    $this->guild = $guild;
+    $this->leader = $leader;
+  }
 
-	function GetName() {
-		return $this->name;
-	}
+  function GetName()
+  {
+    return $this->name;
+  }
 
-	function GetLevel() {
-		return $this->level;
-	}
+  function GetLevel()
+  {
+    return $this->level;
+  }
 
-	function GetProfession() {
-		return $this->profession;
-	}
+  function GetProfession()
+  {
+    return $this->profession;
+  }
 
-	function GetGuild() {
-		return $this->guild;
-	}
+  function GetGuild()
+  {
+    return $this->guild;
+  }
 
-	function IsLeader() {
-		return $this->leader;
-	}
+  function IsLeader()
+  {
+    return $this->leader;
+  }
 
-	function SetLeader($leader) {
-		$this->leader = $leader;
-	}
+  function SetLeader($leader)
+  {
+    $this->leader = $leader;
+  }
 }
 
 ?>

@@ -44,77 +44,77 @@ $AutoUserAdd = new AutoUserAdd($bot);
 
 class AutoUserAdd extends BasePassiveModule
 {
-	private $checked;
+  private $checked;
 
-	function __construct(&$bot)
-	{
-		parent::__construct(&$bot, get_class($this));
-		
-		$this -> register_event("gmsg", "org");
+  function __construct(&$bot)
+  {
+    parent::__construct(&$bot, get_class($this));
 
-		$this -> register_module("autouseradd");
+    $this->register_event("gmsg", "org");
 
-		$this -> bot -> core("settings") -> create("Autouseradd", "Enabled", TRUE, "Should users be added to the Bot?");
-		$this -> bot -> core("settings") -> create("Autouseradd", "Notify", TRUE, "Should the User be Notified that he was added to the Bot?");
+    $this->register_module("autouseradd");
 
-		// Fill checked array with current members, we won't need to readd them:
-		$this -> checked = array();
-		$mems = $this -> bot -> db -> select("SELECT nickname FROM #___users WHERE user_level = 2", MYSQL_ASSOC);
-		if (!empty($mems))
-		{
-			foreach ($mems as $mem)
-			{
-				$this -> checked[$mem['nickname']] = TRUE;
-			}
-		}
-	}
+    $this->bot->core("settings")->create("Autouseradd", "Enabled", TRUE, "Should users be added to the Bot?");
+    $this->bot->core("settings")->create("Autouseradd", "Notify", TRUE, "Should the User be Notified that he was added to the Bot?");
 
-	function register(&$module)
-	{
-		$this -> hooks[] = &$module;
-	}
+    // Fill checked array with current members, we won't need to readd them:
+    $this->checked = array();
+    $mems = $this->bot->db->select("SELECT nickname FROM #___users WHERE user_level = 2", MYSQL_ASSOC);
+    if (!empty($mems)) {
+      foreach ($mems as $mem)
+      {
+        $this->checked[$mem['nickname']] = TRUE;
+      }
+    }
+  }
 
-	function gmsg($name, $group, $msg)
-	{
-		if(!$this -> bot -> core("settings") -> get("Autouseradd", "Enabled"))
-			Return;
+  function register(&$module)
+  {
+    $this->hooks[] = &$module;
+  }
 
-		// Add all characters when they are noticed in chat the first time:
-		if (!isset($this -> checked[$name]))
-		{
-			$this -> checked[$name] = TRUE;
-			
-			$result = $this -> bot -> db -> select("SELECT user_level FROM #___users WHERE nickname = '".$name."'");
-			if (!empty($result))
-			{
-				if ($result[0][0] != 2)
-				{
-					$this -> add_user($name);
-				}
-			}
-			else
-			{
-				$this -> add_user($name);
-			}
-		}
-	}
+  function gmsg($name, $group, $msg)
+  {
+    if (!$this->bot->core("settings")->get("Autouseradd", "Enabled")) {
+      Return;
+    }
 
-	function add_user($name)
-	{
-		if($this -> bot -> core("settings") -> get("Autouseradd", "Notify"))
-			$silent = 0;
-		else
-			$silent = 1;
+    // Add all characters when they are noticed in chat the first time:
+    if (!isset($this->checked[$name])) {
+      $this->checked[$name] = TRUE;
 
-		$this -> bot -> core("user") -> add($this -> bot -> botname, $name, 0, MEMBER, $silent);
+      $result = $this->bot->db->select("SELECT user_level FROM #___users WHERE nickname = '" . $name . "'");
+      if (!empty($result)) {
+        if ($result[0][0] != 2) {
+          $this->add_user($name);
+        }
+      }
+      else
+      {
+        $this->add_user($name);
+      }
+    }
+  }
 
-		if(!empty($this -> hooks))
-		{
-			foreach($this -> hooks as $hook)
-			{
-				$hook -> new_user($name);
-			}
-		}
-	}
+  function add_user($name)
+  {
+    if ($this->bot->core("settings")->get("Autouseradd", "Notify")) {
+      $silent = 0;
+    }
+    else
+    {
+      $silent = 1;
+    }
+
+    $this->bot->core("user")->add($this->bot->botname, $name, 0, MEMBER, $silent);
+
+    if (!empty($this->hooks)) {
+      foreach ($this->hooks as $hook)
+      {
+        $hook->new_user($name);
+      }
+    }
+  }
 }
+
 ?>

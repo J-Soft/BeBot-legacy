@@ -43,230 +43,226 @@ The Class itself...
 */
 class AOChatWrapper_Core extends BasePassiveModule
 {
-	/*
-	Constructor:
-	Hands over a referance to the "Bot" class.
-	*/
-	function __construct(&$bot)
-	{
-		parent::__construct(&$bot, get_class($this));
+  /*
+  Constructor:
+  Hands over a referance to the "Bot" class.
+  */
+  function __construct(&$bot)
+  {
+    parent::__construct(&$bot, get_class($this));
 
-		$this -> register_module("chat");
-	}
+    $this->register_module("chat");
+  }
 
-	/*
-	This is a wrapper function for aoc->get_uid() that checks the whois cache if aoc->get_uid() failes
-	*/
-	function get_uid($user)
-	{
-		if(empty($user))
-		{
-			$this->error->set('No user specified');
-			// TODO: adapt all calls to get_uid() to check for instanceof BotError?
-			// return($this->error);
-			return false;
-		}
+  /*
+  This is a wrapper function for aoc->get_uid() that checks the whois cache if aoc->get_uid() failes
+  */
+  function get_uid($user)
+  {
+    if (empty($user)) {
+      $this->error->set('No user specified');
+      // TODO: adapt all calls to get_uid() to check for instanceof BotError?
+      // return($this->error);
+      return false;
+    }
 
-		//Attempt to get uid from FC (This fails randomly)
-		$uid = $this -> bot -> aoc -> get_uid($user);
+    //Attempt to get uid from FC (This fails randomly)
+    $uid = $this->bot->aoc->get_uid($user);
 
-		//When it fails attempt to get it from the cache.
-		if($uid === false)
-		{
-			$db_uid = $this -> bot -> db -> select("SELECT ID FROM #___whois WHERE nickname = '" . $user . "' LIMIT 1", MYSQL_ASSOC);
+    //When it fails attempt to get it from the cache.
+    if ($uid === false) {
+      $db_uid = $this->bot->db->select("SELECT ID FROM #___whois WHERE nickname = '" . $user . "' LIMIT 1", MYSQL_ASSOC);
 
-			if (!empty($db_uid))
-			{
-				$uid = $db_uid[0]['ID'];
-			}
-			else
-			{
-				$this -> error -> set("I was unable to get the user id for user: '$user'");
-				// TODO: adapt all calls to get_uid() to check for instanceof BotError?
-				// return($this->error);
-				return false;
-			}
-		}
+      if (!empty($db_uid)) {
+        $uid = $db_uid[0]['ID'];
+      }
+      else
+      {
+        $this->error->set("I was unable to get the user id for user: '$user'");
+        // TODO: adapt all calls to get_uid() to check for instanceof BotError?
+        // return($this->error);
+        return false;
+      }
+    }
 
-		return $uid;
-	}
+    return $uid;
+  }
 
-	/*
-	This is a wrapper function for aoc->get_uname() that checks the whois cache if aoc->get_uname() failes
-	*/
-	function get_uname($user)
-	{
-		if ($user === false || $user === 0 || $user === -1)
-		{
-			return false;
-		}
+  /*
+  This is a wrapper function for aoc->get_uname() that checks the whois cache if aoc->get_uname() failes
+  */
+  function get_uname($user)
+  {
+    if ($user === false || $user === 0 || $user === -1) {
+      return false;
+    }
 
-		$name = $this -> bot -> aoc -> get_uname($user);
+    $name = $this->bot->aoc->get_uname($user);
 
-		if($name === false || $name === 0 || $name === -1)
-		{
-			$db_name = $this -> bot -> db -> select("SELECT nickname FROM #___whois WHERE ID = '" . $user . "' OR nickname = '" . $user . "'");
+    if ($name === false || $name === 0 || $name === -1) {
+      $db_name = $this->bot->db->select("SELECT nickname FROM #___whois WHERE ID = '" . $user . "' OR nickname = '" . $user . "'");
 
-			if (!empty($db_name))
-			{
-				$name = $db_name[0][0];
-			}
-			else
-			{
-				$name = false;
-				$this -> bot -> log('GETUNAME', 'FAILED', "I was unable to get the user name belonging to: $user");
-			}
-		}
-		return $name;
-	}
+      if (!empty($db_name)) {
+        $name = $db_name[0][0];
+      }
+      else
+      {
+        $name = false;
+        $this->bot->log('GETUNAME', 'FAILED', "I was unable to get the user name belonging to: $user");
+      }
+    }
+    return $name;
+  }
 
-	/* Buddies */
-	function buddy_add($user, $que = TRUE)
-	{
-		$add = true;
-		if (empty($user) || ($uid = $this -> get_uid($user)) === false)
-		{
-			return false;
-		}
-		else
-		{
-			// FIXME
-			// Currently checking specifically for 4294967295 as userid to ensure we never ever send an add buddy
-			// packet to AoC as it will disconnect the player.
-			if ($uid == 4294967295)
-			{
-				$this -> bot -> log("BUDDY", "BUDDY-ADD", "Received add request for " . $this -> get_uname($uid) . "(" . $uid . ") This user is likely in the userlist and might need to be manually removed if this error persists.");
-				return FALSE;
-			}
-			
-			
-			if (!($this -> bot -> aoc -> buddy_exists($uid)) && $uid != 0 && $uid != -1
-			&& $uid != $this -> get_uid($this -> bot -> botname) && $this -> get_uname($uid) != -1)
-			{
-				if (!$que || $this -> bot -> core("buddy_queue") -> check_queue())
-				{
-					$this -> bot -> aoc -> buddy_add($uid);
-					$this -> bot -> log("BUDDY", "BUDDY-ADD", $this -> get_uname($uid));
-					return true;
-				}
-				else
-				{
-					$return = $this -> bot -> core("buddy_queue") -> into_queue($uid, $add);
-					return $return;
-				}
-			}
-			else
-				return false;
-		}
-	}
+  /* Buddies */
+  function buddy_add($user, $que = TRUE)
+  {
+    $add = true;
+    if (empty($user) || ($uid = $this->get_uid($user)) === false) {
+      return false;
+    }
+    else
+    {
+      // FIXME
+      // Currently checking specifically for 4294967295 as userid to ensure we never ever send an add buddy
+      // packet to AoC as it will disconnect the player.
+      if ($uid == 4294967295) {
+        $this->bot->log("BUDDY", "BUDDY-ADD", "Received add request for " . $this->get_uname($uid) . "(" . $uid . ") This user is likely in the userlist and might need to be manually removed if this error persists.");
+        return FALSE;
+      }
 
-	function buddy_remove($user)
-	{
-		$add = false;
-		if (empty($user) || ($uid = $this -> get_uid($user)) === false)
-		{
-			return false;
-		}
-		else
-		{
-			if (($this -> bot -> aoc -> buddy_exists($uid)))
-			{
-				if ($this -> bot -> core("buddy_queue") -> check_queue())
-				{
-					$this -> bot -> aoc -> buddy_remove($uid);
-					$this -> bot -> log("BUDDY", "BUDDY-DEL", $this -> get_uname($uid));
-					return true;
-				}
-				else
-				{
-					$return = $this -> bot -> core("buddy_queue") -> into_queue($uid, $add);
-					return $return;
-				}
-			}
-			else
-				return false;
-		}
-	}
 
-	function buddy_exists($who)
-	{
-		return $this -> bot -> aoc -> buddy_exists($who);
-	}
+      if (!($this->bot->aoc->buddy_exists($uid)) && $uid != 0 && $uid != -1
+        && $uid != $this->get_uid($this->bot->botname) && $this->get_uname($uid) != -1
+      ) {
+        if (!$que || $this->bot->core("buddy_queue")->check_queue()) {
+          $this->bot->aoc->buddy_add($uid);
+          $this->bot->log("BUDDY", "BUDDY-ADD", $this->get_uname($uid));
+          return true;
+        }
+        else
+        {
+          $return = $this->bot->core("buddy_queue")->into_queue($uid, $add);
+          return $return;
+        }
+      }
+      else
+      {
+        return false;
+      }
+    }
+  }
 
-	function buddy_online($who)
-	{
-		return $this -> bot -> aoc -> buddy_online($who);
-	}
+  function buddy_remove($user)
+  {
+    $add = false;
+    if (empty($user) || ($uid = $this->get_uid($user)) === false) {
+      return false;
+    }
+    else
+    {
+      if (($this->bot->aoc->buddy_exists($uid))) {
+        if ($this->bot->core("buddy_queue")->check_queue()) {
+          $this->bot->aoc->buddy_remove($uid);
+          $this->bot->log("BUDDY", "BUDDY-DEL", $this->get_uname($uid));
+          return true;
+        }
+        else
+        {
+          $return = $this->bot->core("buddy_queue")->into_queue($uid, $add);
+          return $return;
+        }
+      }
+      else
+      {
+        return false;
+      }
+    }
+  }
 
-	/*
-	accept invite to private group
-	*/
-	function pgroup_join($group)
-	{
-		if ($group == NULL)
-			return false;
+  function buddy_exists($who)
+  {
+    return $this->bot->aoc->buddy_exists($who);
+  }
 
-		$this -> bot -> log("PGRP", "ACCEPT", "Accepting Invite for Private Group [" . $group . "]");
-		return $this -> bot -> aoc -> privategroup_join($group);
-	}
+  function buddy_online($who)
+  {
+    return $this->bot->aoc->buddy_online($who);
+  }
 
-	/*
-	leave private group
-	*/
-	function pgroup_leave($group)
-	{
-		if ($group == NULL)
-			return false;
+  /*
+  accept invite to private group
+  */
+  function pgroup_join($group)
+  {
+    if ($group == NULL) {
+      return false;
+    }
 
-		$this -> bot -> log("PGRP", "LEAVE", "Leaving Private Group [" . $group . "]");
-		return $this -> bot -> aoc -> privategroup_leave($group);
-	}
+    $this->bot->log("PGRP", "ACCEPT", "Accepting Invite for Private Group [" . $group . "]");
+    return $this->bot->aoc->privategroup_join($group);
+  }
 
-	/*
-	decline private group
-	*/
-	function pgroup_decline($group)
-	{
-		return $this -> send_pgroup_leave($group);
-	}
+  /*
+  leave private group
+  */
+  function pgroup_leave($group)
+  {
+    if ($group == NULL) {
+      return false;
+    }
 
-	/*
-	private group status
-	added - 2007/Sep/1 - anarchyonline@mafoo.org
-	*/
-	function pgroup_status($group)
-	{
-		if ($group == NULL)
-			$group = $this -> bot -> botname;
-		return $this -> bot -> aoc -> group_status($group);
-	}
+    $this->bot->log("PGRP", "LEAVE", "Leaving Private Group [" . $group . "]");
+    return $this->bot->aoc->privategroup_leave($group);
+  }
 
-	function pgroup_invite($user)
-	{
-		$this -> bot -> log("PGRP", "INVITE", "Invited " . $user . " to private group");
-		return $this -> bot -> aoc -> privategroup_invite($user);
-	}
+  /*
+  decline private group
+  */
+  function pgroup_decline($group)
+  {
+    return $this->send_pgroup_leave($group);
+  }
 
-	function pgroup_kick($user)
-	{
-		$this -> bot -> log("PGRP", "KICK", "Kicking " . $user . " from private group");
-		return $this -> bot -> aoc -> privategroup_kick($user);
-	}
+  /*
+  private group status
+  added - 2007/Sep/1 - anarchyonline@mafoo.org
+  */
+  function pgroup_status($group)
+  {
+    if ($group == NULL) {
+      $group = $this->bot->botname;
+    }
+    return $this->bot->aoc->group_status($group);
+  }
 
-	function pgroup_kick_all()
-	{
-		$this -> bot -> log("PGRP", "KICKALL", "Kicking all user from private group");
-		return $this -> bot -> aoc -> privategroup_kick_all();
-	}
+  function pgroup_invite($user)
+  {
+    $this->bot->log("PGRP", "INVITE", "Invited " . $user . " to private group");
+    return $this->bot->aoc->privategroup_invite($user);
+  }
 
-	function lookup_group($arg, $type=0)
-	{
-		return $this -> bot -> aoc -> lookup_group($arg, $type);
-	}
+  function pgroup_kick($user)
+  {
+    $this->bot->log("PGRP", "KICK", "Kicking " . $user . " from private group");
+    return $this->bot->aoc->privategroup_kick($user);
+  }
 
-	function get_gname($g)
-	{
-		return $this -> bot -> aoc -> get_gname($g);
-	}
+  function pgroup_kick_all()
+  {
+    $this->bot->log("PGRP", "KICKALL", "Kicking all user from private group");
+    return $this->bot->aoc->privategroup_kick_all();
+  }
+
+  function lookup_group($arg, $type = 0)
+  {
+    return $this->bot->aoc->lookup_group($arg, $type);
+  }
+
+  function get_gname($g)
+  {
+    return $this->bot->aoc->get_gname($g);
+  }
 }
+
 ?>

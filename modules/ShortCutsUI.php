@@ -39,70 +39,73 @@ $shortcut_gui = new ShortCutGUI($bot);
 
 class ShortCutGUI extends BaseActiveModule
 {
-	function __construct(&$bot)
-	{
-		parent::__construct(&$bot, get_class($this));
+  function __construct(&$bot)
+  {
+    parent::__construct(&$bot, get_class($this));
 
-		$this -> register_command("all", "shortcuts", "OWNER");
-		
-		$this -> help['description'] = "Allows you view, add and delete entries in the shortcut database.";
-		$this -> help['command']['shortcuts'] = "Shows currently existing shortcuts with corresponding long entries and allows deleting selected entries.";
-		$this -> help['command']['shortcuts add "<short>" "<long>"'] = "Adds <short> as shortcut for <long> to the database. Neither <short> nor <long> can contain any \".";
-	}
+    $this->register_command("all", "shortcuts", "OWNER");
 
-	function command_handler($name, $msg, $origin)
-	{
-		if (preg_match("/^shortcuts$/i", $msg))
-			return $this -> show_shortcuts();
-		elseif (preg_match("/^shortcuts add &quot;(.*)&quot; &quot;(.*)&quot;$/i", $msg, $info))
-			return $this -> add($info[1], $info[2]);
-		elseif (preg_match("/^shortcuts del ([01-9]+)$/i", $msg, $info))
-			return $this -> del($info[1]);
-	}
+    $this->help['description'] = "Allows you view, add and delete entries in the shortcut database.";
+    $this->help['command']['shortcuts'] = "Shows currently existing shortcuts with corresponding long entries and allows deleting selected entries.";
+    $this->help['command']['shortcuts add "<short>" "<long>"'] = "Adds <short> as shortcut for <long> to the database. Neither <short> nor <long> can contain any \".";
+  }
 
-	function show_shortcuts()
-	{
-		$shortcuts = $this -> bot -> db -> select("SELECT shortcut, long_desc, id FROM #___shortcuts ORDER BY shortcut ASC");
+  function command_handler($name, $msg, $origin)
+  {
+    if (preg_match("/^shortcuts$/i", $msg)) {
+      return $this->show_shortcuts();
+    }
+    elseif (preg_match("/^shortcuts add &quot;(.*)&quot; &quot;(.*)&quot;$/i", $msg, $info))
+    {
+      return $this->add($info[1], $info[2]);
+    }
+    elseif (preg_match("/^shortcuts del ([01-9]+)$/i", $msg, $info))
+    {
+      return $this->del($info[1]);
+    }
+  }
 
-		if (empty($shortcuts))
-		{
-			return "No shortcuts defined!";
-		}
+  function show_shortcuts()
+  {
+    $shortcuts = $this->bot->db->select("SELECT shortcut, long_desc, id FROM #___shortcuts ORDER BY shortcut ASC");
 
-		$blob = "##ao_infoheader##The following shortcuts are defined:##end##\n";
+    if (empty($shortcuts)) {
+      return "No shortcuts defined!";
+    }
 
-		foreach ($shortcuts as $shortcut)
-		{
-			$blob .= "\n##ao_infotext##" . stripslashes($shortcut[0]) . " ##end##short for##ao_infotext## ";
-			$blob .= stripslashes($shortcut[1]) . "##end## ";
-			$blob .= $this -> bot -> core("tools") -> chatcmd("shortcuts del " . $shortcut[2], "[DELETE]");
-		}
+    $blob = "##ao_infoheader##The following shortcuts are defined:##end##\n";
 
-		return $this -> bot -> core("tools") -> make_blob("Defined shortcuts", $blob);
-	}
+    foreach ($shortcuts as $shortcut)
+    {
+      $blob .= "\n##ao_infotext##" . stripslashes($shortcut[0]) . " ##end##short for##ao_infotext## ";
+      $blob .= stripslashes($shortcut[1]) . "##end## ";
+      $blob .= $this->bot->core("tools")->chatcmd("shortcuts del " . $shortcut[2], "[DELETE]");
+    }
 
-	function add($short, $long)
-	{
-		$ret = $this -> bot -> core("shortcuts") -> add($short, $long);
+    return $this->bot->core("tools")->make_blob("Defined shortcuts", $blob);
+  }
 
-		if ($ret['error'])
-		{
-			return "##error##" . $ret['errordesc'] . "##end##";
-		}
+  function add($short, $long)
+  {
+    $ret = $this->bot->core("shortcuts")->add($short, $long);
 
-		return $ret['content'];
-	}
+    if ($ret['error']) {
+      return "##error##" . $ret['errordesc'] . "##end##";
+    }
 
-	function del($id)
-	{
-		$ret = $this -> bot -> core("shortcuts") -> delete_id($id);
+    return $ret['content'];
+  }
 
-		if ($ret['error'])
-		{
-			return "##error##" . $ret['errordesc'] . "##end##";
-		}
+  function del($id)
+  {
+    $ret = $this->bot->core("shortcuts")->delete_id($id);
 
-		return $ret['content'];
-	}
+    if ($ret['error']) {
+      return "##error##" . $ret['errordesc'] . "##end##";
+    }
+
+    return $ret['content'];
+  }
 }
+
 ?>

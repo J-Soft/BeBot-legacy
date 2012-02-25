@@ -39,180 +39,171 @@ $notify_core = new Notify_Core($bot);
 
 class Notify_Core extends BasePassiveModule
 {
-	private $cache;
+  private $cache;
 
-	function Notify_Core(&$bot)
-	{
-		parent::__construct(&$bot, get_class($this));
+  function Notify_Core(&$bot)
+  {
+    parent::__construct(&$bot, get_class($this));
 
-		$this -> register_module("notify");
-		$this -> update_cache();
-	}
+    $this->register_module("notify");
+    $this->update_cache();
+  }
 
-	function update_cache()
-	{
-		$this -> cache = array();
-		$notifylist = $this -> bot -> db -> select("SELECT nickname FROM #___users WHERE notify = 1");
-		if (!empty($notifylist))
-		{
-			foreach ($notifylist as $user)
-			{
-				$this -> cache[ucfirst(strtolower($user[0]))] = TRUE;
-			}
-		}
-	}
+  function update_cache()
+  {
+    $this->cache = array();
+    $notifylist = $this->bot->db->select("SELECT nickname FROM #___users WHERE notify = 1");
+    if (!empty($notifylist)) {
+      foreach ($notifylist as $user)
+      {
+        $this->cache[ucfirst(strtolower($user[0]))] = TRUE;
+      }
+    }
+  }
 
-	function check($name)
-	{
-		return isset($this -> cache[ucfirst(strtolower($name))]);
-	}
+  function check($name)
+  {
+    return isset($this->cache[ucfirst(strtolower($name))]);
+  }
 
-	function add($source, $user)
-	{
-		$ret['error'] = FALSE;
+  function add($source, $user)
+  {
+    $ret['error'] = FALSE;
 
-		$id = $this -> bot -> core("chat") -> get_uid($user);
-		$user = ucfirst(strtolower($user));
-		if ($id == 0)
-		{
-			$ret['error'] = TRUE;
-			$ret['errordesc'] = $user . " is no valid character name!";
-			return $ret;
-		}
+    $id = $this->bot->core("chat")->get_uid($user);
+    $user = ucfirst(strtolower($user));
+    if ($id == 0) {
+      $ret['error'] = TRUE;
+      $ret['errordesc'] = $user . " is no valid character name!";
+      return $ret;
+    }
 
-		// Make sure user is in users table
-		$usr = $this -> bot -> db -> select("SELECT notify FROM #___users WHERE nickname = '" . $user . "'");
-		if (empty($usr))
-		{
-			// Need to add $user to users table as anonymous and silent
-			$this -> bot -> core("user") -> add ($source, $user, 0, 0, 1);
-		}
-		else
-		{
-			// Check if already on notify
-			if ($usr[0][0] == 1)
-			{
-				$ret['error'] = TRUE;
-				$ret['errordesc'] = $user . " is already on the notify list!";
-				return $ret;
-			}
-		}
+    // Make sure user is in users table
+    $usr = $this->bot->db->select("SELECT notify FROM #___users WHERE nickname = '" . $user . "'");
+    if (empty($usr)) {
+      // Need to add $user to users table as anonymous and silent
+      $this->bot->core("user")->add($source, $user, 0, 0, 1);
+    }
+    else
+    {
+      // Check if already on notify
+      if ($usr[0][0] == 1) {
+        $ret['error'] = TRUE;
+        $ret['errordesc'] = $user . " is already on the notify list!";
+        return $ret;
+      }
+    }
 
-		// Mark for notify in users table and cache
-		$this -> bot -> db -> query("UPDATE #___users SET notify = 1 WHERE nickname = '" . $user . "'");
-		$this -> cache[$user] = TRUE;
+    // Mark for notify in users table and cache
+    $this->bot->db->query("UPDATE #___users SET notify = 1 WHERE nickname = '" . $user . "'");
+    $this->cache[$user] = TRUE;
 
-		// Now add to notify list if not yet there
-		$this -> bot -> core("chat") -> buddy_add($id);
+    // Now add to notify list if not yet there
+    $this->bot->core("chat")->buddy_add($id);
 
-		$ret['content'] = $user . " added to notify list!";
-		return $ret;
-	}
+    $ret['content'] = $user . " added to notify list!";
+    return $ret;
+  }
 
-	function del($user)
-	{
-		$ret['error'] = FALSE;
+  function del($user)
+  {
+    $ret['error'] = FALSE;
 
-		$id = $this -> bot -> core("chat") -> get_uid($user);
-		$user = ucfirst(strtolower($user));
-		if ($id == 0)
-		{
-			$ret['error'] = true;
-			$ret['errordesc'] = $user . " is no valid character name!";
-			return $ret;
-		}
+    $id = $this->bot->core("chat")->get_uid($user);
+    $user = ucfirst(strtolower($user));
+    if ($id == 0) {
+      $ret['error'] = true;
+      $ret['errordesc'] = $user . " is no valid character name!";
+      return $ret;
+    }
 
-		// Make sure $user is on notify (and in users table)
-		$usr = $this -> bot -> db -> select("SELECT notify FROM #___users WHERE nickname = '" . $user . "'");
+    // Make sure $user is on notify (and in users table)
+    $usr = $this->bot->db->select("SELECT notify FROM #___users WHERE nickname = '" . $user . "'");
 
-		if (empty($usr))
-		{
-			$ret['error'] = true;
-			$ret['errordesc'] = $user . " is not on notify list!";
-			return $ret;
-		}
+    if (empty($usr)) {
+      $ret['error'] = true;
+      $ret['errordesc'] = $user . " is not on notify list!";
+      return $ret;
+    }
 
-		if ($usr[0][0] == 0)
-		{
-			$ret['error'] = true;
-			$ret['errordesc'] = $user . " is not on notify list!";
-			return $ret;
-		}
+    if ($usr[0][0] == 0) {
+      $ret['error'] = true;
+      $ret['errordesc'] = $user . " is not on notify list!";
+      return $ret;
+    }
 
-		// Unflag notify for user in table and cache
-		$this -> bot -> db -> query("UPDATE #___users SET notify = 0 WHERE nickname = '" . $user . "'");
-		unset($this -> cache[$user]);
+    // Unflag notify for user in table and cache
+    $this->bot->db->query("UPDATE #___users SET notify = 0 WHERE nickname = '" . $user . "'");
+    unset($this->cache[$user]);
 
-		// If in buddy list remove
-		$this -> bot -> core("chat") -> buddy_remove($id);
+    // If in buddy list remove
+    $this->bot->core("chat")->buddy_remove($id);
 
-		$this -> bot -> db -> query("UPDATE #___online SET status_gc = 0 WHERE nickname = '" . $user . "' AND botname = '".$this -> bot -> botname."'");
+    $this->bot->db->query("UPDATE #___online SET status_gc = 0 WHERE nickname = '" . $user . "' AND botname = '" . $this->bot->botname . "'");
 
-		$ret['content'] = $user . " removed from notify list!";
-		return $ret;
-	}
+    $ret['content'] = $user . " removed from notify list!";
+    return $ret;
+  }
 
-	function list_cache()
-	{
-		$count = 0;
+  function list_cache()
+  {
+    $count = 0;
 
-		$notify_list = $this -> cache;
+    $notify_list = $this->cache;
 
-		asort($notify_list);
+    asort($notify_list);
 
-		foreach ($notify_list as $key => $value)
-		{
-			$notify_db = $this -> bot -> db -> select("SELECT notify FROM #___users WHERE nickname = '" . $key . "'");
-			$msg .= $key;
+    foreach ($notify_list as $key => $value)
+    {
+      $notify_db = $this->bot->db->select("SELECT notify FROM #___users WHERE nickname = '" . $key . "'");
+      $msg .= $key;
 
-			if ($value == 1)
-			{
-				$msg .= " [##green##Cache##end##]";
-			}
-			else
-			{
-				$msg .= " [##red##Cache##end##]";
-			}
+      if ($value == 1) {
+        $msg .= " [##green##Cache##end##]";
+      }
+      else
+      {
+        $msg .= " [##red##Cache##end##]";
+      }
 
-			if ($notify_db[0][0] == 1)
-			{
-				$msg .= "[##green##DB##end##]";
-			}
-			else
-			{
-				$msg .= "[##red##DB##end##]";
-			}
+      if ($notify_db[0][0] == 1) {
+        $msg .= "[##green##DB##end##]";
+      }
+      else
+      {
+        $msg .= "[##red##DB##end##]";
+      }
 
-			if ($notify_db[0][0] != $value)
-			{
-				$msg .= " ##yellow##MISMATCH##end##\n";
-			}
-			else
-			{
-				$msg .= "\n";
-			}
+      if ($notify_db[0][0] != $value) {
+        $msg .= " ##yellow##MISMATCH##end##\n";
+      }
+      else
+      {
+        $msg .= "\n";
+      }
 
-			$count++;
-		}
+      $count++;
+    }
 
-		return $count . " members in <botname>'s notify cache :: " . $this -> bot -> core("tools") -> make_blob("click to view", $msg);
-	}
+    return $count . " members in <botname>'s notify cache :: " . $this->bot->core("tools")->make_blob("click to view", $msg);
+  }
 
-	function clear_cache()
-	{
-		$count = 0;
+  function clear_cache()
+  {
+    $count = 0;
 
-		$count = count($this -> cache);
-		unset($this -> cache);
-		$this -> cache = array();
+    $count = count($this->cache);
+    unset($this->cache);
+    $this->cache = array();
 
 
-		return "Removed " . $count . " members from <botname>'s notify cache.";
-	}
+    return "Removed " . $count . " members from <botname>'s notify cache.";
+  }
 
-	function get_all()
-	{
-		Return $this -> cache;
-	}
+  function get_all()
+  {
+    Return $this->cache;
+  }
 }
+
 ?>
