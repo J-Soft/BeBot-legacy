@@ -235,20 +235,10 @@ class Bot
       die("Unknown dimension (" . $this->dimension . ")");
     }
 
-    // Open connection
-    $this->log("LOGIN", "STATUS", "Connecting to $this->game server $server:$port");
-    if (!$this->aoc->connect($server, $port, $this->sixtyfourbit)) {
-      $this->cron_activated = false;
-      $this->disconnect();
-      $this->log("CONN", "ERROR", "Can't connect to server. Retrying in " . $this->reconnecttime . " seconds.");
-      sleep($this->reconnecttime);
-      die("The bot is restarting.\n");
-    }
-
     // AoC authentication is a bit different
     if ($this->game == "aoc") {
       $this->log("LOGIN", "STATUS", "Authenticating");
-      if ($this->aoc->authenticateConan($this->username, $this->password, $this->botname) == false) {
+      if ($this->aoc->authenticateConan($server, $port, $this->username, $this->password, $this->botname, $this->sixtyfourbit) == false) {
         $this->cron_activated = false;
         $this->disconnect();
         $this->log("CONN", "ERROR", "Failed authenticating to server. Retrying in " . $this->reconnecttime . " seconds.");
@@ -258,6 +248,16 @@ class Bot
     }
     else
     {
+      // Open connection
+      $this->log("LOGIN", "STATUS", "Connecting to $this->game server $server:$port");
+      if (!$this->aoc->connect($server, $port, $this->sixtyfourbit)) {
+        $this->cron_activated = false;
+        $this->disconnect();
+        $this->log("CONN", "ERROR", "Can't connect to server. Retrying in " . $this->reconnecttime . " seconds.");
+        sleep($this->reconnecttime);
+        die("The bot is restarting.\n");
+      }
+
       // Authenticate
       $this->log("LOGIN", "STATUS", "Authenticating $this->username");
       $this->aoc->authenticate($this->username, $this->password);

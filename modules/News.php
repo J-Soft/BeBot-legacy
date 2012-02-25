@@ -159,13 +159,13 @@ class News extends BaseActiveModule
     {
       case '':
       case 'read':
-      if (($type == 1) || ($type == 2)) {
-        return $this->get_news($name);
-      }
-      else
-      {
-        return $this->get_raids($name);
-      }
+        if (($type == 1) || ($type == 2)) {
+          return $this->get_news($name);
+        }
+        else
+        {
+          return $this->get_raids($name);
+        }
         break;
       case 'add':
         return $this->set_news($name, $com['args'], $type);

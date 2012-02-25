@@ -181,13 +181,13 @@ class Raid extends BaseActiveModule
             Return $this->set_announce($name, $var[2]);
           case 'desc':
           case 'description':
-          if (!empty($var[3])) {
-            $desc = $var[2] . " " . $var[3];
-          }
-          else
-          {
-            $desc = $var[2];
-          }
+            if (!empty($var[3])) {
+              $desc = $var[2] . " " . $var[3];
+            }
+            else
+            {
+              $desc = $var[2];
+            }
             Return $this->set_description($name, $desc);
           case 'level':
           case 'minlevel':

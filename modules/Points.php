@@ -167,9 +167,9 @@ class Points extends BaseActiveModule
         Break;
       case 'del':
       case 'rem':
-      if (strlen($msg[4]) < 5) {
-        Return ("Error: Reason required, min ##highlight##5##end## letters");
-      }
+        if (strlen($msg[4]) < 5) {
+          Return ("Error: Reason required, min ##highlight##5##end## letters");
+        }
         $this->rem_points($name, $msg[2], $msg[3], $msg[4]);
         Break;
       case 'transfer':

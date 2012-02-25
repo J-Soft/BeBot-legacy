@@ -114,7 +114,7 @@ class ConfigMagik extends BasePassiveModule
     if ($section) {
       $this->PROCESS_SECTIONS = true;
     }
-    else           {
+    else {
       $this->PROCESS_SECTIONS = false;
     }
     // get requested value
