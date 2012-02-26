@@ -46,7 +46,7 @@ define('BOT_VERSION_SNAPSHOT', TRUE);
 define('BOT_VERSION_STABLE', TRUE);
 
 // Workaround for backport to 0.6 branch
-$bot_version = BOT_VERSION . BOT_VERSION_INFO;
+$bot_version      = BOT_VERSION . BOT_VERSION_INFO;
 $bot_version_name = BOT_VERSION_NAME;
 
 $php_version = phpversion();
@@ -58,7 +58,7 @@ date_default_timezone_set('UTC');
 Detect if we are being run from a shell or if someone is stupid enough to try and run from a web browser.
 */
 if ((!empty($_SERVER['HTTP_HOST'])) || (!empty($_SERVER['HTTP_USER_AGENT']))) {
-  die("BeBot does not support being run from a web server and it is inherently dangerous to do so!\nFor your own good and for the safety of your account information, please do not attempt to run BeBot from a web server!");
+    die("BeBot does not support being run from a web server and it is inherently dangerous to do so!\nFor your own good and for the safety of your account information, please do not attempt to run BeBot from a web server!");
 }
 
 /*
@@ -66,24 +66,24 @@ OS detection, borrowed from Angelsbot.
 */
 $os = getenv("OSTYPE");
 if (empty($os)) {
-  $os = getenv("OS");
+    $os = getenv("OS");
 }
 
 if (preg_match("/^windows/i", $os)) {
-  $os_windows = true;
+    $os_windows = true;
 }
 
 /*
 Check if we are running on a 64bit system or not
 */
 if (PHP_INT_SIZE == 4) {
-  $sixtyfourbit = false;
-  $osbit = "32bit";
+    $sixtyfourbit = false;
+    $osbit        = "32bit";
 }
 else
 {
-  $sixtyfourbit = true;
-  $osbit = "64bit";
+    $sixtyfourbit = true;
+    $osbit        = "64bit";
 }
 
 
@@ -107,7 +107,7 @@ usleep(1500000);
 
 // The minimum required PHP version to run.
 if ((float)phpversion() < 5.2) {
-  die("BeBot requires PHP version 5.2.0 or later to work.\n");
+    die("BeBot requires PHP version 5.2.0 or later to work.\n");
 }
 
 /*
@@ -115,60 +115,60 @@ Load extentions we need
 */
 
 if (!extension_loaded("sockets")) {
-  if ($os_windows) {
-    if (!dl("php_sockets.dll")) {
-      die("Loading php_sockets.dll failed. Sockets extention required to run this bot");
+    if ($os_windows) {
+        if (!dl("php_sockets.dll")) {
+            die("Loading php_sockets.dll failed. Sockets extention required to run this bot");
+        }
     }
-  }
-  else
-  {
-    die("Sockets extention required to run this bot");
-  }
+    else
+    {
+        die("Sockets extention required to run this bot");
+    }
 
 }
 
 if (!extension_loaded("mysql")) {
-  if ($os_windows) {
-    if (!dl("php_mysql.dll")) {
-      die("Loading php_mysql.dll failed. MySQL extention required to run this bot");
+    if ($os_windows) {
+        if (!dl("php_mysql.dll")) {
+            die("Loading php_mysql.dll failed. MySQL extention required to run this bot");
+        }
     }
-  }
-  else
-  {
-    die("MySQL support required to run this bot");
-  }
+    else
+    {
+        die("MySQL support required to run this bot");
+    }
 
 }
 
 // Check if we have curl available
 if (!extension_loaded("curl")) {
-  if ($os_windows) {
-    if (@!dl("php_curl.dll")) {
-      echo "Curl not available\n";
+    if ($os_windows) {
+        if (@!dl("php_curl.dll")) {
+            echo "Curl not available\n";
+        }
+        else
+        {
+            echo "Curl extension loaded\n";
+        }
+    }
+    else if (function_exists('curl_init')) {
+        echo "Curl extension loaded\n";
     }
     else
     {
-      echo "Curl extension loaded\n";
+        echo "Curl not available\n";
     }
-  }
-  else if (function_exists('curl_init')) {
-    echo "Curl extension loaded\n";
-  }
-  else
-  {
-    echo "Curl not available\n";
-  }
 }
 
 /*
 If an argument is given, use that to create the config file name.
 */
 if ($argc > 1) {
-  $conffile = ucfirst(strtolower($argv[1])) . ".Bot.conf";
+    $conffile = ucfirst(strtolower($argv[1])) . ".Bot.conf";
 }
 else
 {
-  $conffile = "Bot.conf";
+    $conffile = "Bot.conf";
 }
 
 
@@ -181,11 +181,11 @@ AOChat.php: Interface to communicate with AO chat servers
 Bot.php: The actual bot itself.
 */
 if (file_exists("./conf/" . $conffile)) {
-  require_once "./conf/" . $conffile;
+    require_once "./conf/" . $conffile;
 }
 else
 {
-  die("Could not read config file ./conf/" . $conffile);
+    die("Could not read config file ./conf/" . $conffile);
 }
 
 /*
@@ -193,24 +193,24 @@ else
 * - Khalem
 */
 if (empty($ao_password) || $ao_password == "") {
-  $fp = fopen('./conf/pw', 'r');
-  if ($fp) {
-    $ao_password = fread($fp, filesize('./conf/pw'));
-    fclose($fp);
-    $fp = fopen('./conf/pw', 'w');
-    fwrite($fp, "");
-    fclose($fp);
-  }
-  if (empty($ao_password) || $ao_password == "") {
-    die("No password set in either ./conf/" . $conffile . " or in ./conf/pw");
-  }
+    $fp = fopen('./conf/pw', 'r');
+    if ($fp) {
+        $ao_password = fread($fp, filesize('./conf/pw'));
+        fclose($fp);
+        $fp = fopen('./conf/pw', 'w');
+        fwrite($fp, "");
+        fclose($fp);
+    }
+    if (empty($ao_password) || $ao_password == "") {
+        die("No password set in either ./conf/" . $conffile . " or in ./conf/pw");
+    }
 }
 if (is_numeric($dimension) || strcasecmp($dimension, "Atlantean") == 0 || strcasecmp($dimension, "Rimor") == 0 || strcasecmp($dimension, "Die neue welt") == 0) {
-  $game = "ao";
+    $game = "ao";
 }
 else
 {
-  $game = "aoc";
+    $game = "aoc";
 }
 
 define('AOCHAT_GAME', $game);
@@ -231,7 +231,7 @@ Make sure the log directory exists
 */
 $logpath = $log_path . "/" . strtolower($bot_name) . "@RK" . $dimension;
 if (!file_exists($logpath)) {
-  mkdir($logpath);
+    mkdir($logpath);
 }
 
 $db = new MySQL(ucfirst(strtolower($bot_name)));
@@ -251,29 +251,29 @@ unset ($ao_username);
 
 // Load all main functions of the bot:
 $bot->log("MAIN", "DIR", "Loading main functions of the bot");
-$folder = dir("./main/");
+$folder    = dir("./main/");
 $mainclass = array();
 while ($mod = $folder->read())
 {
-  if (!is_dir($mod) && preg_match("/^[01-9][01-9]_[A-Za-z_01-9\.]+\.php$/i", $mod)) {
-    $mainclass[] = $mod;
-  }
+    if (!is_dir($mod) && preg_match("/^[01-9][01-9]_[A-Za-z_01-9\.]+\.php$/i", $mod)) {
+        $mainclass[] = $mod;
+    }
 }
 
 if (is_array($mainclass)) {
-  sort($mainclass);
+    sort($mainclass);
 
-  foreach ($mainclass AS $name)
-  {
-    require_once "main/" . $name;
-    $bot->log("MAIN", "LOAD", $name);
-  }
+    foreach ($mainclass AS $name)
+    {
+        require_once "main/" . $name;
+        $bot->log("MAIN", "LOAD", $name);
+    }
 }
 unset($mainclass);
 echo "\n";
 
 // create new ConfigMagik-Object
-$path = "conf/" . ucfirst(strtolower($bot->botname)) . ".Modules.ini";
+$path     = "conf/" . ucfirst(strtolower($bot->botname)) . ".Modules.ini";
 $bot->ini = new ConfigMagik(&$bot, $path, true, true);
 
 // Load up core-modules
@@ -281,14 +281,14 @@ $bot->log("CORE", "DIR", "Loading core-modules");
 $folder = dir("./core/");
 while ($mod = $folder->read())
 {
-  $value = $bot->core("ini")->get($mod, "Core");
+    $value = $bot->core("ini")->get($mod, "Core");
 
-  if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
-    && $value != "FALSE"
-  ) {
-    require_once "core/" . $mod;
-    $bot->log("CORE", "LOAD", $mod);
-  }
+    if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
+        && $value != "FALSE"
+    ) {
+        require_once "core/" . $mod;
+        $bot->log("CORE", "LOAD", $mod);
+    }
 }
 echo "\n";
 
@@ -297,59 +297,59 @@ $bot->log("CORE", "DIR", "Loading Game Specific core-modules");
 $folder = dir("./core/" . $game . "/");
 while ($mod = $folder->read())
 {
-  $value = $bot->core("ini")->get($mod, "Core");
+    $value = $bot->core("ini")->get($mod, "Core");
 
-  if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
-    && $value != "FALSE"
-  ) {
-    require_once "core/" . strtolower($game) . "/" . $mod;
-    $bot->log("CORE", "LOAD", $mod);
-  }
+    if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
+        && $value != "FALSE"
+    ) {
+        require_once "core/" . strtolower($game) . "/" . $mod;
+        $bot->log("CORE", "LOAD", $mod);
+    }
 }
 echo "\n";
 
 // Load up all custom core-modules if the directory exists
 if (is_dir("./custom/core")) {
-  $bot->log("CORE-CUSTOM", "DIR", "Loading additional core-modules in directory custom/core/");
-  $folder = dir("./custom/core/");
-  while ($mod = $folder->read())
-  {
-    $value = $bot->core("ini")->get($mod, "Custom_Core");
+    $bot->log("CORE-CUSTOM", "DIR", "Loading additional core-modules in directory custom/core/");
+    $folder = dir("./custom/core/");
+    while ($mod = $folder->read())
+    {
+        $value = $bot->core("ini")->get($mod, "Custom_Core");
 
-    if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
-      && $value != "FALSE"
-    ) {
-      require_once "custom/core/" . $mod;
-      $bot->log("CORE-CUSTOM", "LOAD", $mod);
+        if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
+            && $value != "FALSE"
+        ) {
+            require_once "custom/core/" . $mod;
+            $bot->log("CORE-CUSTOM", "LOAD", $mod);
+        }
     }
-  }
-  echo "\n";
+    echo "\n";
 }
 
 // Load up the core modules in the $core_directories config entry
 $core_dirs = explode(",", $core_directories);
 foreach ($core_dirs as $core_dir)
 {
-  $core_dir = trim($core_dir);
-  // Only load anything if it really is a directory
-  if (is_dir($core_dir)) {
-    $bot->log("CORE-ADD", "DIR", "Loading additional core-modules in directory " . $core_dir);
-    $sec_name = str_replace("/", "_", $core_dir);
+    $core_dir = trim($core_dir);
+    // Only load anything if it really is a directory
+    if (is_dir($core_dir)) {
+        $bot->log("CORE-ADD", "DIR", "Loading additional core-modules in directory " . $core_dir);
+        $sec_name = str_replace("/", "_", $core_dir);
 
-    $folder = dir($core_dir . "/");
-    while ($mod = $folder->read())
-    {
-      $value = $bot->core("ini")->get($mod, $sec_name);
+        $folder = dir($core_dir . "/");
+        while ($mod = $folder->read())
+        {
+            $value = $bot->core("ini")->get($mod, $sec_name);
 
-      if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
-        && $value != "FALSE"
-      ) {
-        require_once $core_dir . "/" . $mod;
-        $bot->log("CORE-ADD", "LOAD", $mod);
-      }
+            if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
+                && $value != "FALSE"
+            ) {
+                require_once $core_dir . "/" . $mod;
+                $bot->log("CORE-ADD", "LOAD", $mod);
+            }
+        }
+        echo "\n";
     }
-    echo "\n";
-  }
 }
 
 // Load up all modules
@@ -357,77 +357,77 @@ $bot->log("MOD", "DIR", "Loading modules");
 $folder = dir("./modules/");
 while ($mod = $folder->read())
 {
-  $value = $bot->core("ini")->get($mod, "Modules");
+    $value = $bot->core("ini")->get($mod, "Modules");
 
-  if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
-    && $value != "FALSE"
-  ) {
-    require_once "modules/" . $mod;
-    $bot->log("MOD", "LOAD", $mod);
-  }
+    if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
+        && $value != "FALSE"
+    ) {
+        require_once "modules/" . $mod;
+        $bot->log("MOD", "LOAD", $mod);
+    }
 }
 echo "\n";
 
 // Load up all modules Gam specific modules if the directory exists
 if (is_dir("./modules/" . $game)) {
-  $bot->log("MOD", "DIR", "Loading game specific modules");
-  $folder = dir("./modules/" . $game . "/");
-  while ($mod = $folder->read())
-  {
-    $value = $bot->core("ini")->get($mod, "Modules");
+    $bot->log("MOD", "DIR", "Loading game specific modules");
+    $folder = dir("./modules/" . $game . "/");
+    while ($mod = $folder->read())
+    {
+        $value = $bot->core("ini")->get($mod, "Modules");
 
-    if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
-      && $value != "FALSE"
-    ) {
-      require_once "modules/" . $game . "/" . $mod;
-      $bot->log("MOD", "LOAD", $mod);
+        if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
+            && $value != "FALSE"
+        ) {
+            require_once "modules/" . $game . "/" . $mod;
+            $bot->log("MOD", "LOAD", $mod);
+        }
     }
-  }
-  echo "\n";
+    echo "\n";
 }
 
 // Load up all custom modules if the directoy exists
 if (is_dir("./custom/modules")) {
-  $bot->log("MOD-CUSTOM", "DIR", "Loading additional modules in directory custom/modules/");
-  $folder = dir("./custom/modules/");
-  while ($mod = $folder->read())
-  {
-    $value = $bot->core("ini")->get($mod, "Custom_Modules");
+    $bot->log("MOD-CUSTOM", "DIR", "Loading additional modules in directory custom/modules/");
+    $folder = dir("./custom/modules/");
+    while ($mod = $folder->read())
+    {
+        $value = $bot->core("ini")->get($mod, "Custom_Modules");
 
-    if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
-      && $value != "FALSE"
-    ) {
-      require_once "custom/modules/" . $mod;
-      $bot->log("MOD-CUSTOM", "LOAD", $mod);
+        if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
+            && $value != "FALSE"
+        ) {
+            require_once "custom/modules/" . $mod;
+            $bot->log("MOD-CUSTOM", "LOAD", $mod);
+        }
     }
-  }
-  echo "\n";
+    echo "\n";
 }
 
 // Load up the modules in the $module_directories config entry
 $mod_dirs = explode(",", $module_directories);
 foreach ($mod_dirs as $mod_dir)
 {
-  $mod_dir = trim($mod_dir);
-  // Only load anything if it really is a directory
-  if (is_dir($mod_dir)) {
-    $bot->log("MOD-ADD", "DIR", "Loading additional modules in directory " . $mod_dir);
-    $sec_name = str_replace("/", "_", $mod_dir);
+    $mod_dir = trim($mod_dir);
+    // Only load anything if it really is a directory
+    if (is_dir($mod_dir)) {
+        $bot->log("MOD-ADD", "DIR", "Loading additional modules in directory " . $mod_dir);
+        $sec_name = str_replace("/", "_", $mod_dir);
 
-    $folder = dir($mod_dir . "/");
-    while ($mod = $folder->read())
-    {
-      $value = $bot->core("ini")->get($mod, $sec_name);
+        $folder = dir($mod_dir . "/");
+        while ($mod = $folder->read())
+        {
+            $value = $bot->core("ini")->get($mod, $sec_name);
 
-      if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
-        && $value != "FALSE"
-      ) {
-        require_once $mod_dir . "/" . $mod;
-        $bot->log("MOD-ADD", "LOAD", $mod);
-      }
+            if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)
+                && $value != "FALSE"
+            ) {
+                require_once $mod_dir . "/" . $mod;
+                $bot->log("MOD-ADD", "LOAD", $mod);
+            }
+        }
     }
-  }
-  echo "\n";
+    echo "\n";
 }
 
 
@@ -439,11 +439,11 @@ Listen for incoming events...
 */
 while (true)
 {
-  if ($aoc->wait_for_packet() == "disconnected") {
-    $bot->reconnect();
-  }
+    if ($aoc->wait_for_packet() == "disconnected") {
+        $bot->reconnect();
+    }
 
-  $bot->cron();
+    $bot->cron();
 }
 
 
@@ -452,59 +452,59 @@ Parse incomeing events...
 */
 function callback($type, $args)
 {
-  global $bot;
+    global $bot;
 
-  $bot->cron();
+    $bot->cron();
 
-  switch ($type)
-  {
-    case AOCP_LOGIN_OK:
-      $bot->log("LOGIN", "RESULT", "OK");
-      break;
-    case AOCP_LOGIN_ERROR:
-      $bot->log("LOGIN", "RESULT", "Error");
-      break;
-    case AOCP_CLIENT_NAME:
-      // Silently ignore for now (AOCP_CLIENT_NAME)
-      break;
-    case AOCP_MSG_PRIVATE:
-      // Event is a tell
-      $bot->inc_tell($args);
-      break;
-    case AOCP_BUDDY_ADD:
-      // Event is a buddy logging on/off
-      $bot->inc_buddy($args);
-      break;
-    case AOCP_PRIVGRP_CLIJOIN:
-      // Event is someone joining the privgroup
-      $bot->inc_pgjoin($args);
-      break;
-    case AOCP_PRIVGRP_CLIPART:
-      // Event is someone leaveing the privgroup
-      $bot->inc_pgleave($args);
-      break;
-    case AOCP_PRIVGRP_MESSAGE:
-      // Event is a privgroup message
-      $bot->inc_pgmsg($args);
-      break;
-    case AOCP_GROUP_MESSAGE:
-      // Event is a group message (guildchat, towers etc)
-      $bot->inc_gmsg($args);
-      break;
-    case AOCP_PRIVGRP_INVITE:
-      // Event is a privgroup invite
-      $bot->inc_pginvite($args);
-      break;
-    case AOCP_GROUP_ANNOUNCE:
-      $bot->inc_gannounce($args);
-      break;
-    case AOCP_MSG_VICINITYA:
-      $bot->inc_vannounce($args);
-      break;
-    default:
-      // $bot -> log ("MAIN", "TYPE", "Uhandeled packet type $type");
+    switch ($type)
+    {
+        case AOCP_LOGIN_OK:
+            $bot->log("LOGIN", "RESULT", "OK");
+            break;
+        case AOCP_LOGIN_ERROR:
+            $bot->log("LOGIN", "RESULT", "Error");
+            break;
+        case AOCP_CLIENT_NAME:
+            // Silently ignore for now (AOCP_CLIENT_NAME)
+            break;
+        case AOCP_MSG_PRIVATE:
+            // Event is a tell
+            $bot->inc_tell($args);
+            break;
+        case AOCP_BUDDY_ADD:
+            // Event is a buddy logging on/off
+            $bot->inc_buddy($args);
+            break;
+        case AOCP_PRIVGRP_CLIJOIN:
+            // Event is someone joining the privgroup
+            $bot->inc_pgjoin($args);
+            break;
+        case AOCP_PRIVGRP_CLIPART:
+            // Event is someone leaveing the privgroup
+            $bot->inc_pgleave($args);
+            break;
+        case AOCP_PRIVGRP_MESSAGE:
+            // Event is a privgroup message
+            $bot->inc_pgmsg($args);
+            break;
+        case AOCP_GROUP_MESSAGE:
+            // Event is a group message (guildchat, towers etc)
+            $bot->inc_gmsg($args);
+            break;
+        case AOCP_PRIVGRP_INVITE:
+            // Event is a privgroup invite
+            $bot->inc_pginvite($args);
+            break;
+        case AOCP_GROUP_ANNOUNCE:
+            $bot->inc_gannounce($args);
+            break;
+        case AOCP_MSG_VICINITYA:
+            $bot->inc_vannounce($args);
+            break;
+        default:
+            // $bot -> log ("MAIN", "TYPE", "Uhandeled packet type $type");
 
-  }
+    }
 }
 
 ?>
