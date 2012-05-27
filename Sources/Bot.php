@@ -1651,7 +1651,7 @@ class Bot
         if (isset($this->module_links[strtolower($name)])) {
             return $this->module_links[strtolower($name)];
         }
-        $dummy = new BasePassiveModule(&$this, $name);
+        $dummy = new BasePassiveModule($this, $name);
         $this->log('CORE', 'ERROR', "Module '$name' does not exist or is not loaded.");
         return $dummy;
     }
@@ -1830,7 +1830,7 @@ class Bot
             elseif ($event == 'timer')
             {
                 if ($target) {
-                    $this->core("timer")->register_callback($target, &$module);
+                    $this->core("timer")->register_callback($target, $module);
                     return false;
                 }
                 else
@@ -1840,14 +1840,14 @@ class Bot
             }
             elseif ($event == 'logon_notify')
             {
-                $this->core("logon_notifies")->register(&$module);
+                $this->core("logon_notifies")->register($module);
                 return false;
             }
             elseif ($event == 'settings')
             {
                 if (is_array($target) && isset($target['module']) && isset($target['setting'])) {
                     return $this->core("settings")
-                        ->register_callback($target['module'], $target['setting'], &$module);
+                        ->register_callback($target['module'], $target['setting'], $module);
                 }
                 return "No module and/or setting defined, can't register!";
             }
@@ -1925,18 +1925,18 @@ class Bot
             elseif ($event == 'timer')
             {
                 return $this->core("timer")
-                    ->unregister_callback($target, &$module);
+                    ->unregister_callback($target, $module);
             }
             elseif ($event == 'logon_notify')
             {
-                $this->core("logon_notifies")->unregister(&$module);
+                $this->core("logon_notifies")->unregister($module);
                 return false;
             }
             elseif ($event == 'settings')
             {
                 if (is_array($target) && isset($target['module']) && isset($target['setting'])) {
                     return $this->core("settings")
-                        ->unregister_callback($target['module'], $target['setting'], &$module);
+                        ->unregister_callback($target['module'], $target['setting'], $module);
                 }
                 return "No module and/or setting defined, can't unregister!";
             }

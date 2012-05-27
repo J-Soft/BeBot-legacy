@@ -54,7 +54,7 @@ class NewTeams extends BaseActiveModule
     */
     function __construct(&$bot)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         $this->teams    = array();
         $this->numteams = 0;
@@ -134,7 +134,7 @@ class NewTeams extends BaseActiveModule
 
     function AddTeam(&$team)
     {
-        array_push($this->teams, &$team);
+        array_push($this->teams, $team);
     }
 
 

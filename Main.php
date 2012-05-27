@@ -274,7 +274,7 @@ echo "\n";
 
 // create new ConfigMagik-Object
 $path     = "conf/" . ucfirst(strtolower($bot->botname)) . ".Modules.ini";
-$bot->ini = new ConfigMagik(&$bot, $path, true, true);
+$bot->ini = new ConfigMagik($bot, $path, true, true);
 
 // Load up core-modules
 $bot->log("CORE", "DIR", "Loading core-modules");

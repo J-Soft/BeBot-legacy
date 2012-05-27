@@ -33,7 +33,7 @@
 * Revision: $Id: Alias.php 1673 2008-07-23 15:44:39Z temar $
 */
 
-$preferences = new Preferences_GUI(&$bot);
+$preferences = new Preferences_GUI($bot);
 
 /*
 The Class itself...
@@ -42,7 +42,7 @@ class Preferences_GUI extends BaseActiveModule
 {
     function __construct(&$bot)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         //Create access settings for this module
         $this->register_command("all", "preferences", "MEMBER", array('default' => 'SUPERADMIN'));

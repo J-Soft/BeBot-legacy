@@ -49,7 +49,7 @@ class Team
         $this->teamMembers = array();
         $this->teamName    = $teamName;
         $this->numMembers  = 0;
-        $this->AddMember(&$teamMember);
+        $this->AddMember($teamMember);
     }
 
 
@@ -63,7 +63,7 @@ class Team
     {
         if (count($this->teamMembers) < MAXMEM) {
             $this->numMembers++;
-            return array_push($this->teamMembers, &$teamMember);
+            return array_push($this->teamMembers, $teamMember);
         }
         else {
             return false;

@@ -57,7 +57,7 @@ class Raffle extends BaseActiveModule
 
     function __construct(&$bot)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         $this->register_command("all", "raffle", "GUEST");
 
@@ -141,7 +141,7 @@ class Raffle extends BaseActiveModule
             $users = array_keys($this->users);
             for ($i = 0; $i < 5; $i++)
             {
-                shuffle(&$users);
+                shuffle($users);
             }
 
             $usr_num = count($users);

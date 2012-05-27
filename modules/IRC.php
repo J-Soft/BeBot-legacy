@@ -62,7 +62,7 @@ class IRC extends BaseActiveModule
     */
     function __construct(&$bot)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         $this->register_module("irc");
         $this->register_command("all", "irc", "OWNER");
@@ -142,7 +142,7 @@ class IRC extends BaseActiveModule
         $this->irc            = null;
         $this->last_log["st"] = time();
 
-        $this->bot->core("timer")->register_callback("IRC", &$this);
+        $this->bot->core("timer")->register_callback("IRC", $this);
 
         $this->spam[0] = array(0,
                                0,

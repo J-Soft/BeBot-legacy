@@ -33,7 +33,7 @@
 * Revision: $Id: 06_Preferences.php 35 2008-11-30 18:55:36Z temar $
 */
 
-$preferences_core = new Preferences_core(&$bot);
+$preferences_core = new Preferences_core($bot);
 
 class Preferences_core extends BasePassiveModule
 {
@@ -45,7 +45,7 @@ class Preferences_core extends BasePassiveModule
     */
     function __construct(&$bot)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         $query = 'CREATE TABLE IF NOT EXISTS ' . $this->bot->db->define_tablename('preferences_def', 'true');
         $query .= '(ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ';

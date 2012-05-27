@@ -41,7 +41,7 @@ class User_Core extends BasePassiveModule
 {
     function __construct(&$bot)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         $this->register_module("user");
 

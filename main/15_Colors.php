@@ -60,7 +60,7 @@ class Colors_Core extends BasePassiveModule
     */
     function __construct(&$bot)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         $this->register_module("colors");
         $this->register_event("cron", "1hour");

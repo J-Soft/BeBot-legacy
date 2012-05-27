@@ -46,7 +46,7 @@ class LeadEcho extends BaseActiveModule
 {
     function __construct(&$bot)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         $this->bot->core("settings")
             ->create("Leader", "Name", "", "The name of the character that took lead.", "", TRUE);

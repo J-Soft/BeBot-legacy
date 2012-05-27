@@ -45,7 +45,7 @@ class AutoInv extends BaseActiveModule
     */
     function __construct(&$bot)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         $this->bot->core("settings")
             ->create("AutoInv", "Activated", FALSE, "Is the autoinvite activated?");

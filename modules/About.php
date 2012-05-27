@@ -48,7 +48,7 @@ class About extends BaseActiveModule
     */
     function __construct(&$bot, $owner)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         //Sed default access control levels
         $this->register_command('all', 'about', 'GUEST');

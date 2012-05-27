@@ -42,7 +42,7 @@ abstract class BaseActiveModule extends BasePassiveModule
     function __construct(&$bot, $module_name)
     {
         //Save reference to bot
-        parent::__construct(&$bot, $module_name);
+        parent::__construct($bot, $module_name);
     }
 
 
@@ -77,7 +77,7 @@ abstract class BaseActiveModule extends BasePassiveModule
                              'tell');
         if ((in_array($channel, $channels)) && (in_array($access, $levels))) {
             if (!$this->bot->exists_command($channel, $command)) {
-                $this->bot->register_command($channel, $command, &$this);
+                $this->bot->register_command($channel, $command, $this);
                 $this->bot->core("access_control")
                     ->create($channel, $command, $access);
                 if ($subcommands != NULL) {

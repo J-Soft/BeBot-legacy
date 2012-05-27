@@ -51,6 +51,7 @@ class MySQL
         $this->last_error     = 0;
         $this->last_reconnect = 0;
         $this->underscore     = "_";
+        $nounderscore         = FALSE;
 
         /*
         Load up config

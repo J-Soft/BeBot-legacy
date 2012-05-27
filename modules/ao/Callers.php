@@ -47,7 +47,7 @@ class Callers extends BaseActiveModule
 
     function __construct(&$bot)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         $this->callers = array();
 

@@ -58,7 +58,7 @@ class ClassName extends BaseActiveModule
     function __construct(&$bot)
     {
         //Initialize the base module
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         /*
             Register commands with the bot.

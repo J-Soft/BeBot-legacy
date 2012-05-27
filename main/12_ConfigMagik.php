@@ -52,7 +52,7 @@ class ConfigMagik extends BasePassiveModule
     function __construct(&$bot, $path = null, $synchronize = false,
                          $process_sections = true)
     {
-        parent::__construct(&$bot, get_class($this));
+        parent::__construct($bot, get_class($this));
 
         $this->register_module("ini");
 
