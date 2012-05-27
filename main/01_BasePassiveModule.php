@@ -44,10 +44,10 @@ class BasePassiveModule
     function __construct(&$bot, $module_name)
     {
         //Save reference to bot
-        $this->bot         = &$bot;
+        $this->bot = &$bot;
         $this->module_name = $module_name;
-        $this->link_name   = NULL;
-        $this->error       = new BotError($bot, $module_name);
+        $this->link_name = NULL;
+        $this->error = new BotError($bot, $module_name);
     }
 
 
@@ -93,14 +93,12 @@ class BasePassiveModule
                 if ($channel & $this->source) {
                     $channel -= SAME;
                 }
-                else
-                {
+                else {
                     $channel += $this->source;
                 }
             }
         }
-        else
-        {
+        else {
             $channel += $this->source;
         }
 
@@ -124,14 +122,13 @@ class BasePassiveModule
 
     public function __call($name, $args)
     {
-        foreach ($args as $i => $arg)
-        {
+        foreach ($args as $i => $arg) {
             if (is_object($arg)) {
                 $args[$i] = "::object::";
             }
         }
         $args = implode(', ', $args);
-        $msg  = "Undefined function $name($args)!";
+        $msg = "Undefined function $name($args)!";
         $this->error->set($msg);
         return $this->error->message();
     }

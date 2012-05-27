@@ -46,27 +46,26 @@ class testproxy extends BaseActiveModule
 
         $this->register_command('tell', 'testproxy', 'SUPERADMIN');
 
-        $this->help['description'] = 'This plugin runs through all the proxies that have been setup and tests each of them.';
+        $this->help['description']
+            = 'This plugin runs through all the proxies that have been setup and tests each of them.';
     }
 
 
     function command_handler($name, $msg, $origin)
     {
-        $strip_headers  = 0;
+        $strip_headers = 0;
         $server_timeout = 25;
-        $read_timeout   = 30;
-        $url            = "http://people.anarchy-online.com/character/bio/d/2/name/ebagmp/bio.xml";
+        $read_timeout = 30;
+        $url = "http://people.anarchy-online.com/character/bio/d/2/name/ebagmp/bio.xml";
 
-        foreach ($this->bot->proxy_server_address as $proxy)
-        {
+        foreach ($this->bot->proxy_server_address as $proxy) {
             $result = $this->bot->core("tools")
                 ->get_site_data($url, $strip_headers, $server_timeout, $read_timeout, $proxy);
 
             if ($result["error"] == true || $result["error"] == 1) {
                 $status = "Failed\n" . $result["errordesc"];
             }
-            else
-            {
+            else {
                 $status = "Good";
             }
 

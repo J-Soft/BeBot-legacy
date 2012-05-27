@@ -66,8 +66,9 @@ class Whois_Core extends BasePassiveModule
         /*
         Create tables for our whois cache if it does not already exsist.
         */
-        $this->bot->db->query("CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("whois", "false")
-                              . " (
+        $this->bot->db->query(
+            "CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("whois", "false")
+                . " (
 					ID BIGINT NOT NULL default '0',
 					nickname varchar(15) NOT NULL default '',
 					firstname varchar(20) NOT NULL default '',
@@ -101,25 +102,41 @@ class Whois_Core extends BasePassiveModule
 					KEY Alienlevel (defender_rank_id),
 					KEY updated (updated),
 					KEY used (used)
-				)");
+				)"
+        );
 
         $this->register_module("whois");
         $this->register_event("cron", "1hour");
 
-        $this->cache           = array();
+        $this->cache = array();
         $this->alien_rank_name = array();
-        $this->alien_rank      = array();
+        $this->alien_rank = array();
 
         $this->create_name_cache();
 
         $this->bot->core("settings")
-            ->create("Whois", "MaxCacheSize", 100, "What is the maximum number of whois entries that should be cached internally in the bot at the same time to reduce load on the SQL server?", "10;25;50;75;100;200;300;500;1000");
+            ->create(
+            "Whois", "MaxCacheSize", 100,
+            "What is the maximum number of whois entries that should be cached internally in the bot at the same time to reduce load on the SQL server?",
+            "10;25;50;75;100;200;300;500;1000"
+        );
         $this->bot->core("settings")
-            ->create("Whois", "MaxTimeInCache", 3, "After how many hours in the internal query cache should an entry be removed because it could be outdated or free memory should be freed? This setting does not affect database entries in any way.", "1;2;3;4;5;6;7;8;9;10;11;12");
+            ->create(
+            "Whois", "MaxTimeInCache", 3,
+            "After how many hours in the internal query cache should an entry be removed because it could be outdated or free memory should be freed? This setting does not affect database entries in any way.",
+            "1;2;3;4;5;6;7;8;9;10;11;12"
+        );
         $this->bot->core("settings")
-            ->create("Whois", "TimeValid", 1, "After how many days should the whois information in a database entry be considered outdated and looked for an update? NOTICE: Only use values higher then one day if you have trouble connecting to the FC website or are running the external updating script.", "1;2;3;4;5");
+            ->create(
+            "Whois", "TimeValid", 1,
+            "After how many days should the whois information in a database entry be considered outdated and looked for an update? NOTICE: Only use values higher then one day if you have trouble connecting to the FC website or are running the external updating script.",
+            "1;2;3;4;5"
+        );
         $this->bot->core("settings")
-            ->create('Whois', 'LookupOrder', 'funcom_auno', 'Which order should we use to look up players information?', 'funcom_auno;auno_funcom;funcom_only;auno_only');
+            ->create(
+            'Whois', 'LookupOrder', 'funcom_auno', 'Which order should we use to look up players information?',
+            'funcom_auno;auno_funcom;funcom_only;auno_only'
+        );
         $this->bot->core("settings")
             ->create('Whois', "Debug", False, "Show debug information (such as Character ID, Org ID, etc)");
 
@@ -133,15 +150,14 @@ class Whois_Core extends BasePassiveModule
             return;
         }
 
-        switch ($this->bot->db->get_version("whois"))
-        {
-            case 1: // Update Table version to prevent repeat update calls
-                //was an update for a setting
-            case 2:
-            case 3:
-            case 4:
-                $this->bot->db->update_table("whois", "ID", "alter", "ALTER TABLE #___whois MODIFY ID BIGINT NOT NULL");
-            default:
+        switch ($this->bot->db->get_version("whois")) {
+        case 1: // Update Table version to prevent repeat update calls
+            //was an update for a setting
+        case 2:
+        case 3:
+        case 4:
+            $this->bot->db->update_table("whois", "ID", "alter", "ALTER TABLE #___whois MODIFY ID BIGINT NOT NULL");
+        default:
         }
         $this->bot->db->set_version("whois", 5);
     }
@@ -149,16 +165,16 @@ class Whois_Core extends BasePassiveModule
 
     function create_name_cache()
     {
-        $this->alien_rank_name[0]  = "None";
-        $this->alien_rank_name[1]  = "Fledgling";
-        $this->alien_rank_name[2]  = "Amateur";
-        $this->alien_rank_name[3]  = "Beginner";
-        $this->alien_rank_name[4]  = "Starter";
-        $this->alien_rank_name[5]  = "Newcomer";
-        $this->alien_rank_name[6]  = "Student";
-        $this->alien_rank_name[7]  = "Common";
-        $this->alien_rank_name[8]  = "Intermediate";
-        $this->alien_rank_name[9]  = "Mediocre";
+        $this->alien_rank_name[0] = "None";
+        $this->alien_rank_name[1] = "Fledgling";
+        $this->alien_rank_name[2] = "Amateur";
+        $this->alien_rank_name[3] = "Beginner";
+        $this->alien_rank_name[4] = "Starter";
+        $this->alien_rank_name[5] = "Newcomer";
+        $this->alien_rank_name[6] = "Student";
+        $this->alien_rank_name[7] = "Common";
+        $this->alien_rank_name[8] = "Intermediate";
+        $this->alien_rank_name[9] = "Mediocre";
         $this->alien_rank_name[10] = "Fair";
         $this->alien_rank_name[11] = "Able";
         $this->alien_rank_name[12] = "Accomplished";
@@ -181,8 +197,7 @@ class Whois_Core extends BasePassiveModule
         $this->alien_rank_name[29] = "Vanquisher";
         $this->alien_rank_name[30] = "Vindicator";
 
-        foreach ($this->alien_rank_name as $level => $name)
-        {
+        foreach ($this->alien_rank_name as $level => $name) {
             $this->alien_rank[$name] = $level;
         }
     }
@@ -201,21 +216,24 @@ class Whois_Core extends BasePassiveModule
     {
         $oldesttime = -1;
         $oldestname = "";
-        $thistime   = time();
-        foreach ($this->cache as $nick => $who)
-        {
+        $thistime = time();
+        foreach ($this->cache as $nick => $who) {
             if ($who["timestamp"] < $thistime - 60 * 60 * $this->bot
                 ->core("settings")->get("Whois", "MaxTimeInCache")
             ) {
                 unset($this->cache[$nick]);
             }
-            else if ($oldesttime == -1) {
-                $oldesttime = $who["timestamp"];
-                $oldestname = $nick;
-            }
-            else if ($oldesttime > $who["timestamp"]) {
-                $oldesttime = $who["timestamp"];
-                $oldestname = $nick;
+            else {
+                if ($oldesttime == -1) {
+                    $oldesttime = $who["timestamp"];
+                    $oldestname = $nick;
+                }
+                else {
+                    if ($oldesttime > $who["timestamp"]) {
+                        $oldesttime = $who["timestamp"];
+                        $oldestname = $nick;
+                    }
+                }
             }
         }
 
@@ -247,7 +265,7 @@ class Whois_Core extends BasePassiveModule
         }
 
         // We got room now, just add the new entry to cache
-        $who["timestamp"]                                   = time();
+        $who["timestamp"] = time();
         $this->cache[ucfirst(strtolower($who["nickname"]))] = $who;
     }
 
@@ -267,12 +285,12 @@ class Whois_Core extends BasePassiveModule
         $name = ucfirst(strtolower($name));
 
         $who["error"] = false;
-        $uid          = $this->bot->core("chat")->get_uid($name);
+        $uid = $this->bot->core("chat")->get_uid($name);
         /*
         Make sure we havent been passed a bogus name.
         */
         if (!$uid) {
-            $who["error"]     = true;
+            $who["error"] = true;
             $who["errordesc"] = "$name appears to be a non exsistant character.";
 
             return $who;
@@ -296,22 +314,22 @@ class Whois_Core extends BasePassiveModule
         If we have a result, we assume we might need to use it in case funcom XML is unresponsive.
         */
         if (!empty($lookup)) {
-            $who["id"]         = $lookup[0]['ID'];
-            $who["nickname"]   = $lookup[0]['nickname'];
-            $who["firstname"]  = stripslashes($lookup[0]['firstname']);
-            $who["lastname"]   = stripslashes($lookup[0]['lastname']);
-            $who["level"]      = $lookup[0]['level'];
-            $who["gender"]     = $lookup[0]['gender'];
-            $who["breed"]      = $lookup[0]['breed'];
+            $who["id"] = $lookup[0]['ID'];
+            $who["nickname"] = $lookup[0]['nickname'];
+            $who["firstname"] = stripslashes($lookup[0]['firstname']);
+            $who["lastname"] = stripslashes($lookup[0]['lastname']);
+            $who["level"] = $lookup[0]['level'];
+            $who["gender"] = $lookup[0]['gender'];
+            $who["breed"] = $lookup[0]['breed'];
             $who["profession"] = $lookup[0]['profession'];
-            $who["class"]      = $lookup[0]['profession'];
-            $who["faction"]    = $lookup[0]['faction'];
-            $who["rank"]       = $lookup[0]['org_rank'];
-            $who["rank_id"]    = $lookup[0]['org_rank_id'];
-            $who["org"]        = stripslashes($lookup[0]['org_name']);
-            $who["org_id"]     = $lookup[0]['org_id'];
-            $who["at_id"]      = $lookup[0]['defender_rank_id'];
-            $who["at"]         = $this->alien_rank_name[$who["at_id"]];
+            $who["class"] = $lookup[0]['profession'];
+            $who["faction"] = $lookup[0]['faction'];
+            $who["rank"] = $lookup[0]['org_rank'];
+            $who["rank_id"] = $lookup[0]['org_rank_id'];
+            $who["org"] = stripslashes($lookup[0]['org_name']);
+            $who["org_id"] = $lookup[0]['org_id'];
+            $who["at_id"] = $lookup[0]['defender_rank_id'];
+            $who["at"] = $this->alien_rank_name[$who["at_id"]];
             $who["pictureurl"] = $lookup[0]['pictureurl'];
 
 
@@ -319,14 +337,15 @@ class Whois_Core extends BasePassiveModule
             if ($lookup[0]['ID'] == 0 || $lookup[0]['ID'] == -1) {
                 $this->bot->db->query("UPDATE #___whois SET ID = '" . $uid . "' WHERE nickname = '" . $name . "'");
                 $lookup[0]['ID'] = $uid;
-                $who["id"]       = $uid;
+                $who["id"] = $uid;
             }
 
             /*
             If the result isn't stale yet and the userid's match, use it.
             */
             if ($lookup[0]['updated'] >= (time() - ($this->bot->core("settings")
-                                                        ->get("whois", "timevalid") * 24 * 3600)) && $lookup[0]['ID'] == $uid
+                ->get("whois", "timevalid") * 24 * 3600))
+                && $lookup[0]['ID'] == $uid
             ) {
                 $this->add_to_cache($who);
                 return $who;
@@ -340,11 +359,11 @@ class Whois_Core extends BasePassiveModule
         if ($noupdate) {
             if (empty($lookup)) {
                 // No old data exists, return error:
-                $who["error"]     = true;
-                $who["errordesc"] = "No chached character data was found for $name, but no web lookup mode was requested!";
+                $who["error"] = true;
+                $who["errordesc"]
+                    = "No chached character data was found for $name, but no web lookup mode was requested!";
             }
-            else
-            {
+            else {
                 // only cache valid entries
                 $this->add_to_cache($who);
             }
@@ -359,31 +378,31 @@ class Whois_Core extends BasePassiveModule
         We got a result.
         */
         if (!isset($result["error"])) {
-            $who["id"]         = $uid;
-            $who["nickname"]   = $this->bot->core("tools")
+            $who["id"] = $uid;
+            $who["nickname"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "nick");
-            $who["firstname"]  = $this->bot->core("tools")
+            $who["firstname"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "firstname");
-            $who["lastname"]   = $this->bot->core("tools")
+            $who["lastname"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "lastname");
-            $who["level"]      = $this->bot->core("tools")
+            $who["level"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "level");
-            $who["gender"]     = $this->bot->core("tools")
+            $who["gender"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "gender");
-            $who["breed"]      = $this->bot->core("tools")
+            $who["breed"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "breed");
             $who["profession"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "profession");
-            $who["faction"]    = $this->bot->core("tools")
+            $who["faction"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "faction");
-            $who["rank"]       = $this->bot->core("tools")
+            $who["rank"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "rank");
-            $who["rank_id"]    = $this->bot->core("tools")
+            $who["rank_id"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "rank_id");
             if ($who["rank_id"] == '') {
                 $who["rank_id"] = '0';
             }
-            $who["org"]    = $this->bot->core("tools")
+            $who["org"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "organization_name");
             $who["org_id"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "organization_id");
@@ -395,7 +414,7 @@ class Whois_Core extends BasePassiveModule
             if ($who["at_id"] == '') {
                 $who["at_id"] = '0';
             }
-            $who["at"]         = $this->alien_rank_name[$who["at_id"]];
+            $who["at"] = $this->alien_rank_name[$who["at_id"]];
             $who["pictureurl"] = $this->bot->core("tools")
                 ->xmlparse($result["content"], "pictureurl");
 
@@ -412,17 +431,19 @@ class Whois_Core extends BasePassiveModule
         /*
         Unable to lookup from XML, fallback to our cached version.
         */
-        else if (!(empty($lookup))) {
-            return $who;
-        }
-        /*
-        All has failed, fess up.
-        */
-        else
-        {
-            $who["error"]     = TRUE;
-            $who["errordesc"] = "Character lookup could not be completed. people.anarchy-online.com and www.auno.org lookups have failed and no cached data is available.";
-            return $who;
+        else {
+            if (!(empty($lookup))) {
+                return $who;
+            }
+            /*
+            All has failed, fess up.
+            */
+            else {
+                $who["error"] = TRUE;
+                $who["errordesc"]
+                    = "Character lookup could not be completed. people.anarchy-online.com and www.auno.org lookups have failed and no cached data is available.";
+                return $who;
+            }
         }
     }
 
@@ -437,35 +458,50 @@ class Whois_Core extends BasePassiveModule
         $name = strtolower($name);
 
         if ($this->bot->core("settings")
-                ->get("Whois", "LookupOrder") == "funcom_auno"
+            ->get("Whois", "LookupOrder") == "funcom_auno"
         ) {
             $site1NAME = "Anarchy-Online";
-            $site1URL  = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower($name) . "/bio.xml";
+            $site1URL
+                = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower(
+                $name
+            ) . "/bio.xml";
             $site2NAME = "Auno";
-            $site2URL  = "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . strtolower($name);
+            $site2URL
+                = "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . strtolower(
+                $name
+            );
         }
         elseif ($this->bot->core("settings")
-                    ->get("Whois", "LookupOrder") == "funcom_only"
-        )
-        {
+            ->get("Whois", "LookupOrder") == "funcom_only"
+        ) {
             $site1NAME = "Anarchy-Online";
-            $site1URL  = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower($name) . "/bio.xml";
+            $site1URL
+                = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower(
+                $name
+            ) . "/bio.xml";
             $site2NAME = FALSE;
         }
         elseif ($this->bot->core("settings")
-                    ->get("Whois", "LookupOrder") == "auno_only"
-        )
-        {
+            ->get("Whois", "LookupOrder") == "auno_only"
+        ) {
             $site1NAME = "Auno";
-            $site1URL  = "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . strtolower($name);
+            $site1URL
+                = "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . strtolower(
+                $name
+            );
             $site2NAME = FALSE;
         }
-        else
-        {
+        else {
             $site1NAME = "Auno";
-            $site1URL  = "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . strtolower($name);
+            $site1URL
+                = "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . strtolower(
+                $name
+            );
             $site2NAME = "Anarchy-Online";
-            $site2URL  = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower($name) . "/bio.xml";
+            $site2URL
+                = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower(
+                $name
+            ) . "/bio.xml";
         }
 
         $xml = $this->bot->core("tools")->get_site($site1URL);
@@ -514,12 +550,11 @@ class Whois_Core extends BasePassiveModule
         This should __never__ happen, but you can never rule out errors on Funcom's end.
         */
         if ($nickname == '') {
-            $xml["error"]     = TRUE;
+            $xml["error"] = TRUE;
             $xml["errordesc"] = "Could not parse XML data.";
             return $xml;
         }
-        else
-        {
+        else {
             return $xml;
         } // If we get here, all should be well.
     } // End function check_xml()
@@ -542,25 +577,32 @@ class Whois_Core extends BasePassiveModule
             /*
             Update our database cache
             */
-            $this->bot->db->query("INSERT INTO #___whois (id, nickname, firstname, lastname, level, gender, breed, faction,"
-                                  . " profession, defender_rank_id, org_id, org_name, org_rank, org_rank_id, pictureurl, updated)"
-                                  . " VALUES ('" . $who["id"] . "', '" . $who["nickname"] . "', '" . mysql_real_escape_string($who["firstname"])
-                                  . "', '" . mysql_real_escape_string($who["lastname"]) . "', '" . $who["level"] . "', '" . $who["gender"]
-                                  . "', '" . $who["breed"] . "', '" . $who["faction"] . "', '" . $who["profession"] . "', '" . $who["at_id"]
-                                  . "', '" . $who["org_id"] . "', '" . mysql_real_escape_string($who["org"]) . "', '" . $who["rank"] . "', '"
-                                  . $who["rank_id"] . "', '" . $who["pictureurl"] . "','" . time() . "') ON DUPLICATE KEY UPDATE id = VALUES(id), "
-                                  . "firstname = VALUES(firstname), lastname = VALUES(lastname), level = VALUES(level), gender = VALUES(gender), "
-                                  . "breed = VALUES(breed), faction = VALUES(faction), profession = VALUES(profession), "
-                                  . "defender_rank_id = VALUES(defender_rank_id), pictureurl = VALUES(pictureurl), updated = VALUES(updated), "
-                                  . "org_id = VALUES(org_id), org_name = VALUES(org_name), org_rank = VALUES(org_rank), org_rank_id = VALUES(org_rank_id)");
+            $this->bot->db->query(
+                "INSERT INTO #___whois (id, nickname, firstname, lastname, level, gender, breed, faction,"
+                    . " profession, defender_rank_id, org_id, org_name, org_rank, org_rank_id, pictureurl, updated)"
+                    . " VALUES ('" . $who["id"] . "', '" . $who["nickname"] . "', '" . mysql_real_escape_string(
+                    $who["firstname"]
+                )
+                    . "', '" . mysql_real_escape_string($who["lastname"]) . "', '" . $who["level"] . "', '"
+                    . $who["gender"]
+                    . "', '" . $who["breed"] . "', '" . $who["faction"] . "', '" . $who["profession"] . "', '"
+                    . $who["at_id"]
+                    . "', '" . $who["org_id"] . "', '" . mysql_real_escape_string($who["org"]) . "', '" . $who["rank"]
+                    . "', '"
+                    . $who["rank_id"] . "', '" . $who["pictureurl"] . "','" . time()
+                    . "') ON DUPLICATE KEY UPDATE id = VALUES(id), "
+                    . "firstname = VALUES(firstname), lastname = VALUES(lastname), level = VALUES(level), gender = VALUES(gender), "
+                    . "breed = VALUES(breed), faction = VALUES(faction), profession = VALUES(profession), "
+                    . "defender_rank_id = VALUES(defender_rank_id), pictureurl = VALUES(pictureurl), updated = VALUES(updated), "
+                    . "org_id = VALUES(org_id), org_name = VALUES(org_name), org_rank = VALUES(org_rank), org_rank_id = VALUES(org_rank_id)"
+            );
 
             // Clear from memory cache
             $this->remove_from_cache($who["nickname"]);
 
             return TRUE;
         }
-        else
-        {
+        else {
             return FALSE;
         }
     } // End function udpate()
@@ -596,14 +638,20 @@ class Whois_Core extends BasePassiveModule
         }
 
 
-        if ($this->bot->core("security")->check_access($source, $this->bot
-            ->core("settings")->get('Security', 'Whois'))
+        if ($this->bot->core("security")->check_access(
+            $source, $this->bot
+                ->core("settings")->get('Security', 'Whois')
+        )
         ) {
             $access = $this->bot->core("security")
                 ->get_access_level($whois['nickname']);
             $this->bot->core("security")->get_access_name($access);
-            $window .= " ##normal##Bot access: ##highlight##" . ucfirst(strtolower($this->bot
-                ->core("security")->get_access_name($access)));
+            $window .= " ##normal##Bot access: ##highlight##" . ucfirst(
+                strtolower(
+                    $this->bot
+                        ->core("security")->get_access_name($access)
+                )
+            );
 
             if ($this->bot->core("settings")->get('Whois', 'Debug')) {
                 $window .= " ($access)";
@@ -640,41 +688,57 @@ class Whois_Core extends BasePassiveModule
                 $lastseen = $this->bot->core("online")
                     ->get_last_seen($whois['nickname']);
                 if ($lastseen) {
-                    $window .= "##normal## Last Seen: ##highlight##" . gmdate($this->bot
-                        ->core("settings")
-                        ->get("time", "formatstring"), $lastseen) . "##end####end##\n";
+                    $window .= "##normal## Last Seen: ##highlight##" . gmdate(
+                        $this->bot
+                            ->core("settings")
+                            ->get("time", "formatstring"), $lastseen
+                    ) . "##end####end##\n";
                 }
             }
         }
 
         if ($this->bot->core("settings")->get('Whois', 'Debug')) {
-            $whois_debug = $this->bot->db->select("SELECT updated FROM #___whois WHERE nickname = '" . $whois['nickname'] . "'", MYSQL_ASSOC);
+            $whois_debug = $this->bot->db->select(
+                "SELECT updated FROM #___whois WHERE nickname = '" . $whois['nickname'] . "'", MYSQL_ASSOC
+            );
 
-            $user_debug = $this->bot->db->select("SELECT id,notify,user_level,added_by,added_at,deleted_by,deleted_at,updated_at FROM #___users WHERE nickname = '" . $whois['nickname'] . "'", MYSQL_ASSOC);
+            $user_debug = $this->bot->db->select(
+                "SELECT id,notify,user_level,added_by,added_at,deleted_by,deleted_at,updated_at FROM #___users WHERE nickname = '"
+                    . $whois['nickname'] . "'", MYSQL_ASSOC
+            );
 
             $window .= "\n##red## Debug Information:##end##\n";
             if (!empty($whois_debug[0]['updated'])) {
-                $window .= " ##normal##Whois Updated Time: ##highlight## " . gmdate($this->bot
-                    ->core("settings")
-                    ->get("time", "formatstring"), $whois_debug[0]['updated']) . "##end##\n";
+                $window .= " ##normal##Whois Updated Time: ##highlight## " . gmdate(
+                    $this->bot
+                        ->core("settings")
+                        ->get("time", "formatstring"), $whois_debug[0]['updated']
+                ) . "##end##\n";
             }
 
             if (!empty($user_debug[0]['id'])) {
                 if (!empty($user_debug[0]['added_by'])) {
                     $window .= " ##normal##User Added By: ##highlight## " . $user_debug[0]['added_by'] . "##end##\n";
-                    $window .= " ##normal##User Added At: ##highlight## " . gmdate($this->bot
-                        ->core("settings")
-                        ->get("time", "formatstring"), $user_debug[0]['added_at']) . "##end##\n";
+                    $window .= " ##normal##User Added At: ##highlight## " . gmdate(
+                        $this->bot
+                            ->core("settings")
+                            ->get("time", "formatstring"), $user_debug[0]['added_at']
+                    ) . "##end##\n";
                 }
                 if (!empty($user_debug[0]['deleted_by'])) {
-                    $window .= " ##normal##User Deleted By: ##highlight## " . $user_debug[0]['deleted_by'] . "##end##\n";
-                    $window .= " ##normal##User Deleted At: ##highlight## " . gmdate($this->bot
-                        ->core("settings")
-                        ->get("time", "formatstring"), $user_debug[0]['deleted_at']) . "##end##\n";
+                    $window
+                        .= " ##normal##User Deleted By: ##highlight## " . $user_debug[0]['deleted_by'] . "##end##\n";
+                    $window .= " ##normal##User Deleted At: ##highlight## " . gmdate(
+                        $this->bot
+                            ->core("settings")
+                            ->get("time", "formatstring"), $user_debug[0]['deleted_at']
+                    ) . "##end##\n";
                 }
-                $window .= " ##normal##User Updated At: ##highlight## " . gmdate($this->bot
-                    ->core("settings")
-                    ->get("time", "formatstring"), $user_debug[0]['updated_at']) . "##end##\n";
+                $window .= " ##normal##User Updated At: ##highlight## " . gmdate(
+                    $this->bot
+                        ->core("settings")
+                        ->get("time", "formatstring"), $user_debug[0]['updated_at']
+                ) . "##end##\n";
 
                 $flag_count = 0;
 
@@ -732,25 +796,32 @@ class Whois_Core extends BasePassiveModule
         if ($this->bot->core("settings")->get("Whois", "ShowOptions") == TRUE) {
             $window .= "\n##normal##::: Options :::##end##\n";
             $window .= $this->bot->core("tools")
-                           ->chatcmd('addbuddy ' . $whois['nickname'], 'Add to buddylist', 'cc') . "\n";
+                ->chatcmd('addbuddy ' . $whois['nickname'], 'Add to buddylist', 'cc') . "\n";
             $window .= $this->bot->core("tools")
-                           ->chatcmd('rembuddy ' . $whois['nickname'], 'Remove from buddylist', 'cc') . "\n";
+                ->chatcmd('rembuddy ' . $whois['nickname'], 'Remove from buddylist', 'cc') . "\n";
             $window .= $this->bot->core("tools")
-                           ->chatcmd('history ' . $whois['nickname'], 'Character history') . "\n";
+                ->chatcmd('history ' . $whois['nickname'], 'Character history') . "\n";
         }
 
         if ($this->bot->core("settings")->get("Whois", "ShowLinks") == TRUE) {
-            $funcomURL = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower($whois['nickname']);
-            $vhabotURL = "http://characters.vhabot.net/character.php?character=" . strtolower($whois['nickname']) . "&dimension=" . $this->bot->dimension;
-            $aunoURL   = "http://auno.org/ao/char.php?dimension=" . $this->bot->dimension . "&name=" . strtolower($whois['nickname']);
+            $funcomURL
+                = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower(
+                $whois['nickname']
+            );
+            $vhabotURL
+                = "http://characters.vhabot.net/character.php?character=" . strtolower($whois['nickname']) . "&dimension="
+                . $this->bot->dimension;
+            $aunoURL = "http://auno.org/ao/char.php?dimension=" . $this->bot->dimension . "&name=" . strtolower(
+                $whois['nickname']
+            );
 
             $window .= "\n##normal##::: Links :::##end##\n";
             $window .= $this->bot->core("tools")
-                           ->chatcmd($funcomURL, 'Official character bio', 'start') . "\n";
+                ->chatcmd($funcomURL, 'Official character bio', 'start') . "\n";
             $window .= $this->bot->core("tools")
-                           ->chatcmd($vhabotURL, 'Vhab\'s character info (beta)', 'start') . "\n";
+                ->chatcmd($vhabotURL, 'Vhab\'s character info (beta)', 'start') . "\n";
             $window .= $this->bot->core("tools")
-                           ->chatcmd($aunoURL, 'Auno\'s character info', 'start') . "\n";
+                ->chatcmd($aunoURL, 'Auno\'s character info', 'start') . "\n";
 
         }
 

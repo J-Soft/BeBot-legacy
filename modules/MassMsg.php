@@ -51,20 +51,35 @@ class MassMsg extends BaseActiveModule
         $this->register_command('all', 'massinv', 'LEADER');
         $this->bot->core("queue")->register($this, "invite", 0.2, 5);
 
-        $this->help['description']                   = 'Sends out mass messages and invites.';
-        $this->help['command']['announce <message>'] = "Sends out announcement <message> as tells to all online members.";
-        $this->help['command']['massinv <message>']  = "Sends out announcement <message> as tells to all online members and invites them to the private group.";
+        $this->help['description'] = 'Sends out mass messages and invites.';
+        $this->help['command']['announce <message>']
+            = "Sends out announcement <message> as tells to all online members.";
+        $this->help['command']['massinv <message>']
+            = "Sends out announcement <message> as tells to all online members and invites them to the private group.";
 
         $this->bot->core("settings")
             ->create('MassMsg', 'MassMsg', 'Both', 'Who should get mass messages and invites?', 'Guild;Private;Both');
         $this->bot->core("settings")
-            ->create('MassMsg', 'MinAccess', 'GUEST', 'Which access level must characters online have to receive mass messages and invites?', 'ANONYMOUS;GUEST;MEMBER;LEADER;ADMIN;SUPERADMIN;OWNER');
+            ->create(
+            'MassMsg', 'MinAccess', 'GUEST',
+            'Which access level must characters online have to receive mass messages and invites?',
+            'ANONYMOUS;GUEST;MEMBER;LEADER;ADMIN;SUPERADMIN;OWNER'
+        );
         $this->bot->core("settings")
-            ->create('MassMsg', 'IncludePrefLink', TRUE, 'Should a link to preferences be included in the messages/invites?');
+            ->create(
+            'MassMsg', 'IncludePrefLink', TRUE, 'Should a link to preferences be included in the messages/invites?'
+        );
         $this->bot->core("settings")
-            ->create('MassMsg', 'tell_to_PG_users', FALSE, 'Should Bot Send message to users in PG instead of just Outputing to PG and ignoreing them');
+            ->create(
+            'MassMsg', 'tell_to_PG_users', FALSE,
+            'Should Bot Send message to users in PG instead of just Outputing to PG and ignoreing them'
+        );
         $this->bot->core("settings")
-            ->create('MassMsg', 'msgFormat', '##massmsg_type####type## from##end## ##highlight####name####end##: ##massmsg_msg####msg####end####disable##', 'What format should Mass message be, use ##type##, ##msg##, ##name## and ##disable## disable being the line telling user how to disable if enabled.');
+            ->create(
+            'MassMsg', 'msgFormat',
+            '##massmsg_type####type## from##end## ##highlight####name####end##: ##massmsg_msg####msg####end####disable##',
+            'What format should Mass message be, use ##type##, ##msg##, ##name## and ##disable## disable being the line telling user how to disable if enabled.'
+        );
 
         $this->bot->core('prefs')
             ->create('MassMsg', 'recieve_message', 'Do you want to recieve mass-messages?', 'Yes', 'Yes;No');
@@ -80,20 +95,23 @@ class MassMsg extends BaseActiveModule
 
     function command_handler($name, $msg, $origin)
     {
-        $com = $this->parse_com($msg, array('com',
-                                            'args'));
-        switch ($com['com'])
-        {
-            case 'announce':
-                $this->bot->send_output($name, "Mass message being sent. Please stand by...", $origin);
-                return ($this->mass_msg($name, $com['args'], 'Message', $source));
-                break;
-            case 'massinv':
-                $this->bot->send_output($name, "Mass invite being sent. Please stand by...", $origin);
-                return ($this->mass_msg($name, $com['args'], 'Invite', $source));
-                break;
-            default:
-                $this->bot->send_help($name);
+        $com = $this->parse_com(
+            $msg, array(
+                'com',
+                'args'
+            )
+        );
+        switch ($com['com']) {
+        case 'announce':
+            $this->bot->send_output($name, "Mass message being sent. Please stand by...", $origin);
+            return ($this->mass_msg($name, $com['args'], 'Message', $source));
+            break;
+        case 'massinv':
+            $this->bot->send_output($name, "Mass invite being sent. Please stand by...", $origin);
+            return ($this->mass_msg($name, $com['args'], 'Invite', $source));
+            break;
+        default:
+            $this->bot->send_help($name);
         }
     }
 
@@ -105,16 +123,18 @@ class MassMsg extends BaseActiveModule
         }
 
         //get a list of online users in the configured channel.
-        $users = $this->bot->core('online')->list_users($this->bot
-            ->core('settings')->get('MassMsg', 'MassMsg'));
+        $users = $this->bot->core('online')->list_users(
+            $this->bot
+                ->core('settings')->get('MassMsg', 'MassMsg')
+        );
         if ($users instanceof BotError) {
             return ($users);
         }
 
         $format = $this->bot->core("settings")->get('MassMsg', 'msgFormat');
-        $msg    = str_ireplace("##msg##", $msg, $format);
-        $msg    = str_ireplace("##type##", $type, $msg);
-        $msg    = str_ireplace("##name##", $sender, $msg);
+        $msg = str_ireplace("##msg##", $msg, $format);
+        $msg = str_ireplace("##type##", $type, $msg);
+        $msg = str_ireplace("##name##", $sender, $msg);
 
         $msg = $this->bot->core("colors")->parse($msg);
 
@@ -131,24 +151,21 @@ class MassMsg extends BaseActiveModule
         }
         $msg = $this->bot->core("colors")->colorize("normal", $msg);
 
-        foreach ($users as $recipient)
-        {
+        foreach ($users as $recipient) {
             if ($this->bot->core('prefs')
-                    ->get($recipient, 'MassMsg', 'recieve_message') == 'Yes'
+                ->get($recipient, 'MassMsg', 'recieve_message') == 'Yes'
             ) {
                 $massmsg = TRUE;
             }
-            else
-            {
+            else {
                 $massmsg = FALSE;
             }
             if ($this->bot->core('prefs')
-                    ->get($recipient, 'MassMsg', 'recieve_invites') == 'Yes'
+                ->get($recipient, 'MassMsg', 'recieve_invites') == 'Yes'
             ) {
                 $massinv = TRUE;
             }
-            else
-            {
+            else {
                 $massinv = FALSE;
             }
 
@@ -156,39 +173,37 @@ class MassMsg extends BaseActiveModule
             if ($this->bot->core('settings')->get('MassMsg', 'IncludePrefLink')
             ) {
                 if (!isset($blobs[(int)$massmsg][(int)$massinv])) {
-                    $blob                                = $this->bot
+                    $blob = $this->bot
                         ->core('prefs')
                         ->show_prefs($recipient, 'MassMsg', FALSE);
-                    $blob                                = $this->bot
+                    $blob = $this->bot
                         ->core("colors")->parse($blob);
-                    $blob                                = $this->bot
+                    $blob = $this->bot
                         ->core("colors")->colorize("normal", $blob);
                     $blobs[(int)$massmsg][(int)$massinv] = $blob;
                 }
                 $addlink = $dis . $blobs[(int)$massmsg][(int)$massinv];
             }
-            else
-            {
+            else {
                 $addlink = "";
             }
 
             $message = str_ireplace("##disable##", $addlink, $msg);
             //If they want messages they will get them regardless of type
             if ($massmsg) {
-                if (!$inchattell && $this->bot->core("online")
-                    ->in_chat($recipient)
+                if (!$inchattell
+                    && $this->bot->core("online")
+                        ->in_chat($recipient)
                 ) {
                     $status[$recipient]['sent'] = FALSE;
-                    $status[$recipient]['pg']   = true;
+                    $status[$recipient]['pg'] = true;
                 }
-                else
-                {
+                else {
                     $this->bot->send_tell($recipient, $message, 0, FALSE, TRUE, FALSE);
                     $status[$recipient]['sent'] = true;
                 }
             }
-            else
-            {
+            else {
                 $status[$recipient]['sent'] = false;
             }
 
@@ -197,10 +212,9 @@ class MassMsg extends BaseActiveModule
                 if ($massinv) {
                     if ($this->bot->core("online")->in_chat($recipient)) {
                         $status[$recipient]['sent'] = FALSE;
-                        $status[$recipient]['pg']   = true;
+                        $status[$recipient]['pg'] = true;
                     }
-                    else
-                    {
+                    else {
                         //Check if they've already gotten the tell so we don't spam unneccessarily.
                         if (!$status[$recipient]['sent']) {
                             $this->bot->send_tell($recipient, $message, 0, FALSE, TRUE, FALSE);
@@ -209,16 +223,14 @@ class MassMsg extends BaseActiveModule
                         if ($this->bot->core("queue")->check_queue("invite")) {
                             $this->bot->core('chat')->pgroup_invite($recipient);
                         }
-                        else
-                        {
+                        else {
                             $this->bot->core("queue")
                                 ->into_queue("invite", $recipient);
                         }
                         $status[$recipient]['invited'] = true;
                     }
                 }
-                else
-                {
+                else {
                     $status[$recipient]['invited'] = false;
                 }
             }
@@ -227,8 +239,7 @@ class MassMsg extends BaseActiveModule
         if ($source == "tell") {
             return ("Mass messages complete. " . $this->make_status_blob($status));
         }
-        else
-        {
+        else {
             $this->bot->send_tell($sender, "Sending Mass messages complete.");
             return ("Sending Mass messages. " . $this->make_status_blob($status));
         }
@@ -238,35 +249,35 @@ class MassMsg extends BaseActiveModule
     function make_status_blob($status_array)
     {
         $window = "<center>##blob_title##::: Status report for mass message :::##end##</center>\n";
-        foreach ($status_array as $recipient => $status)
-        {
+        foreach ($status_array as $recipient => $status) {
             $window .= "\n##highlight##$recipient##end## - Message: ";
             if ($status['sent']) {
                 $window .= "##lime##Sent to user##end##";
             }
-            elseif ($status['pg'])
-            {
+            elseif ($status['pg']) {
                 $window .= "##lime##Viewed in PG##end##";
             }
-            else
-            {
+            else {
                 $window .= "##error##Blocked by preferences##end##";
             }
             if (isset($status['invited'])) {
                 if ($status['invited']) {
                     $window .= " - Invite to pgroup: ##lime##sent to user##end##";
                 }
-                else
-                {
+                else {
                     $window .= " - Invite to pgroup: ##error##blocked by preferences##end##";
                 }
             }
             if (strtolower($this->bot->botname) == "bangbot") {
                 if ($status['sent'] || $status['pg']) {
                     //Update announce count...
-                    $result = $this->bot->db->select("SELECT announces FROM stats WHERE nickname = '" . $recipient . "'");
+                    $result = $this->bot->db->select(
+                        "SELECT announces FROM stats WHERE nickname = '" . $recipient . "'"
+                    );
                     if (!empty($result)) {
-                        $this->bot->db->query("UPDATE stats SET announces = announces+1 WHERE nickname = '" . $recipient . "'");
+                        $this->bot->db->query(
+                            "UPDATE stats SET announces = announces+1 WHERE nickname = '" . $recipient . "'"
+                        );
                     }
                 }
             }

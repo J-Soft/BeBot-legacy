@@ -54,21 +54,31 @@ class FlexibleSecurityGUI extends BaseActiveModule
         // The group needs to be added and set to the wished access level (GUEST would be the best for the purpose).
         // Every level and faction conditions will always be replaced on some change done with minlevel or faction.
         $this->bot->core("settings")
-            ->create("Flexible_Security", "Guest_Group", "", "What's the name of the group that should be used as guest group in the flexible rules for the faction and minlevel commands?");
+            ->create(
+            "Flexible_Security", "Guest_Group", "",
+            "What's the name of the group that should be used as guest group in the flexible rules for the faction and minlevel commands?"
+        );
 
-        $this->help['description']                                                                                   = 'Handles flexible security rules for the bot.';
-        $this->help['command']['minlevel']                                                                           = "Shows the currently set minimal level for guest access.";
-        $this->help['command']['minlevel <level>']                                                                   = "Sets the mininmal level for guest access to level.";
-        $this->help['command']['faction']                                                                            = "Shows the current faction settings for guest access.";
-        $this->help['command']['faction exclude <omni|clan|neutral|all>']                                            = "Sets the faction setting for guest access to anyone not in the selected faction. Using exclude all will exclude all from meeting this requirement.";
-        $this->help['command']['faction <omni|clan|neutral|all>']                                                    = "Sets the faction setting for guest access to anyone meeting the selected faction requirement.";
-        $this->help['command']['flexible']                                                                           = "Shows the GUI to create and delete flexible security groups";
-        $this->help['command']['flexible condition add <groupname> <level|rank_id|at_id> <<|<=|>|>=|=|!=> <number>'] = "Adds a new condition to the flexible security group <groupname> for level, rank_id or alien level (at_id), meeting the condition defined by the compare operator and the number to compare too.";
-        $this->help['command']['flexible condition add <groupname> profession <=|!=> <prof>']                        = "Adds a new condition to the flexible security group <groupname> for profession requirement, with <prof> being either a shortcut or the full profession name.";
-        $this->help['command']['flexible condition add <groupname> faction <=|!=> <omni|clan|neutral|all>']          = "Adds a new condition to the flexible security group <groupname> for faction requirement, where ALL matches all factions.";
-        $this->help['command']['flexible condition add <groupname> org <=|!=> <player>']                             = "Adds a new condition to the flexible security group <groupname> for organization requirements, the organization compared to is the org <player> is in.";
+        $this->help['description'] = 'Handles flexible security rules for the bot.';
+        $this->help['command']['minlevel'] = "Shows the currently set minimal level for guest access.";
+        $this->help['command']['minlevel <level>'] = "Sets the mininmal level for guest access to level.";
+        $this->help['command']['faction'] = "Shows the current faction settings for guest access.";
+        $this->help['command']['faction exclude <omni|clan|neutral|all>']
+            = "Sets the faction setting for guest access to anyone not in the selected faction. Using exclude all will exclude all from meeting this requirement.";
+        $this->help['command']['faction <omni|clan|neutral|all>']
+            = "Sets the faction setting for guest access to anyone meeting the selected faction requirement.";
+        $this->help['command']['flexible'] = "Shows the GUI to create and delete flexible security groups";
+        $this->help['command']['flexible condition add <groupname> <level|rank_id|at_id> <<|<=|>|>=|=|!=> <number>']
+            = "Adds a new condition to the flexible security group <groupname> for level, rank_id or alien level (at_id), meeting the condition defined by the compare operator and the number to compare too.";
+        $this->help['command']['flexible condition add <groupname> profession <=|!=> <prof>']
+            = "Adds a new condition to the flexible security group <groupname> for profession requirement, with <prof> being either a shortcut or the full profession name.";
+        $this->help['command']['flexible condition add <groupname> faction <=|!=> <omni|clan|neutral|all>']
+            = "Adds a new condition to the flexible security group <groupname> for faction requirement, where ALL matches all factions.";
+        $this->help['command']['flexible condition add <groupname> org <=|!=> <player>']
+            = "Adds a new condition to the flexible security group <groupname> for organization requirements, the organization compared to is the org <player> is in.";
 
-        $this->help['notes'] = "For the <pre>minlevel and <pre>faction commands to work you have to config a flexible group for guest access and enter the name into the setting Guest_Group of the Flexible_Security module.";
+        $this->help['notes']
+            = "For the <pre>minlevel and <pre>faction commands to work you have to config a flexible group for guest access and enter the name into the setting Guest_Group of the Flexible_Security module.";
     }
 
 
@@ -81,52 +91,50 @@ class FlexibleSecurityGUI extends BaseActiveModule
         if (preg_match("/^flexible$/i", $msg)) {
             return $this->show_groups();
         }
-        elseif (preg_match("/^flexible create ([a-z_]+) (and|or)$/i", $msg, $info))
-        {
+        elseif (preg_match("/^flexible create ([a-z_]+) (and|or)$/i", $msg, $info)) {
             return $this->create_group($info[1], $info[2]);
         }
-        elseif (preg_match("/^flexible delete ([a-z_]+)$/i", $msg, $info))
-        {
+        elseif (preg_match("/^flexible delete ([a-z_]+)$/i", $msg, $info)) {
             return $this->delete_group($info[1]);
         }
-        elseif (preg_match("/^flexible condition add ([a-z_]+) (level|rank_id|at_id) (<|<=|>|>=|=|!=) ([01-9]+)$/i", $msg, $info))
-        {
+        elseif (preg_match(
+            "/^flexible condition add ([a-z_]+) (level|rank_id|at_id) (<|<=|>|>=|=|!=) ([01-9]+)$/i", $msg, $info
+        )
+        ) {
             return $this->add_number_condition($info[1], $info[2], $info[3], $info[4]);
         }
-        elseif (preg_match("/^flexible condition add ([a-z_]+) profession (=|!=) ([a-z]+)$/i", $msg, $info))
-        {
+        elseif (preg_match("/^flexible condition add ([a-z_]+) profession (=|!=) ([a-z]+)$/i", $msg, $info)) {
             return $this->add_prof_condition($info[1], $info[2], $info[3]);
         }
-        elseif (preg_match("/^flexible condition add ([a-z_]+) faction (=|!=) (omni|clan|neutral|all)$/i", $msg, $info))
-        {
+        elseif (preg_match(
+            "/^flexible condition add ([a-z_]+) faction (=|!=) (omni|clan|neutral|all)$/i", $msg, $info
+        )
+        ) {
             return $this->add_faction_condition($info[1], $info[2], $info[3]);
         }
-        elseif (preg_match("/^flexible condition add ([a-z_]+) org (=|!=) ([a-z][a-z01-9]+)$/i", $msg, $info))
-        {
+        elseif (preg_match("/^flexible condition add ([a-z_]+) org (=|!=) ([a-z][a-z01-9]+)$/i", $msg, $info)) {
             return $this->add_org_condition($info[1], $info[2], $info[3]);
         }
-        elseif (preg_match("/^flexible condition del ([a-z_]+) (level|rank_id|at_id|profession|faction|org_id) (<|<=|>|>=|=|!=) (.+)/i", $msg, $info))
-        {
+        elseif (preg_match(
+            "/^flexible condition del ([a-z_]+) (level|rank_id|at_id|profession|faction|org_id) (<|<=|>|>=|=|!=) (.+)/i",
+            $msg, $info
+        )
+        ) {
             return $this->del_condition($info[1], $info[2], $info[3], $info[4]);
         }
-        elseif (preg_match("/^faction$/i", $msg))
-        {
+        elseif (preg_match("/^faction$/i", $msg)) {
             return $this->show_faction();
         }
-        elseif (preg_match("/^faction exclude (all|omni|clan|neutral)$/i", $msg, $info))
-        {
+        elseif (preg_match("/^faction exclude (all|omni|clan|neutral)$/i", $msg, $info)) {
             return $this->change_faction("!=", $info[1]);
         }
-        elseif (preg_match("/^faction (all|omni|clan|neutral)$/i", $msg, $info))
-        {
+        elseif (preg_match("/^faction (all|omni|clan|neutral)$/i", $msg, $info)) {
             return $this->change_faction("=", $info[1]);
         }
-        elseif (preg_match("/^minlevel$/i", $msg))
-        {
+        elseif (preg_match("/^minlevel$/i", $msg)) {
             return $this->show_minlevel();
         }
-        elseif (preg_match("/^minlevel ([1-9][01-9]*)$/i", $msg, $info))
-        {
+        elseif (preg_match("/^minlevel ([1-9][01-9]*)$/i", $msg, $info)) {
             return $this->change_minlevel($info[1]);
         }
 
@@ -136,56 +144,60 @@ class FlexibleSecurityGUI extends BaseActiveModule
 
     function show_groups()
     {
-        $grps = $this->bot->db->select("SELECT t2.gid, name, description, access_level, op FROM #___security_flexible"
-                                       . " AS t1, #___security_groups AS t2 WHERE t1.field = 'join' AND t1.gid = t2.gid ORDER BY access_level DESC, name ASC");
+        $grps = $this->bot->db->select(
+            "SELECT t2.gid, name, description, access_level, op FROM #___security_flexible"
+                . " AS t1, #___security_groups AS t2 WHERE t1.field = 'join' AND t1.gid = t2.gid ORDER BY access_level DESC, name ASC"
+        );
 
         $blob = '';
         if (!empty($grps)) {
-            $blob .= " ##yellow## ::: ##end## ##ao_infoheader##Currently defined flexible security groups for " . $this->bot->botname;
+            $blob .= " ##yellow## ::: ##end## ##ao_infoheader##Currently defined flexible security groups for "
+                . $this->bot->botname;
             $blob .= "##end## ##yellow## ::: ##end##";
 
-            foreach ($grps as $grp)
-            {
+            foreach ($grps as $grp) {
                 $blob .= "\n\n##ao_infotext##Group:##end## " . $grp[1] . " (" . $grp[2] . ") ";
                 $blob .= $this->bot->core("tools")
-                             ->chatcmd("flexible delete " . $grp[1], "[DELETE]") . "\n";
+                    ->chatcmd("flexible delete " . $grp[1], "[DELETE]") . "\n";
                 $blob .= "##ao_infotext##Access level:##end## " . $this->bot
                     ->core("security")->get_access_name($grp[3]) . "\n";
                 $blob .= "##ao_infotext##Conditions:##end## (";
                 if ($grp[4] == '&&') {
                     $blob .= "AND";
                 }
-                else
-                {
+                else {
                     $blob .= "OR";
                 }
                 $blob .= "-combined)";
 
-                $conds = $this->bot->db->select("SELECT field, op, compareto FROM #___security_flexible"
-                                                . " WHERE field != 'join' AND gid = " . $grp[0] . " ORDER BY field ASC");
+                $conds = $this->bot->db->select(
+                    "SELECT field, op, compareto FROM #___security_flexible"
+                        . " WHERE field != 'join' AND gid = " . $grp[0] . " ORDER BY field ASC"
+                );
                 if (empty($conds)) {
                     $blob .= "\nNo conditions, nobody can be member of this group based on the conditions.";
                 }
-                else
-                {
-                    foreach ($conds as $cond)
-                    {
+                else {
+                    foreach ($conds as $cond) {
                         $blob .= "\n - " . $cond[0] . " " . htmlentities($cond[1]) . " " . $cond[2];
                         if ($cond[0] == 'org_id') {
-                            $org_name = $this->bot->db->select("SELECT DISTINCT(org_name) FROM #___whois WHERE "
-                                                               . "org_id = " . $cond[2]);
+                            $org_name = $this->bot->db->select(
+                                "SELECT DISTINCT(org_name) FROM #___whois WHERE "
+                                    . "org_id = " . $cond[2]
+                            );
                             if (!empty($org_name)) {
                                 $blob .= " (Organization: " . stripslashes($org_name[0][0]) . ")";
                             }
-                            else
-                            {
+                            else {
                                 $blob .= " (Organization name not found)";
                             }
                         }
                         $blob .= " ";
                         $blob .= $this->bot->core("tools")
-                            ->chatcmd("flexible condition del " . $grp[1] . " " . $cond[0]
-                                      . " " . htmlentities($cond[1]) . " " . $cond[2], "[DELETE]");
+                            ->chatcmd(
+                            "flexible condition del " . $grp[1] . " " . $cond[0]
+                                . " " . htmlentities($cond[1]) . " " . $cond[2], "[DELETE]"
+                        );
                     }
                 }
             }
@@ -194,15 +206,16 @@ class FlexibleSecurityGUI extends BaseActiveModule
         }
         unset($grps);
 
-        $grps = $this->bot->db->select("SELECT name, description, access_level FROM #___security_groups WHERE gid NOT IN ("
-                                       . "SELECT DISTINCT(gid) FROM #___security_flexible WHERE field = 'join') "
-                                       . "ORDER BY access_level DESC, name ASC");
+        $grps = $this->bot->db->select(
+            "SELECT name, description, access_level FROM #___security_groups WHERE gid NOT IN ("
+                . "SELECT DISTINCT(gid) FROM #___security_flexible WHERE field = 'join') "
+                . "ORDER BY access_level DESC, name ASC"
+        );
         if (!empty($grps)) {
             $blob .= " ##yellow## ::: ##end## ##ao_infoheader##Non-extended security groups for " . $this->bot->botname;
             $blob .= "##end## ##yellow## ::: ##end##";
 
-            foreach ($grps as $grp)
-            {
+            foreach ($grps as $grp) {
                 $blob .= "\n\n##ao_infotext##Group:##end## " . $grp[0] . " (" . $grp[1] . ")\n";
                 $blob .= "##ao_infotext##Access level:##end## " . $this->bot
                     ->core("security")->get_access_name($grp[2]);
@@ -223,7 +236,7 @@ class FlexibleSecurityGUI extends BaseActiveModule
     {
         $combine = strtolower($combine);
         $grpname = strtolower($grpname);
-        $gid     = $this->bot->core("security")->get_gid($grpname);
+        $gid = $this->bot->core("security")->get_gid($grpname);
         if ($gid == -1) {
             return "No group with the name##highlight## " . $grpname . "##end## existing!";
         }
@@ -239,8 +252,10 @@ class FlexibleSecurityGUI extends BaseActiveModule
             return "##highlight##" . $comp . " ##end##is an illegal combine type for flexible groups!";
         }
 
-        $cond = $this->bot->db->select("SELECT op FROM #___security_flexible WHERE gid = " . $gid
-                                       . " AND field = 'join'");
+        $cond = $this->bot->db->select(
+            "SELECT op FROM #___security_flexible WHERE gid = " . $gid
+                . " AND field = 'join'"
+        );
 
         if (!empty($cond)) {
             $rstr = "There is already flexible group extension for the group##highlight## " . $grpname;
@@ -248,8 +263,7 @@ class FlexibleSecurityGUI extends BaseActiveModule
             if ($cond[0][0] == '&&') {
                 $rstr .= "AND";
             }
-            else
-            {
+            else {
                 $rstr .= "OR";
             }
             $rstr .= "##end##-combined!";
@@ -257,20 +271,25 @@ class FlexibleSecurityGUI extends BaseActiveModule
             return $rstr;
         }
 
-        $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op) VALUES (" . $gid . ", 'join', '"
-                              . $comp . "')");
+        $this->bot->db->query(
+            "INSERT INTO #___security_flexible (gid, field, op) VALUES (" . $gid . ", 'join', '"
+                . $comp . "')"
+        );
 
         // Clear the flexible security cache
         $this->bot->core("flexible_security")->clear_cache();
 
-        return "Flexible extension for group##highlight## " . $grpname . "##end## created, conditions will be##highlight## "
-               . strtoupper($combine) . "##end##-combined!";
+        return "Flexible extension for group##highlight## " . $grpname
+            . "##end## created, conditions will be##highlight## "
+            . strtoupper($combine) . "##end##-combined!";
     }
 
 
     function exists_group($gid)
     {
-        $ret = $this->bot->db->select("SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'join'");
+        $ret = $this->bot->db->select(
+            "SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'join'"
+        );
         if (empty($ret)) {
             return FALSE;
         }
@@ -281,7 +300,7 @@ class FlexibleSecurityGUI extends BaseActiveModule
     function delete_group($grpname)
     {
         $grpname = strtolower($grpname);
-        $gid     = $this->bot->core("security")->get_gid($grpname);
+        $gid = $this->bot->core("security")->get_gid($grpname);
         if ($gid == -1) {
             return "No group with the name##highlight## " . $grpname . "##end## existing!";
         }
@@ -303,9 +322,9 @@ class FlexibleSecurityGUI extends BaseActiveModule
     // level|rank_id|at_id
     function add_number_condition($grpname, $field, $condition, $compare)
     {
-        $field   = strtolower($field);
+        $field = strtolower($field);
         $grpname = strtolower($grpname);
-        $gid     = $this->bot->core("security")->get_gid($grpname);
+        $gid = $this->bot->core("security")->get_gid($grpname);
         if ($gid == -1) {
             return "No group with the name##highlight## " . $grpname . "##end## existing!";
         }
@@ -320,14 +339,12 @@ class FlexibleSecurityGUI extends BaseActiveModule
                 return "The level has to be between##highlight## 1##end## and##highlight## 220##end##!";
             }
         }
-        elseif ($field == "rank_id")
-        {
+        elseif ($field == "rank_id") {
             if ($compare < 0 || $compare > 10) {
                 return "The rank ID has to be between##highlight## 0##end## and##highlight## 10##end##!";
             }
         }
-        elseif ($field == "at_id")
-        {
+        elseif ($field == "at_id") {
             if ($compare < 0 || $compare > 30) {
                 return "The alien level has to be between##highlight## 0##end## and##highlight## 30##end##!";
             }
@@ -338,29 +355,32 @@ class FlexibleSecurityGUI extends BaseActiveModule
         }
 
         // make sure condition is in legal range:
-        switch ($condition)
-        {
-            case ">":
-            case ">=":
-            case "<":
-            case "<=":
-            case "=":
-            case "!=":
-                break;
-            default:
-                return "##error##Comparator illegal!##emd##";
+        switch ($condition) {
+        case ">":
+        case ">=":
+        case "<":
+        case "<=":
+        case "=":
+        case "!=":
+            break;
+        default:
+            return "##error##Comparator illegal!##emd##";
         }
 
         // make sure the exact entry doesn't exist yet in the db:
-        $entry = $this->bot->db->select("SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = '"
-                                        . $field . "' AND op = '" . $condition . "' AND compareto = '" . $compare . "'");
+        $entry = $this->bot->db->select(
+            "SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = '"
+                . $field . "' AND op = '" . $condition . "' AND compareto = '" . $compare . "'"
+        );
         if (!empty($entry)) {
             return "##error##Duplicate entry in DB, you cannot enter the exactly same condition twice!##end##";
         }
 
         // enter the condition, all checks done
-        $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES (" . $gid
-                              . ", '" . $field . "', '" . $condition . "', '" . $compare . "')");
+        $this->bot->db->query(
+            "INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES (" . $gid
+                . ", '" . $field . "', '" . $condition . "', '" . $compare . "')"
+        );
 
         if ($condition == '<') {
             $condition = '&lt;';
@@ -373,14 +393,14 @@ class FlexibleSecurityGUI extends BaseActiveModule
         $this->bot->core("flexible_security")->clear_cache();
 
         return "New condition##highlight## " . $field . " " . htmlentities($condition) . " "
-               . $compare . "##end## added successfully to group##highlight## " . $grpname . "##end##!";
+            . $compare . "##end## added successfully to group##highlight## " . $grpname . "##end##!";
     }
 
 
     function add_prof_condition($grpname, $condition, $compare)
     {
         $grpname = strtolower($grpname);
-        $gid     = $this->bot->core("security")->get_gid($grpname);
+        $gid = $this->bot->core("security")->get_gid($grpname);
         if ($gid == -1) {
             return "No group with the name##highlight## " . $grpname . "##end## existing!";
         }
@@ -400,28 +420,33 @@ class FlexibleSecurityGUI extends BaseActiveModule
         }
 
         // make sure the exact entry doesn't exist yet in the db:
-        $entry = $this->bot->db->select("SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'profession'"
-                                        . " AND op = '" . $condition . "' AND compareto = '" . $prof . "'");
+        $entry = $this->bot->db->select(
+            "SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'profession'"
+                . " AND op = '" . $condition . "' AND compareto = '" . $prof . "'"
+        );
         if (!empty($entry)) {
             return "##error##Duplicate entry in DB, you cannot enter the exactly same condition twice!##end##";
         }
 
         // enter the condition, all checks done
-        $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES (" . $gid
-                              . ", 'profession', '" . $condition . "', '" . $prof . "')");
+        $this->bot->db->query(
+            "INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES (" . $gid
+                . ", 'profession', '" . $condition . "', '" . $prof . "')"
+        );
 
         // Clear the flexible security cache
         $this->bot->core("flexible_security")->clear_cache();
 
-        return "New condition##highlight## profession " . $condition . " " . $prof . "##end## added successfully to group"
-               . "##highlight## " . $grpname . "##end##!";
+        return
+            "New condition##highlight## profession " . $condition . " " . $prof . "##end## added successfully to group"
+            . "##highlight## " . $grpname . "##end##!";
     }
 
 
     function add_faction_condition($grpname, $condition, $compare)
     {
         $grpname = strtolower($grpname);
-        $gid     = $this->bot->core("security")->get_gid($grpname);
+        $gid = $this->bot->core("security")->get_gid($grpname);
         if ($gid == -1) {
             return "No group with the name##highlight## " . $grpname . "##end## existing!";
         }
@@ -440,28 +465,33 @@ class FlexibleSecurityGUI extends BaseActiveModule
         }
 
         // make sure the exact entry doesn't exist yet in the db:
-        $entry = $this->bot->db->select("SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'faction'"
-                                        . " AND op = '" . $condition . "' AND compareto = '" . $faction . "'");
+        $entry = $this->bot->db->select(
+            "SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'faction'"
+                . " AND op = '" . $condition . "' AND compareto = '" . $faction . "'"
+        );
         if (!empty($entry)) {
             return "##error##Duplicate entry in DB, you cannot enter the exactly same condition twice!##end##";
         }
 
         // enter the condition, all checks done
-        $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES (" . $gid
-                              . ", 'faction', '" . $condition . "', '" . $faction . "')");
+        $this->bot->db->query(
+            "INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES (" . $gid
+                . ", 'faction', '" . $condition . "', '" . $faction . "')"
+        );
 
         // Clear the flexible security cache
         $this->bot->core("flexible_security")->clear_cache();
 
-        return "New condition##highlight## faction " . $condition . " " . $faction . "##end## added successfully to group"
-               . "##highlight## " . $grpname . "##end##!";
+        return
+            "New condition##highlight## faction " . $condition . " " . $faction . "##end## added successfully to group"
+            . "##highlight## " . $grpname . "##end##!";
     }
 
 
     function add_org_condition($grpname, $condition, $compare)
     {
         $grpname = strtolower($grpname);
-        $gid     = $this->bot->core("security")->get_gid($grpname);
+        $gid = $this->bot->core("security")->get_gid($grpname);
         if ($gid == -1) {
             return "No group with the name##highlight## " . $grpname . "##end## existing!";
         }
@@ -480,7 +510,7 @@ class FlexibleSecurityGUI extends BaseActiveModule
             return $info['errordesc'];
         }
 
-        $org_id   = $info['org_id'];
+        $org_id = $info['org_id'];
         $org_name = $info['org'];
 
         if ($org_id == 0) {
@@ -488,21 +518,25 @@ class FlexibleSecurityGUI extends BaseActiveModule
         }
 
         // make sure the exact entry doesn't exist yet in the db:
-        $entry = $this->bot->db->select("SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'org_id'"
-                                        . " AND op = '" . $condition . "' AND compareto = '" . $org_id . "'");
+        $entry = $this->bot->db->select(
+            "SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'org_id'"
+                . " AND op = '" . $condition . "' AND compareto = '" . $org_id . "'"
+        );
         if (!empty($entry)) {
             return "##error##Duplicate entry in DB, you cannot enter the exactly same condition twice!##end##";
         }
 
         // enter the condition, all checks done
-        $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES (" . $gid
-                              . ", 'org_id', '" . $condition . "', '" . $org_id . "')");
+        $this->bot->db->query(
+            "INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES (" . $gid
+                . ", 'org_id', '" . $condition . "', '" . $org_id . "')"
+        );
 
         // Clear the flexible security cache
         $this->bot->core("flexible_security")->clear_cache();
 
         return "New condition##highlight## org " . $condition . " " . $org_id . " (" . $org_name
-               . ")##end## added successfully to group##highlight## " . $grpname . "##end##!";
+            . ")##end## added successfully to group##highlight## " . $grpname . "##end##!";
     }
 
 
@@ -519,40 +553,49 @@ class FlexibleSecurityGUI extends BaseActiveModule
         }
 
         // make sure the exact entry exist in the db:
-        $entry = $this->bot->db->select("SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = '"
-                                        . $field . "' AND op = '" . $condition . "' AND compareto = '" . $compare . "'");
+        $entry = $this->bot->db->select(
+            "SELECT * FROM #___security_flexible WHERE gid = " . $gid . " AND field = '"
+                . $field . "' AND op = '" . $condition . "' AND compareto = '" . $compare . "'"
+        );
         if (empty($entry)) {
             return "##error##Condition not found, can't delete it!##end##";
         }
 
         // Delete the entry
-        $this->bot->db->query("DELETE FROM #___security_flexible WHERE gid = " . $gid . " AND field = '" . $field
-                              . "' AND op = '" . $condition . "' AND compareto = '" . $compare . "'");
+        $this->bot->db->query(
+            "DELETE FROM #___security_flexible WHERE gid = " . $gid . " AND field = '" . $field
+                . "' AND op = '" . $condition . "' AND compareto = '" . $compare . "'"
+        );
 
         // Clear the flexible security cache
         $this->bot->core("flexible_security")->clear_cache();
 
         return "Condition ##highlight##" . $field . " " . htmlentities($condition) . " " . $compare
-               . "##end## removed from group##highlight## " . $grpname . "##end##!";
+            . "##end## removed from group##highlight## " . $grpname . "##end##!";
     }
 
 
     // Make sure the GUEST group has an AND-combined extension.
     function check_guest_group($gid)
     {
-        $cond = $this->bot->db->select("SELECT op FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'join'");
+        $cond = $this->bot->db->select(
+            "SELECT op FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'join'"
+        );
 
         if (empty($cond)) {
             // Create extension:
-            $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op) VALUES (" . $gid . ", 'join', '&&')");
+            $this->bot->db->query(
+                "INSERT INTO #___security_flexible (gid, field, op) VALUES (" . $gid . ", 'join', '&&')"
+            );
         }
-        else
-        {
+        else {
             // Make sure extension is AND-combined:
             if ($cond[0][0] != '&&') {
                 // OR-combined or wrong definition, delete and create new:
                 $this->bot->db->query("DELETE FROM #___security_flexible WHERE gid = " . $gid);
-                $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op) VALUES (" . $gid . ", 'join', '&&')");
+                $this->bot->db->query(
+                    "INSERT INTO #___security_flexible (gid, field, op) VALUES (" . $gid . ", 'join', '&&')"
+                );
             }
         }
     }
@@ -560,31 +603,36 @@ class FlexibleSecurityGUI extends BaseActiveModule
 
     function show_faction()
     {
-        $grpname = strtolower($this->bot->core("settings")
-            ->get("Flexible_security", "Guest_group"));
-        $gid     = $this->bot->core("security")->get_gid($grpname);
+        $grpname = strtolower(
+            $this->bot->core("settings")
+                ->get("Flexible_security", "Guest_group")
+        );
+        $gid = $this->bot->core("security")->get_gid($grpname);
         if ($gid == -1) {
-            return "The setting ##highlight##Guest_Group##end## for the module ##highlight##Flexible_Security##end## isn't set "
-                   . "to an existing security group!";
+            return
+                "The setting ##highlight##Guest_Group##end## for the module ##highlight##Flexible_Security##end## isn't set "
+                . "to an existing security group!";
         }
 
         $this->check_guest_group($gid);
 
-        $fact = $this->bot->db->select("SELECT op, compareto FROM #___security_flexible WHERE gid = " . $gid
-                                       . " AND field = 'faction'");
+        $fact = $this->bot->db->select(
+            "SELECT op, compareto FROM #___security_flexible WHERE gid = " . $gid
+                . " AND field = 'faction'"
+        );
         if (empty($fact)) {
-            $mode    = "exclude";
+            $mode = "exclude";
             $faction = "all";
-            $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES "
-                                  . "(" . $gid . ", 'faction', '!=', 'all')");
+            $this->bot->db->query(
+                "INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES "
+                    . "(" . $gid . ", 'faction', '!=', 'all')"
+            );
         }
-        else
-        {
+        else {
             if ($fact[0][0] == '=') {
                 $mode = "";
             }
-            else
-            {
+            else {
                 $mode = "exclude";
             }
             $faction = $fact[0][1];
@@ -599,25 +647,29 @@ class FlexibleSecurityGUI extends BaseActiveModule
 
     function change_faction($comp, $faction)
     {
-        $grpname = strtolower($this->bot->core("settings")
-            ->get("Flexible_security", "Guest_group"));
-        $gid     = $this->bot->core("security")->get_gid($grpname);
+        $grpname = strtolower(
+            $this->bot->core("settings")
+                ->get("Flexible_security", "Guest_group")
+        );
+        $gid = $this->bot->core("security")->get_gid($grpname);
         if ($gid == -1) {
-            return "The setting ##highlight##Guest_Group##end## for the module ##highlight##Flexible_Security##end## isn't set "
-                   . "to an existing security group!";
+            return
+                "The setting ##highlight##Guest_Group##end## for the module ##highlight##Flexible_Security##end## isn't set "
+                . "to an existing security group!";
         }
 
         $this->check_guest_group($gid);
 
         $this->bot->db->query("DELETE FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'faction'");
-        $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES "
-                              . "(" . $gid . ", 'faction', '" . $comp . "', '" . $faction . "')");
+        $this->bot->db->query(
+            "INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES "
+                . "(" . $gid . ", 'faction', '" . $comp . "', '" . $faction . "')"
+        );
 
         if ($comp == '=') {
             $mode = "";
         }
-        else
-        {
+        else {
             $mode = "exclude";
         }
 
@@ -630,26 +682,32 @@ class FlexibleSecurityGUI extends BaseActiveModule
 
     function show_minlevel()
     {
-        $grpname = strtolower($this->bot->core("settings")
-            ->get("Flexible_security", "Guest_group"));
-        $gid     = $this->bot->core("security")->get_gid($grpname);
+        $grpname = strtolower(
+            $this->bot->core("settings")
+                ->get("Flexible_security", "Guest_group")
+        );
+        $gid = $this->bot->core("security")->get_gid($grpname);
         if ($gid == -1) {
-            return "The setting ##highlight##Guest_Group##end## for the module ##highlight##Flexible_Security##end## isn't set "
-                   . "to an existing security group!";
+            return
+                "The setting ##highlight##Guest_Group##end## for the module ##highlight##Flexible_Security##end## isn't set "
+                . "to an existing security group!";
         }
 
         $this->check_guest_group($gid);
 
-        $mlvl = $this->bot->db->select("SELECT compareto FROM #___security_flexible WHERE gid = " . $gid . " AND field = "
-                                       . "'level' AND op = '>='");
+        $mlvl = $this->bot->db->select(
+            "SELECT compareto FROM #___security_flexible WHERE gid = " . $gid . " AND field = "
+                . "'level' AND op = '>='"
+        );
         if (empty($mlvl)) {
             $this->bot->db->query("DELETE FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'level'");
-            $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES "
-                                  . "(" . $gid . ", 'level', '>=', '220')");
+            $this->bot->db->query(
+                "INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES "
+                    . "(" . $gid . ", 'level', '>=', '220')"
+            );
             $minlevel = 220;
         }
-        else
-        {
+        else {
             $minlevel = $mlvl[0][0];
         }
 
@@ -662,12 +720,15 @@ class FlexibleSecurityGUI extends BaseActiveModule
 
     function change_minlevel($newlevel)
     {
-        $grpname = strtolower($this->bot->core("settings")
-            ->get("Flexible_security", "Guest_group"));
-        $gid     = $this->bot->core("security")->get_gid($grpname);
+        $grpname = strtolower(
+            $this->bot->core("settings")
+                ->get("Flexible_security", "Guest_group")
+        );
+        $gid = $this->bot->core("security")->get_gid($grpname);
         if ($gid == -1) {
-            return "The setting ##highlight##Guest_Group##end## for the module ##highlight##Flexible_Security##end## isn't set "
-                   . "to an existing security group!";
+            return
+                "The setting ##highlight##Guest_Group##end## for the module ##highlight##Flexible_Security##end## isn't set "
+                . "to an existing security group!";
         }
 
         $this->check_guest_group($gid);
@@ -677,8 +738,10 @@ class FlexibleSecurityGUI extends BaseActiveModule
         }
 
         $this->bot->db->query("DELETE FROM #___security_flexible WHERE gid = " . $gid . " AND field = 'level'");
-        $this->bot->db->query("INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES "
-                              . "(" . $gid . ", 'level', '>=', '" . $newlevel . "')");
+        $this->bot->db->query(
+            "INSERT INTO #___security_flexible (gid, field, op, compareto) VALUES "
+                . "(" . $gid . ", 'level', '>=', '" . $newlevel . "')"
+        );
 
         // Clear the flexible security cache
         $this->bot->core("flexible_security")->clear_cache();

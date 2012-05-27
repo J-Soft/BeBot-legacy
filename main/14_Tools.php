@@ -50,69 +50,76 @@ class tools extends BasePassiveModule
         $this->register_module("tools");
 
         $this->bot->core("settings")
-            ->create("tools", "force_sockets", FALSE, "Should we force the usage of Sockets in get_site() even if Curl is available?");
+            ->create(
+            "tools", "force_sockets", FALSE,
+            "Should we force the usage of Sockets in get_site() even if Curl is available?"
+        );
 
         $this->randomsource = "";
 
-        $this->useragent = BOT_VERSION_NAME . "/" . BOT_VERSION . BOT_VERSION_INFO . " (Originating bot: " . $this->bot->botname . "; Dimension: " . $this->bot->dimension . ";)";
+        $this->useragent
+            = BOT_VERSION_NAME . "/" . BOT_VERSION . BOT_VERSION_INFO . " (Originating bot: " . $this->bot->botname
+            . "; Dimension: " . $this->bot->dimension . ";)";
     }
 
 
     function chatcmd($link, $title, $origin = FALSE)
     {
         $origin = strtolower($origin);
-        switch ($origin)
-        {
-            case'gc':
-            case'o':
-            case'gu':
-            case '3':
-                if ($this->bot->game == "aoc") {
-                    $chatcmd = "gu <pre>";
-                }
-                else
-                {
-                    $chatcmd = "o <pre>";
-                }
-                Break;
-            case'pgmsg':
-            case'pg':
-            case '2':
-                $chatcmd = "group " . $this->bot->botname . " <pre>";
-                Break;
-            case 'start':
-                $chatcmd = "start ";
-                Break;
-            case'tell':
-            case '0':
-            case '1':
-            case FALSE:
-                $chatcmd = "tell " . $this->bot->botname . " <pre>";
-                Break;
-            Default:
-                $chatcmd = $origin . " ";
+        switch ($origin) {
+        case'gc':
+        case'o':
+        case'gu':
+        case '3':
+            if ($this->bot->game == "aoc") {
+                $chatcmd = "gu <pre>";
+            }
+            else {
+                $chatcmd = "o <pre>";
+            }
+            Break;
+        case'pgmsg':
+        case'pg':
+        case '2':
+            $chatcmd = "group " . $this->bot->botname . " <pre>";
+            Break;
+        case 'start':
+            $chatcmd = "start ";
+            Break;
+        case'tell':
+        case '0':
+        case '1':
+        case FALSE:
+            $chatcmd = "tell " . $this->bot->botname . " <pre>";
+            Break;
+        Default:
+            $chatcmd = $origin . " ";
         }
         Return ('<a href=\'chatcmd:///' . $chatcmd . $link . '\'>' . $title . '</a>');
     }
 
 
-    function get_site($url, $strip_headers = 0, $server_timeout = 5,
-                      $read_timeout = 10)
+    function get_site(
+        $url, $strip_headers = 0, $server_timeout = 5,
+        $read_timeout = 10
+    )
     {
-        if (!function_exists('curl_init') || ($this->bot->core("settings")
-                                                  ->get("tools", "force_sockets") == TRUE)
+        if (!function_exists('curl_init')
+            || ($this->bot->core("settings")
+                ->get("tools", "force_sockets") == TRUE)
         ) {
             Return $this->get_site_sock($url, $strip_headers, $server_timeout, $read_timeout);
         }
-        else
-        {
+        else {
             Return $this->get_site_curl($url, $strip_headers, $read_timeout);
         }
     }
 
 
-    function get_site_sock($url, $strip_headers = 0, $server_timeout = 5,
-                           $read_timeout = 10)
+    function get_site_sock(
+        $url, $strip_headers = 0, $server_timeout = 5,
+        $read_timeout = 10
+    )
     {
         $return = $this->get_site_data($url, $strip_headers, $server_timeout, $read_timeout);
 
@@ -141,19 +148,20 @@ class tools extends BasePassiveModule
     /*
     Gets the data from a URL
     */
-    function get_site_data($url, $strip_headers = 0, $server_timeout = 5,
-                           $read_timeout = 10, $proxy = '')
+    function get_site_data(
+        $url, $strip_headers = 0, $server_timeout = 5,
+        $read_timeout = 10, $proxy = ''
+    )
     {
         $get_url = parse_url($url);
 
         // Check to see if we're using a proxy, and get the IP address for the target host.
         if (!empty($proxy)) {
             $proxy_address = explode(":", $proxy);
-            $address       = gethostbyname($proxy_address[0]);
-            $service_port  = $proxy_address[1];
+            $address = gethostbyname($proxy_address[0]);
+            $service_port = $proxy_address[1];
         }
-        else
-        {
+        else {
             $address = gethostbyname($get_url['host']);
 
             /* Get the port for the WWW service. */
@@ -166,24 +174,28 @@ class tools extends BasePassiveModule
 
         // Check to see if the socket failed to create.
         if ($socket === false) {
-            $return["error"]     = true;
+            $return["error"] = true;
             $return["errordesc"] = "Failed to create a socket";
-            $return["content"]   = socket_strerror(socket_last_error());
+            $return["content"] = socket_strerror(socket_last_error());
 
             return $return;
         }
 
         // Set some sane read timeouts to prevent the bot from hanging forever.
-        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array("sec"  => $read_timeout,
-                                                                  "usec" => 0));
+        socket_set_option(
+            $socket, SOL_SOCKET, SO_RCVTIMEO, array(
+                "sec" => $read_timeout,
+                "usec" => 0
+            )
+        );
 
         $connect_result = @socket_connect($socket, $address, $service_port);
 
         // Make sure we have a connection
         if ($connect_result === false) {
-            $return["error"]     = true;
+            $return["error"] = true;
             $return["errordesc"] = "Coult not connect to server " . $address . ":" . $service_port . " (" . $url . ")";
-            $return["content"]   = socket_strerror(socket_last_error());
+            $return["content"] = socket_strerror(socket_last_error());
 
             return $return;
         }
@@ -205,26 +217,25 @@ class tools extends BasePassiveModule
 
         // Make sure we wrote to the server okay.
         if ($write_result === false) {
-            $return["error"]     = true;
+            $return["error"] = true;
             $return["errordesc"] = "Coult not write to server";
-            $return["content"]   = socket_strerror(socket_last_error());
+            $return["content"] = socket_strerror(socket_last_error());
 
             return $return;
         }
 
         $return["content"] = "";
-        $read_result       = @socket_read($socket, 2048);
-        while ($read_result != "" && $read_result !== false)
-        {
+        $read_result = @socket_read($socket, 2048);
+        while ($read_result != "" && $read_result !== false) {
             $return["content"] .= $read_result;
             $read_result = @socket_read($socket, 2048);
         }
 
         // Make sure we got a response back from the server.
         if ($read_result === false) {
-            $return["error"]     = true;
+            $return["error"] = true;
             $return["errordesc"] = "Server returned no data";
-            $return["content"]   = socket_strerror(socket_last_error());
+            $return["content"] = socket_strerror(socket_last_error());
 
             return $return;
         }
@@ -233,16 +244,16 @@ class tools extends BasePassiveModule
 
         // Make sure we closed our socket properly.  Open sockets are bad!
         if ($close_result === false) {
-            $return["error"]     = true;
+            $return["error"] = true;
             $return["errordesc"] = "Failed to close socket";
-            $return["content"]   = socket_strerror(socket_last_error());
+            $return["content"] = socket_strerror(socket_last_error());
 
             return $return;
         }
 
         // Did the calling function want http headers stripped?
         if ($strip_headers) {
-            $split             = split("\r\n\r\n", $return['content']);
+            $split = split("\r\n\r\n", $return['content']);
             $return["content"] = $split[1];
         }
 
@@ -251,9 +262,11 @@ class tools extends BasePassiveModule
     }
 
 
-    function get_site_curl($url, $strip_headers = 0, $timeout = 10,
-                           $post = NULL,
-                           $login = NULL) // login should be username:password
+    function get_site_curl(
+        $url, $strip_headers = 0, $timeout = 10,
+        $post = NULL,
+        $login = NULL
+    ) // login should be username:password
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -361,10 +374,10 @@ class tools extends BasePassiveModule
             $this->error->set("Unable to parse item: '$item'");
             return ($this->error);
         }
-        $parsed['lowid']  = $parts[1];
+        $parsed['lowid'] = $parts[1];
         $parsed['highid'] = $parts[2];
-        $parsed['ql']     = $parts[3];
-        $parsed['name']   = $parts[4];
+        $parsed['ql'] = $parts[3];
+        $parsed['name'] = $parts[4];
         return ($parsed);
     }
 
@@ -421,7 +434,9 @@ class tools extends BasePassiveModule
             return ($this->error);
         }
         if (preg_match("|([a-z]+[0-9]*[^a-z]*)|", $name) == 0) {
-            $this->error->set("Player name has to be alphabetical followed by 0 or more digits not followed by alphabetical characters.");
+            $this->error->set(
+                "Player name has to be alphabetical followed by 0 or more digits not followed by alphabetical characters."
+            );
             return ($this->error);
         }
         if ($check_exists) {
@@ -441,8 +456,7 @@ class tools extends BasePassiveModule
         if (isset($min)) {
             return mt_rand($min, $max);
         }
-        else
-        {
+        else {
             return mt_rand();
         }
     }
@@ -450,18 +464,19 @@ class tools extends BasePassiveModule
 
     function best_match($find, $in, $perc = 0)
     {
-        $use        = array(0);
+        $use = array(0);
         $percentage = 0;
 
         if (!empty($in)) {
-            foreach ($in as $compare)
-            {
+            foreach ($in as $compare) {
                 similar_text($find, $compare, $percentage);
                 if ($percentage >= $perc
                     && $percentage > $use[0]
                 ) {
-                    $use = array($percentage,
-                                 $compare);
+                    $use = array(
+                        $percentage,
+                        $compare
+                    );
                 }
             }
         }
@@ -477,11 +492,9 @@ class tools extends BasePassiveModule
             if (!empty($dif)) {
                 Return (FALSE);
             }
-            else
-            {
+            else {
                 $check = TRUE;
-                foreach ($a as $k => $v)
-                {
+                foreach ($a as $k => $v) {
                     if (is_array($v) && $check) {
                         $check = $this->compare($v, $b[$k]);
                     }
@@ -492,8 +505,7 @@ class tools extends BasePassiveModule
         if (is_array($a) || is_array($b)) {
             Return (FALSE);
         }
-        else
-        {
+        else {
             Return ($a == $b);
         }
     }

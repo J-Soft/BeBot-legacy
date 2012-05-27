@@ -55,10 +55,13 @@ class Time_Core extends BaseActiveModule
         $this->register_module("time");
         $this->register_command("all", "time", "GUEST");
 
-        $this->help['description']     = "Shows the time.";
+        $this->help['description'] = "Shows the time.";
         $this->help['command']['time'] = "Shows the current time.";
         $this->bot->core("settings")
-            ->create("Time", "FormatString", "F jS, Y H:i", "The format string used in all gmdate() calls throughout the bot. For more info check the help to gmdate() in the php manual. WARNING: DO NOT CHANGE THIS IF YOU DON'T KNOW WHAT THIS MEANS! Wrong entries will break the time display throughout the bot!");
+            ->create(
+            "Time", "FormatString", "F jS, Y H:i",
+            "The format string used in all gmdate() calls throughout the bot. For more info check the help to gmdate() in the php manual. WARNING: DO NOT CHANGE THIS IF YOU DON'T KNOW WHAT THIS MEANS! Wrong entries will break the time display throughout the bot!"
+        );
     }
 
 
@@ -80,8 +83,7 @@ class Time_Core extends BaseActiveModule
             $e1 = " from Uncle Pumpkin-head";
             $e2 = "Leet";
         }
-        else
-        {
+        else {
             $e2 = "Conan";
         }
         if (gmdate("n") == 10 && gmdate("j") == 31) // OMG Pumpkinsheads!
@@ -90,7 +92,9 @@ class Time_Core extends BaseActiveModule
         }
         if (gmdate("n") == 12 && gmdate("j") == 25) // OMG Christmas!
         {
-            $output .= "##red##Merry##end## ##lime##Christmas##end## ##red##from##end## ##lime##Santa##end## ##red##" . $e2 . "!##end##";
+            $output
+                .= "##red##Merry##end## ##lime##Christmas##end## ##red##from##end## ##lime##Santa##end## ##red##" . $e2
+                . "!##end##";
         }
         return $output;
     } // End function show_time()
@@ -110,10 +114,10 @@ class Time_Core extends BaseActiveModule
     */
     function get_DHMS($seconds)
     { // Start function get_DHMS()
-        $tmp['days']    = intval($seconds / 86400); // 86400 seconds in a day
-        $partDay        = $seconds - ($tmp['days'] * 86400);
-        $tmp['hours']   = intval($partDay / 3600); // 3600 seconds in an hour
-        $partHour       = $partDay - ($tmp['hours'] * 3600);
+        $tmp['days'] = intval($seconds / 86400); // 86400 seconds in a day
+        $partDay = $seconds - ($tmp['days'] * 86400);
+        $tmp['hours'] = intval($partDay / 3600); // 3600 seconds in an hour
+        $partHour = $partDay - ($tmp['hours'] * 3600);
         $tmp['minutes'] = intval($partHour / 60); // 60 seconds in a minute
         $tmp['seconds'] = $partHour - ($tmp['minutes'] * 60);
         return $tmp;
@@ -125,11 +129,11 @@ class Time_Core extends BaseActiveModule
     function format_seconds($totalsec)
     { // Start function format_seconts()
         if ($totalsec < 0) {
-            $minus    = "-";
+            $minus = "-";
             $totalsec = $totalsec - ($totalsec * 2);
         }
-        $hours   = floor($totalsec / (60 * 60));
-        $rest    = $totalsec % (60 * 60);
+        $hours = floor($totalsec / (60 * 60));
+        $rest = $totalsec % (60 * 60);
         $minutes = floor($rest / 60);
         $seconds = $rest % 60;
         return sprintf($minus . "%02d:%02d:%02d", $hours, $minutes, $seconds);
@@ -145,13 +149,11 @@ class Time_Core extends BaseActiveModule
             $timesize = 60;
             $timeunit = 2;
         }
-        elseif (stristr($timestr, 'h'))
-        {
+        elseif (stristr($timestr, 'h')) {
             $timesize = 60 * 60;
             $timeunit = 3;
         }
-        elseif (stristr($timestr, 'd'))
-        {
+        elseif (stristr($timestr, 'd')) {
             $timesize = 60 * 60 * 24;
             $timeunit = 4;
         }
@@ -160,26 +162,22 @@ class Time_Core extends BaseActiveModule
             $timeparts = explode(":", $timestr);
 
             $numberlength = 0;
-            for ($i = count($timeparts) - 1; $i >= 0; $i--)
-            {
+            for ($i = count($timeparts) - 1; $i >= 0; $i--) {
                 settype($timeparts[$i], "integer");
                 $numberlength += $timesize * $timeparts[$i];
                 if ($timeunit == 1) {
                     $timesize = 60;
                 }
-                elseif ($timeunit == 2)
-                {
+                elseif ($timeunit == 2) {
                     $timesize = 60 * 60;
                 }
-                elseif ($timeunit >= 3)
-                {
+                elseif ($timeunit >= 3) {
                     $timesize = 24 * 60 * 60;
                 }
                 $timeunit++;
             }
         }
-        else
-        {
+        else {
             $numberlength = $timestr;
             settype($numberlength, "integer");
             $numberlength = $numberlength * $timesize;
@@ -204,11 +202,10 @@ class Time_Core extends BaseActiveModule
         if ($diftime > 0) {
             if ($diftime > 24) {
                 $diftimedays = floor($diftime / 24);
-                $timestr     = $diftime % 24 . " hours" . $timestr;
+                $timestr = $diftime % 24 . " hours" . $timestr;
                 return $diftimedays . " days " . $timestr . " ago";
             }
-            else
-            {
+            else {
                 $timestr = $diftime . " hours" . $timestr;
                 return $timestr . " ago";
             }

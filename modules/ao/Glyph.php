@@ -68,25 +68,36 @@ class Glyph extends BaseActiveModule
         if (preg_match("/^glyph start a ([0-9]+) e ([0-9]+) o ([0-9]+)$/i", $msg, $info)) {
             $this->start_glyph($name, $info[1], $info[2], $info[3]);
         }
-        else if (preg_match("/^glyph start/i", $msg, $info)) {
-            $this->bot->send_tell($name, "Usage: glyph start a <aban number> e <enel number> o <ocra number>\n" .
-                                         "Example: glyph start a 3 e 2 o 5");
-        }
-        else if (preg_match("/^glyph cancel/i", $msg, $info)) {
-            $this->cancel_glyph($name);
-        }
-        else if (preg_match("/^glyph (result|end)/i", $msg, $info)) {
-            $this->result_glyph($name);
-        }
-        else if (preg_match("/^glyph join$/i", $msg)) {
-            $this->join_glyph($name);
-        }
-        else if (preg_match("/^glyph leave$/i", $msg)) {
-            $this->leave_glyph($name);
-        }
-        else
-        {
-            $this->bot->send_help($name);
+        else {
+            if (preg_match("/^glyph start/i", $msg, $info)) {
+                $this->bot->send_tell(
+                    $name, "Usage: glyph start a <aban number> e <enel number> o <ocra number>\n" .
+                    "Example: glyph start a 3 e 2 o 5"
+                );
+            }
+            else {
+                if (preg_match("/^glyph cancel/i", $msg, $info)) {
+                    $this->cancel_glyph($name);
+                }
+                else {
+                    if (preg_match("/^glyph (result|end)/i", $msg, $info)) {
+                        $this->result_glyph($name);
+                    }
+                    else {
+                        if (preg_match("/^glyph join$/i", $msg)) {
+                            $this->join_glyph($name);
+                        }
+                        else {
+                            if (preg_match("/^glyph leave$/i", $msg)) {
+                                $this->leave_glyph($name);
+                            }
+                            else {
+                                $this->bot->send_help($name);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -98,29 +109,31 @@ class Glyph extends BaseActiveModule
     {
         if ($this->bot->core("security")->check_access($name, "leader")) {
             if (!$this->raffle) {
-                $this->raffle        = true;
-                $this->aban          = $a;
-                $this->enel          = $e;
-                $this->ocra          = $o;
+                $this->raffle = true;
+                $this->aban = $a;
+                $this->enel = $e;
+                $this->ocra = $o;
                 $this->users["aban"] = array();
                 $this->users["enel"] = array();
                 $this->users["ocra"] = array();
 
-                $this->bot->send_pgroup("##highlight##$name##end## has ##highlight##started##end## " .
-                                        "a raffle for ##highlight##$a##end## Aban glyphs, " .
-                                        "##highlight##$e##end## Enel glyphs, " .
-                                        "##highlight##$o##end## Ocra glyphs. :: " . $this->click_join() .
-                                        "\n##highlight##" .
-                                        " - Glyphs are for your own use only. You may NOT sell them!\n" .
-                                        " - A won glyph will cost you 2 raidpoints.##end##");
+                $this->bot->send_pgroup(
+                    "##highlight##$name##end## has ##highlight##started##end## " .
+                        "a raffle for ##highlight##$a##end## Aban glyphs, " .
+                        "##highlight##$e##end## Enel glyphs, " .
+                        "##highlight##$o##end## Ocra glyphs. :: " . $this->click_join() .
+                        "\n##highlight##" .
+                        " - Glyphs are for your own use only. You may NOT sell them!\n" .
+                        " - A won glyph will cost you 2 raidpoints.##end##"
+                );
             }
-            else
-            {
-                $this->bot->send_tell($name, "A glyph raffle has already been started. \"!glyph cancel\" to cancel it.");
+            else {
+                $this->bot->send_tell(
+                    $name, "A glyph raffle has already been started. \"!glyph cancel\" to cancel it."
+                );
             }
         }
-        else
-        {
+        else {
             $this->bot->send_tell($name, "You must be a raidleader to do this");
         }
     }
@@ -137,13 +150,11 @@ class Glyph extends BaseActiveModule
                 $this->raffle = false;
                 $this->bot->send_pgroup("##highlight##$name##end## has ##highlight##canceled##end## the glyph raffle.");
             }
-            else
-            {
+            else {
                 $this->bot->send_tell($name, "No glyph raffle running.");
             }
         }
-        else
-        {
+        else {
             $this->bot->send_tell($name, "You must be a raidleader to do this");
         }
     }
@@ -164,47 +175,50 @@ class Glyph extends BaseActiveModule
                 $ocra = "Winners for the ##highlight##ocra##end## glyph: ##highlight## ";
 
                 // ABAN
-                for ($i = 0; $i < $this->aban; $i++)
-                {
+                for ($i = 0; $i < $this->aban; $i++) {
                     if (!empty($this->users["aban"])) {
                         $users = array_keys($this->users["aban"]);
-                        $num   = ((int)$this->bot->core("tools")
+                        $num = ((int)$this->bot->core("tools")
                             ->my_rand(0, 10000000)) % count($users);
                         $aban .= $users[$num] . " ";
                         unset($this->users["aban"][$users[$num]]);
-                        $this->bot->db->query("UPDATE raid_points SET points = points - 20 WHERE id = " .
-                                              $this->bot->core("chat")
-                                                  ->get_uid($users[$num]));
+                        $this->bot->db->query(
+                            "UPDATE raid_points SET points = points - 20 WHERE id = " .
+                                $this->bot->core("chat")
+                                    ->get_uid($users[$num])
+                        );
                     }
                 }
 
                 // ENEL
-                for ($i = 0; $i < $this->enel; $i++)
-                {
+                for ($i = 0; $i < $this->enel; $i++) {
                     if (!empty($this->users["enel"])) {
                         $users = array_keys($this->users["enel"]);
-                        $num   = ((int)$this->bot->core("tools")
+                        $num = ((int)$this->bot->core("tools")
                             ->my_rand(0, 10000000)) % count($users);
                         $enel .= $users[$num] . " ";
                         unset($this->users["enel"][$users[$num]]);
-                        $this->bot->db->query("UPDATE raid_points SET points = points - 20 WHERE id = " .
-                                              $this->bot->core("chat")
-                                                  ->get_uid($users[$num]));
+                        $this->bot->db->query(
+                            "UPDATE raid_points SET points = points - 20 WHERE id = " .
+                                $this->bot->core("chat")
+                                    ->get_uid($users[$num])
+                        );
                     }
                 }
 
                 // OCRA
-                for ($i = 0; $i < $this->ocra; $i++)
-                {
+                for ($i = 0; $i < $this->ocra; $i++) {
                     if (!empty($this->users["ocra"])) {
                         $users = array_keys($this->users["ocra"]);
-                        $num   = ((int)$this->bot->core("tools")
+                        $num = ((int)$this->bot->core("tools")
                             ->my_rand(0, 10000000)) % count($users);
                         $ocra .= $users[$num] . " ";
                         unset($this->users["ocra"][$users[$num]]);
-                        $this->bot->db->query("UPDATE raid_points SET points = points - 20 WHERE id = " .
-                                              $this->bot->core("chat")
-                                                  ->get_uid($users[$num]));
+                        $this->bot->db->query(
+                            "UPDATE raid_points SET points = points - 20 WHERE id = " .
+                                $this->bot->core("chat")
+                                    ->get_uid($users[$num])
+                        );
                     }
                 }
                 $aban .= "##end##\n";
@@ -221,16 +235,16 @@ class Glyph extends BaseActiveModule
                     $ocra = "No ##highlight##ocra##end## glyphs where up for raffle.\n";
                 }
 
-                $this->bot->send_pgroup("The glyph winners are:##highlight##\n" . $aban . $enel . $ocra .
-                                        "##end##\n##highlight##2##end## raidpoints where deduced from their accounts.");
+                $this->bot->send_pgroup(
+                    "The glyph winners are:##highlight##\n" . $aban . $enel . $ocra .
+                        "##end##\n##highlight##2##end## raidpoints where deduced from their accounts."
+                );
             }
-            else
-            {
+            else {
                 $this->bot->send_tell($name, "No glyph raffle running.");
             }
         }
-        else
-        {
+        else {
             $this->bot->send_tell($name, "You must be a raidleader to do this");
         }
     }
@@ -242,28 +256,31 @@ class Glyph extends BaseActiveModule
     function join_glyph($name)
     {
         if ($this->raffle) {
-            $result = $this->bot->db->select("SELECT points FROM raid_points WHERE id = " .
-                                             $this->bot->core("chat")
-                                                 ->get_uid($name));
+            $result = $this->bot->db->select(
+                "SELECT points FROM raid_points WHERE id = " .
+                    $this->bot->core("chat")
+                        ->get_uid($name)
+            );
             if ($result[0][0] < 2) {
                 $this->bot->send_tell("You must have at least 2 raidpoints to join");
             }
-            else
-            {
+            else {
                 $type = $this->get_type($name);
                 if (!isset($this->users[$type][$name])) {
                     $this->users[$type][$name] = true;
-                    $this->bot->send_pgroup("##highlight##$name##end## has ##highlight##entered##end## the raffle for an ##highlight##$type##end## glyph.");
-                    $this->bot->send_tell($name, "You have joined the raffle for an ##highlight##$type##end## glyph.", 1);
+                    $this->bot->send_pgroup(
+                        "##highlight##$name##end## has ##highlight##entered##end## the raffle for an ##highlight##$type##end## glyph."
+                    );
+                    $this->bot->send_tell(
+                        $name, "You have joined the raffle for an ##highlight##$type##end## glyph.", 1
+                    );
                 }
-                else
-                {
+                else {
                     $this->bot->send_tell($name, "You are already in the raffle.");
                 }
             }
         }
-        else
-        {
+        else {
             $this->bot->send_tell($name, "No glyph raffle running");
         }
     }
@@ -281,13 +298,11 @@ class Glyph extends BaseActiveModule
                 $this->bot->send_pgroup("##highlight##$name##end## has ##highlight##left##end## the gylph raffle.");
                 $this->bot->send_tell($name, "You have left the raffle.");
             }
-            else
-            {
+            else {
                 $this->bot->send_tell($name, "You are not in the raffle.");
             }
         }
-        else
-        {
+        else {
             $this->bot->send_tell($name, "No glyph raffle running");
         }
     }
@@ -298,26 +313,29 @@ class Glyph extends BaseActiveModule
     */
     function get_type($name)
     {
-        $result = $this->bot->db->select("SELECT profession FROM users WHERE id = " .
-                                         $this->bot->core("chat")
-                                             ->get_uid($name));
+        $result = $this->bot->db->select(
+            "SELECT profession FROM users WHERE id = " .
+                $this->bot->core("chat")
+                    ->get_uid($name)
+        );
         $result = $result[0][0];
 
-        if (($result == "Enforcer") || ($result == "Engineer") || ($result == "Keeper") ||
-            ($result == "Martial Artist") || ($result == "Shade")
+        if (($result == "Enforcer") || ($result == "Engineer") || ($result == "Keeper") || ($result == "Martial Artist")
+            || ($result == "Shade")
         ) {
             return "aban";
         }
 
-        else if (($result == "Agent") || ($result == "Bureaucrat") || ($result == "Nano-Technician") ||
-                 ($result == "Soldier")
-        ) {
-            return "enel";
-        }
+        else {
+            if (($result == "Agent") || ($result == "Bureaucrat") || ($result == "Nano-Technician")
+                || ($result == "Soldier")
+            ) {
+                return "enel";
+            }
 
-        else
-        {
-            return "ocra";
+            else {
+                return "ocra";
+            }
         }
     }
 

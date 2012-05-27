@@ -37,7 +37,7 @@ class Chuck Extends BaseActiveModule
 
         $this->register_command("all", "chuck", "MEMBER");
 
-        $this->help['description']     = 'Pwnzor.';
+        $this->help['description'] = 'Pwnzor.';
         $this->help['command']['beer'] = "Pwnzors you!";
 
     }
@@ -660,8 +660,8 @@ class Chuck Extends BaseActiveModule
             "Chuck Norris digs graves with a shoe horn."
         );
         // You can add more possible responses to the array above.
-        $dmg       = $this->bot->core("tools")->my_rand(100, 999);
-        $creds     = $this->bot->core("tools")->my_rand(10000, 9999999);
+        $dmg = $this->bot->core("tools")->my_rand(100, 999);
+        $creds = $this->bot->core("tools")->my_rand(10000, 9999999);
         $returnstr = $chuck[$this->bot->core("tools")
             ->my_rand(0, sizeof($chuck) - 1)];
         $returnstr = str_replace("*name*", $name, $returnstr);

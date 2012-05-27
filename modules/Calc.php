@@ -51,7 +51,7 @@ class Calc extends BaseActiveModule
         $this->bot->core("settings")
             ->create("Calc", "ShowEquation", TRUE, "Should the equation be shown when doing calculations?");
 
-        $this->help['description']                  = "Performs simple calculations";
+        $this->help['description'] = "Performs simple calculations";
         $this->help['command']['calc <expression>'] = "Shows the result of the matematical <expression>";
 
         $this->calcu = array();
@@ -66,12 +66,10 @@ class Calc extends BaseActiveModule
         if (preg_match("/^calc (.+)/i", $msg, $info)) {
             return $this->do_calcs($name, $info[1]);
         }
-        elseif (preg_match("/^calc$/i", $msg))
-        {
+        elseif (preg_match("/^calc$/i", $msg)) {
             return $this->show_calc($name);
         }
-        else
-        {
+        else {
             $this->bot->send_help($name);
         }
         return false;
@@ -101,19 +99,18 @@ class Calc extends BaseActiveModule
             if (preg_match('|^([\+\*/\-%])|', $calc, $matches) && isset($this->calcu[$name])) {
                 $temp = "\$x=" . $this->calcu[$name] . ";";
                 eval("$temp");
-                $expr  = $x . $calc;
+                $expr = $x . $calc;
                 $calcu = "\$y=(" . $this->calcu[$name] . ")" . $calc . ";";
                 if ($matches[1] != "+" && $matches[1] != "-") {
                     $this->calcu[$name] = "(" . $this->calcu[$name] . ")" . $calc;
                 }
-                else
-                {
+                else {
                     $this->calcu[$name] .= $calc;
                 }
             }
             else {
-                $calcu              = "\$y=" . $calc . ";";
-                $expr               = $calc;
+                $calcu = "\$y=" . $calc . ";";
+                $expr = $calc;
                 $this->calcu[$name] = $expr;
             }
             eval("$calcu");
@@ -123,18 +120,15 @@ class Calc extends BaseActiveModule
                 if ($this->bot->core("settings")->get("Calc", "ShowEquation")) {
                     return $expr . " = " . str_replace(".00", "", number_format($y, "2", ".", " "));
                 }
-                else
-                {
+                else {
                     return $y;
                 }
             }
-            else
-            {
+            else {
                 return "Wrong syntax, please /tell <botname> <pre>help <pre>calc";
             }
         }
-        else
-        {
+        else {
             return "Wrong syntax, please /tell <botname> <pre>help <pre>calc";
         }
     }
@@ -148,8 +142,7 @@ class Calc extends BaseActiveModule
             $return = $this->calcu[$name] . " = " . $calc;
             return $return;
         }
-        else
-        {
+        else {
             return "You've not made any calculations since my last restart.";
         }
     }

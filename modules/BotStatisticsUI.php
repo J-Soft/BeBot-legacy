@@ -53,15 +53,15 @@ class BotStatisticsUI extends BaseActiveModule
 
         $command = $var[0];
 
-        switch ($var[0])
-        {
-            case 'bots':
-                $reply = $this->check_bots($name, $origin, $var[1]);
-                if ($reply !== FALSE) {
-                    Return ($reply);
-                }
-            default:
-                Return ("##error##Error : Broken plugin, recieved unhandled command: ##highlight##" . $var[0] . "##end## in Bots.php##end##");
+        switch ($var[0]) {
+        case 'bots':
+            $reply = $this->check_bots($name, $origin, $var[1]);
+            if ($reply !== FALSE) {
+                Return ($reply);
+            }
+        default:
+            Return ("##error##Error : Broken plugin, recieved unhandled command: ##highlight##" . $var[0]
+                . "##end## in Bots.php##end##");
         }
     }
 
@@ -77,14 +77,12 @@ class BotStatisticsUI extends BaseActiveModule
                 Return $this->bot->core("bot_statistics")
                     ->check_bots($name, $origin, $msg[0], $msg[1]);
             }
-            else
-            {
+            else {
                 Return $this->bot->core("bot_statistics")
                     ->check_bots($name, $origin, $msg[0]);
             }
         }
-        else
-        {
+        else {
             Return $this->bot->core("bot_statistics")
                 ->check_bots($name, $origin);
         }

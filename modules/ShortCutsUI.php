@@ -45,9 +45,11 @@ class ShortCutGUI extends BaseActiveModule
 
         $this->register_command("all", "shortcuts", "OWNER");
 
-        $this->help['description']                                 = "Allows you view, add and delete entries in the shortcut database.";
-        $this->help['command']['shortcuts']                        = "Shows currently existing shortcuts with corresponding long entries and allows deleting selected entries.";
-        $this->help['command']['shortcuts add "<short>" "<long>"'] = "Adds <short> as shortcut for <long> to the database. Neither <short> nor <long> can contain any \".";
+        $this->help['description'] = "Allows you view, add and delete entries in the shortcut database.";
+        $this->help['command']['shortcuts']
+            = "Shows currently existing shortcuts with corresponding long entries and allows deleting selected entries.";
+        $this->help['command']['shortcuts add "<short>" "<long>"']
+            = "Adds <short> as shortcut for <long> to the database. Neither <short> nor <long> can contain any \".";
     }
 
 
@@ -56,12 +58,10 @@ class ShortCutGUI extends BaseActiveModule
         if (preg_match("/^shortcuts$/i", $msg)) {
             return $this->show_shortcuts();
         }
-        elseif (preg_match("/^shortcuts add &quot;(.*)&quot; &quot;(.*)&quot;$/i", $msg, $info))
-        {
+        elseif (preg_match("/^shortcuts add &quot;(.*)&quot; &quot;(.*)&quot;$/i", $msg, $info)) {
             return $this->add($info[1], $info[2]);
         }
-        elseif (preg_match("/^shortcuts del ([01-9]+)$/i", $msg, $info))
-        {
+        elseif (preg_match("/^shortcuts del ([01-9]+)$/i", $msg, $info)) {
             return $this->del($info[1]);
         }
     }
@@ -77,8 +77,7 @@ class ShortCutGUI extends BaseActiveModule
 
         $blob = "##ao_infoheader##The following shortcuts are defined:##end##\n";
 
-        foreach ($shortcuts as $shortcut)
-        {
+        foreach ($shortcuts as $shortcut) {
             $blob .= "\n##ao_infotext##" . stripslashes($shortcut[0]) . " ##end##short for##ao_infotext## ";
             $blob .= stripslashes($shortcut[1]) . "##end## ";
             $blob .= $this->bot->core("tools")

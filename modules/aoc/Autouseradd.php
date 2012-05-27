@@ -62,10 +62,9 @@ class AutoUserAdd extends BasePassiveModule
 
         // Fill checked array with current members, we won't need to readd them:
         $this->checked = array();
-        $mems          = $this->bot->db->select("SELECT nickname FROM #___users WHERE user_level = 2", MYSQL_ASSOC);
+        $mems = $this->bot->db->select("SELECT nickname FROM #___users WHERE user_level = 2", MYSQL_ASSOC);
         if (!empty($mems)) {
-            foreach ($mems as $mem)
-            {
+            foreach ($mems as $mem) {
                 $this->checked[$mem['nickname']] = TRUE;
             }
         }
@@ -94,8 +93,7 @@ class AutoUserAdd extends BasePassiveModule
                     $this->add_user($name);
                 }
             }
-            else
-            {
+            else {
                 $this->add_user($name);
             }
         }
@@ -107,8 +105,7 @@ class AutoUserAdd extends BasePassiveModule
         if ($this->bot->core("settings")->get("Autouseradd", "Notify")) {
             $silent = 0;
         }
-        else
-        {
+        else {
             $silent = 1;
         }
 
@@ -116,8 +113,7 @@ class AutoUserAdd extends BasePassiveModule
             ->add($this->bot->botname, $name, 0, MEMBER, $silent);
 
         if (!empty($this->hooks)) {
-            foreach ($this->hooks as $hook)
-            {
+            foreach ($this->hooks as $hook) {
                 $hook->new_user($name);
             }
         }

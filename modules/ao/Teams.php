@@ -56,9 +56,9 @@ class NewTeams extends BaseActiveModule
     {
         parent::__construct($bot, get_class($this));
 
-        $this->teams    = array();
+        $this->teams = array();
         $this->numteams = 0;
-        $this->pgroup   = array(array());
+        $this->pgroup = array(array());
 
         $this->register_command("all", "teams", "GUEST");
         $this->register_command("all", "startteam", "LEADER");
@@ -79,25 +79,26 @@ class NewTeams extends BaseActiveModule
     {
         if (preg_match("#^[1-9]#", $num)) {
             if ($num <= count($this->teams) && $num > 0) {
-                $team   =& $this->GetTeam($num);
+                $team =& $this->GetTeam($num);
                 $member =& $team->GetMember($name);
                 if ($member) {
                     $team->ClearLeader();
                     $member->SetLeader(true);
-                    $this->bot->send_pgroup("[##highlight##" . $name . "##end##] is new leader of team ##highlight##" . $num . "##end##");
+                    $this->bot->send_pgroup(
+                        "[##highlight##" . $name . "##end##] is new leader of team ##highlight##" . $num . "##end##"
+                    );
                 }
-                else
-                {
-                    $this->bot->send_tell($executer, "[##highlight##" . $name . "##end##] is not in team ##highlight##" . $num . "##end##");
+                else {
+                    $this->bot->send_tell(
+                        $executer, "[##highlight##" . $name . "##end##] is not in team ##highlight##" . $num . "##end##"
+                    );
                 }
             }
-            else
-            {
+            else {
                 $this->bot->send_tell($executer, "Team ##highlight##" . $num . "##end## does not exist");
             }
         }
-        else
-        {
+        else {
             $this->bot->send_tell($executer, "Usage: !setleader &lt;number&gt; &lt;name&gt;");
         }
     }
@@ -105,24 +106,23 @@ class NewTeams extends BaseActiveModule
 
     function PrintTeams()
     {
-        foreach ($this->teams as $index => $team)
-        {
+        foreach ($this->teams as $index => $team) {
             if ($team->GetName() == "") {
-                $msg = "Team ##highlight##" . bcadd($index, 1) . "##end## (##highlight##" . $team->Count() . "##end##) :: ";
+                $msg = "Team ##highlight##" . bcadd($index, 1) . "##end## (##highlight##" . $team->Count()
+                    . "##end##) :: ";
             }
-            else
-            {
-                $msg = "Team ##highlight##" . bcadd($index, 1) . "##end## :: \"" . $team->GetName() . "\" (##highlight##" . $team->Count() . "##end##) :: ";
+            else {
+                $msg
+                    = "Team ##highlight##" . bcadd($index, 1) . "##end## :: \"" . $team->GetName() . "\" (##highlight##"
+                    . $team->Count() . "##end##) :: ";
             }
 
             $members =& $team->GetTeamMembers();
-            foreach ($members as $index => $teammember)
-            {
+            foreach ($members as $index => $teammember) {
                 if ($teammember->IsLeader()) {
                     $msg .= "[##blob_title##" . $teammember->GetName() . " :: Leader##end##]";
                 }
-                else
-                {
+                else {
                     $msg .= "[##highlight##" . $teammember->GetName() . "##end##]";
                 }
             }
@@ -140,8 +140,7 @@ class NewTeams extends BaseActiveModule
 
     function ClearTeams($name)
     {
-        foreach ($this->teams as $index => $teams)
-        {
+        foreach ($this->teams as $index => $teams) {
             $this->DelTeam(1, $name);
         }
         $this->bot->send_pgroup("Teams cleared by [##highlight##" . $name . "##end##]");
@@ -153,8 +152,7 @@ class NewTeams extends BaseActiveModule
         if (preg_match("#^[1-9]#", $num)) {
             if ($num <= count($this->teams) && $num > 0) {
                 $team =& $this->teams[$num - 1];
-                foreach ($team->GetTeamMembers() as $index => $member)
-                {
+                foreach ($team->GetTeamMembers() as $index => $member) {
                     if (isset($this->pgroup[$member->GetName()])) {
                         $this->pgroup[$member->GetName()][4] = true;
                     }
@@ -163,13 +161,11 @@ class NewTeams extends BaseActiveModule
                 $this->numteams--;
                 $this->teams = array_values($this->teams);
             }
-            else
-            {
+            else {
                 $this->bot->send_tell($executer, "Team ##highlight##" . $num . "##end## does not exist");
             }
         }
-        else
-        {
+        else {
             $this->bot->send_tell($executer, "Usage: <pre>delteam &lt;number&gt;##end##");
         }
     }
@@ -186,8 +182,7 @@ class NewTeams extends BaseActiveModule
         $return = false;
 
         if ($this->bot->core("chat")->get_uid($name)) {
-            for ($i = 1; $i <= count($this->teams); $i++)
-            {
+            for ($i = 1; $i <= count($this->teams); $i++) {
                 $team =& $this->GetTeam($i);
                 if ($team->DelMember($name)) {
                     if (isset($this->pgroup[$name])) {
@@ -195,18 +190,19 @@ class NewTeams extends BaseActiveModule
                     }
                     $return = true;
                     if (!$suppress) {
-                        $this->bot->send_pgroup("[##highlight##" . $name . "##end##] has been removed from team ##highlight##" . $i . "##end##");
+                        $this->bot->send_pgroup(
+                            "[##highlight##" . $name . "##end##] has been removed from team ##highlight##" . $i
+                                . "##end##"
+                        );
                     }
                 }
-                else
-                {
+                else {
                     $return = $return | false;
                 }
             }
             return $return;
         }
-        else
-        {
+        else {
             if (!$silent) {
                 $this->bot->send_tell($executer, "Usage: <pre>remteam &lt;name&gt;");
             }
@@ -221,16 +217,18 @@ class NewTeams extends BaseActiveModule
             if ($num <= count($this->teams) && $num > 0) {
                 if ($name != "") {
                     if (isset($this->pgroup[$name])) {
-                        $member      =& new TeamMember($this->pgroup[$name][0], $this->pgroup[$name][1], $this->pgroup[$name][2], $this->pgroup[$name][3]);
-                        $team        =& $this->GetTeam($num);
+                        $member
+                            =& new TeamMember($this->pgroup[$name][0], $this->pgroup[$name][1], $this->pgroup[$name][2], $this->pgroup[$name][3]);
+                        $team =& $this->GetTeam($num);
                         $teammembers =& $team->GetTeamMembers();
                         print_r(get_object_vars($teammembers));
                         if (array_search($member, $teammembers)) {
-                            $this->bot->send_pgroup("##highlight##" . $name . "##end## is already in team ##highlight##" . $num . "##end##");
+                            $this->bot->send_pgroup(
+                                "##highlight##" . $name . "##end## is already in team ##highlight##" . $num . "##end##"
+                            );
                             return;
                         }
-                        else
-                        {
+                        else {
                             $deleted = $this->DelTeamMember($name, $executer);
                         }
 
@@ -238,31 +236,32 @@ class NewTeams extends BaseActiveModule
                         if ($team->AddMember($member)) {
                             $this->pgroup[$name][4] = false;
                             if ($deleted) {
-                                $this->bot->send_pgroup("[##highlight##" . $name . "##end##] changed to team ##highlight##" . $num . "##end##");
+                                $this->bot->send_pgroup(
+                                    "[##highlight##" . $name . "##end##] changed to team ##highlight##" . $num
+                                        . "##end##"
+                                );
                             }
-                            else
-                            {
-                                $this->bot->send_pgroup("[##highlight##" . $name . "##end##] has been added to team ##highlight##" . $num . "##end####end##");
+                            else {
+                                $this->bot->send_pgroup(
+                                    "[##highlight##" . $name . "##end##] has been added to team ##highlight##" . $num
+                                        . "##end####end##"
+                                );
                             }
                         }
-                        else
-                        {
+                        else {
                             $this->bot->send_pgroup("Team ##highlight##" . $num . "##end## is full");
                         }
                     }
-                    else
-                    {
+                    else {
                         $this->bot->send_tell($executer, "[##highlight##" . $name . "##end##] is not in the group");
                     }
                 }
             }
-            else
-            {
+            else {
                 $this->bot->send_tell($executer, "Team ##highlight##" . $num . "##end## does not exist");
             }
         }
-        else
-        {
+        else {
             $this->bot->send_tell($executer, "Usage: <pre>teamadd &lt;number&gt; &lt;name&gt;");
         }
     }
@@ -273,15 +272,19 @@ class NewTeams extends BaseActiveModule
         if ($name != "") {
             if (isset($this->pgroup[$name])) {
                 $this->DelTeamMember($name, $executer);
-                $member = &new TeamMember($this->pgroup[$name][0], $this->pgroup[$name][1], $this->pgroup[$name][2], $this->pgroup[$name][3], true);
-                $team   = &new Team($member, $teamname);
+                $member
+                    = &
+                    new TeamMember($this->pgroup[$name][0], $this->pgroup[$name][1], $this->pgroup[$name][2], $this->pgroup[$name][3], true);
+                $team = &new Team($member, $teamname);
                 ++$this->numteams;
                 $this->pgroup[$name][4] = false;
                 $this->AddTeam($team);
-                $this->bot->send_pgroup("Team ##highlight##" . $this->numteams . "##end## has been started. Leader is ##highlight##[" . $name . "##end##]");
+                $this->bot->send_pgroup(
+                    "Team ##highlight##" . $this->numteams . "##end## has been started. Leader is ##highlight##["
+                        . $name . "##end##]"
+                );
             }
-            else
-            {
+            else {
                 $this->bot->send_pgroup("[##highlight##" . $name . "##end##] is not in the group");
             }
         }
@@ -295,13 +298,11 @@ class NewTeams extends BaseActiveModule
                 $team =& $this->GetTeam($num);
                 $team->SetName($teamname);
             }
-            else
-            {
+            else {
                 $this->bot->send_tell($executer, "Team ##highlight##" . $num . "##end## does not exist");
             }
         }
-        else
-        {
+        else {
             $this->bot->send_tell($executer, "Usage: <pre>teamname &lt;number&gt; &lt;name&gt;");
         }
 
@@ -310,7 +311,7 @@ class NewTeams extends BaseActiveModule
 
     function GetPlayerInfo($name)
     {
-        $uid    = $this->bot->core("chat")->get_uid($name);
+        $uid = $this->bot->core("chat")->get_uid($name);
         $result = $this->bot->core("whois")->lookup($name);
 
         if ($result["error"]) {
@@ -321,8 +322,7 @@ class NewTeams extends BaseActiveModule
             $member[4] = true;
             return $member;
         }
-        else
-        {
+        else {
             $member[0] = $name;
             $member[1] = $result["level"];
             $member[2] = $result["profession"];
@@ -335,35 +335,51 @@ class NewTeams extends BaseActiveModule
 
     function command_handler($name, $msg, $origin)
     {
-        $msg    = explode(" ", $msg);
+        $msg = explode(" ", $msg);
         $msg[0] = strtolower($msg[0]);
 
         if (strtolower($msg[0]) == "startteam") {
             $this->StartTeam($name, ucfirst(strtolower($msg[1])), implode(" ", array_slice($msg, 2)));
         }
-        else if ($msg[0] == "teams") {
-            $this->PrintTeams();
-        }
-        else if ($msg[0] == "addteam") {
-            $this->AddTeamMember(ucfirst(strtolower($msg[2])), $msg[1], $name);
-        }
-        else if ($msg[0] == "remteam") {
-            $this->DelTeamMember(ucfirst(strtolower($msg[1])), $name, false);
-        }
-        else if ($msg[0] == "delteam") {
-            $this->DelTeam($msg[1], $name);
-        }
-        else if ($msg[0] == "setleader") {
-            $this->SetTeamLeader(ucfirst(strtolower($msg[2])), $msg[1], $name);
-        }
-        else if ($msg[0] == "teamname") {
-            $this->SetTeamName(implode(" ", array_slice($msg, 2)), $msg[1], $name);
-        }
-        else if ($msg[0] == "clearteams") {
-            $this->ClearTeams($name);
-        }
-        else if ($msg[0] == "teamadmin") {
-            $this->GetAdminConsole($name);
+        else {
+            if ($msg[0] == "teams") {
+                $this->PrintTeams();
+            }
+            else {
+                if ($msg[0] == "addteam") {
+                    $this->AddTeamMember(ucfirst(strtolower($msg[2])), $msg[1], $name);
+                }
+                else {
+                    if ($msg[0] == "remteam") {
+                        $this->DelTeamMember(ucfirst(strtolower($msg[1])), $name, false);
+                    }
+                    else {
+                        if ($msg[0] == "delteam") {
+                            $this->DelTeam($msg[1], $name);
+                        }
+                        else {
+                            if ($msg[0] == "setleader") {
+                                $this->SetTeamLeader(ucfirst(strtolower($msg[2])), $msg[1], $name);
+                            }
+                            else {
+                                if ($msg[0] == "teamname") {
+                                    $this->SetTeamName(implode(" ", array_slice($msg, 2)), $msg[1], $name);
+                                }
+                                else {
+                                    if ($msg[0] == "clearteams") {
+                                        $this->ClearTeams($name);
+                                    }
+                                    else {
+                                        if ($msg[0] == "teamadmin") {
+                                            $this->GetAdminConsole($name);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         return false;
@@ -388,43 +404,45 @@ class NewTeams extends BaseActiveModule
         $msg = "##highlight##:::: Teams Administration ::::##end##\n\n";
         $msg .= "##highlight##Commands:##end##\n";
         $msg .= $this->bot->core("tools")
-                    ->chatcmd("teamadmin", "Refresh Teams Administration") . "\n";
+            ->chatcmd("teamadmin", "Refresh Teams Administration") . "\n";
         $msg .= $this->bot->core("tools")
-                    ->chatcmd("teams", "Show Teams") . "\n";
+            ->chatcmd("teams", "Show Teams") . "\n";
         $msg .= $this->bot->core("tools")
-                    ->chatcmd("clearteams", "Clear Teams") . "\n\n";
+            ->chatcmd("clearteams", "Clear Teams") . "\n\n";
 
-        foreach ($this->teams as $index => $team)
-        {
+        foreach ($this->teams as $index => $team) {
             if ($team->GetName() == "") {
-                $msg .= ":: Team ##highlight##" . bcadd($index, 1) . "##end## (##highlight##" . $team->Count() . "##end##) :: ";
+                $msg .= ":: Team ##highlight##" . bcadd($index, 1) . "##end## (##highlight##" . $team->Count()
+                    . "##end##) :: ";
                 $msg .= $this->bot->core("tools")
-                            ->chatcmd("delteam " . bcadd($index, 1), "Del") . "\n";
+                    ->chatcmd("delteam " . bcadd($index, 1), "Del") . "\n";
             }
-            else
-            {
-                $msg .= ":: Team ##highlight##" . bcadd($index, 1) . "##end## :: \"" . $team->GetName() . "\" (##highlight##" . $team->Count() . "##end##) :: ";
+            else {
+                $msg .= ":: Team ##highlight##" . bcadd($index, 1) . "##end## :: \"" . $team->GetName()
+                    . "\" (##highlight##" . $team->Count() . "##end##) :: ";
                 $msg .= $this->bot->core("tools")
-                            ->chatcmd("delteam " . bcadd($index, 1), "Del") . "\n";
+                    ->chatcmd("delteam " . bcadd($index, 1), "Del") . "\n";
             }
 
             $members =& $team->GetTeamMembers();
-            foreach ($members as $indexteam => $teammember)
-            {
+            foreach ($members as $indexteam => $teammember) {
                 if ($teammember->IsLeader()) {
-                    $msg .= "\t[##blob_title##" . $teammember->GetName() . " :: Leader##end##] (" . $teammember->GetLevel() . " " . $teammember->GetProfession() . ") ";
+                    $msg
+                        .= "\t[##blob_title##" . $teammember->GetName() . " :: Leader##end##] (" . $teammember->GetLevel()
+                        . " " . $teammember->GetProfession() . ") ";
                     $msg .= $this->GetExtraInfo($teammember->GetName(), $index + 1);
                 }
-                else
-                {
-                    $msg .= "\t[##highlight##" . $teammember->GetName() . "##end##] (" . $teammember->GetLevel() . " " . $teammember->GetProfession() . ") ";
+                else {
+                    $msg .= "\t[##highlight##" . $teammember->GetName() . "##end##] (" . $teammember->GetLevel() . " "
+                        . $teammember->GetProfession() . ") ";
                     $msg .= $this->GetExtraInfo($teammember->GetName(), $index + 1);
                 }
-                foreach ($this->teams as $indexteam => $teams)
-                {
+                foreach ($this->teams as $indexteam => $teams) {
                     $msg .= "/";
                     $msg .= $this->bot->core("tools")
-                        ->chatcmd("addteam " . bcadd($indexteam, 1) . " " . $teammember->GetName(), bcadd($indexteam, 1));
+                        ->chatcmd(
+                        "addteam " . bcadd($indexteam, 1) . " " . $teammember->GetName(), bcadd($indexteam, 1)
+                    );
                 }
                 $msg .= "\n";
             }
@@ -432,15 +450,13 @@ class NewTeams extends BaseActiveModule
         }
         $msg .= "\n";
         $msg .= "##blob_title##::Looking For Team::##end##\n\n";
-        foreach ($this->pgroup as $index => $array)
-        {
+        foreach ($this->pgroup as $index => $array) {
             $test = $array;
             if ($array[4]) {
                 $msg .= "\t[##highlight##" . $array[0] . "##end##] (" . $array[1] . " " . $array[2] . ") :: ";
                 $msg .= $this->bot->core("tools")
                     ->chatcmd("startteam " . $array[0], "Start Team");
-                foreach ($this->teams as $indexteam => $teams)
-                {
+                foreach ($this->teams as $indexteam => $teams) {
                     $msg .= "/";
                     $msg .= $this->bot->core("tools")
                         ->chatcmd("addteam " . bcadd($indexteam, 1) . " " . $test[0], bcadd($indexteam, 1));
@@ -449,17 +465,19 @@ class NewTeams extends BaseActiveModule
             }
         }
         $msg .= "##end##";
-        $this->bot->send_tell($name, $this->bot->core("tools")
-            ->make_blob("Teams Administration", $msg));
+        $this->bot->send_tell(
+            $name, $this->bot->core("tools")
+                ->make_blob("Teams Administration", $msg)
+        );
     }
 
 
     function GetExtraInfo($name, $index)
     {
         $msg .= $this->bot->core("tools")
-                    ->chatcmd("remteam " . $name, "Rem") . "/";
+            ->chatcmd("remteam " . $name, "Rem") . "/";
         $msg .= $this->bot->core("tools")
-                    ->chatcmd("startteam " . $name, "Sta") . "/";
+            ->chatcmd("startteam " . $name, "Sta") . "/";
         $msg .= $this->bot->core("tools")
             ->chatcmd("setleader $index $name", "Lead");
         return $msg;

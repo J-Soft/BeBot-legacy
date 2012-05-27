@@ -50,17 +50,19 @@ class Logon extends BaseActiveModule
     {
         parent::__construct($bot, get_class($this));
 
-        $this->bot->db->query("CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("logon", "true") . "
+        $this->bot->db->query(
+            "CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("logon", "true") . "
 				(id BIGINT NOT NULL PRIMARY KEY,
-				message VARCHAR(255))");
+				message VARCHAR(255))"
+        );
 
         $this->last_log = array();
 
         $this->start = time() + 3600;
 
-        $this->help['description']                = 'Announces logon logoff events in guildchat.';
+        $this->help['description'] = 'Announces logon logoff events in guildchat.';
         $this->help['command']['logon <message>'] = "Sets a custom logon message to be displayed when you log on.";
-        $this->help['command']['logon']           = "Deletes your custom logon message.";
+        $this->help['command']['logon'] = "Deletes your custom logon message.";
 
         $this->register_command("all", "logon", "MEMBER");
         $this->register_event("buddy");
@@ -91,7 +93,10 @@ class Logon extends BaseActiveModule
         $this->bot->core("settings")
             ->create("Relay", "LogonInPgroup", TRUE, "Should logons be shown in the private group of the bot too?");
         $this->bot->core("settings")
-            ->create("Relay", "OrgLogon", FALSE, "Should prefixing the org channel shortcut to the logon information be used when relaying logons?");
+            ->create(
+            "Relay", "OrgLogon", FALSE,
+            "Should prefixing the org channel shortcut to the logon information be used when relaying logons?"
+        );
         $this->bot->core("settings")
             ->create("Relay", "Alias", TRUE, "Should a Users Main Alias be Shown with logon message?");
     }
@@ -102,11 +107,10 @@ class Logon extends BaseActiveModule
         if ($this->bot->db->get_version("logon") == 2) {
             return;
         }
-        switch ($this->bot->db->get_version("logon"))
-        {
-            case 1:
-                $this->bot->db->update_table("logon", "id", "alter", "ALTER TABLE #___logon MODIFY id BIGINT NOT NULL");
-            default:
+        switch ($this->bot->db->get_version("logon")) {
+        case 1:
+            $this->bot->db->update_table("logon", "id", "alter", "ALTER TABLE #___logon MODIFY id BIGINT NOT NULL");
+        default:
         }
         $this->bot->db->set_version("logon", 2);
     }
@@ -117,8 +121,7 @@ class Logon extends BaseActiveModule
         if (preg_match("/^logon (.+)/i", $msg, $info)) {
             return $this->set_msg($name, $info[1]);
         }
-        elseif (preg_match("/^logon$/i", $msg, $info))
-        {
+        elseif (preg_match("/^logon$/i", $msg, $info)) {
             return $this->set_msg($name, '');
         }
         return false;
@@ -128,16 +131,16 @@ class Logon extends BaseActiveModule
     function buddy($name, $msg)
     {
         if ($msg == 1 || $msg == 0) {
-            if (($this->start < time()) && ($this->bot->core("settings")
-                ->get("Logon", "Enable"))
+            if (($this->start < time())
+                && ($this->bot->core("settings")
+                    ->get("Logon", "Enable"))
             ) {
                 if ($this->bot->core("notify")->check($name)) {
                     $level = $this->bot->db->select("SELECT user_level FROM #___users WHERE nickname = '$name'");
                     if (!empty($level)) {
                         $level = $level[0][0];
                     }
-                    else
-                    {
+                    else {
                         $level = 0;
                     }
                     if ($level == "2") {
@@ -147,8 +150,7 @@ class Logon extends BaseActiveModule
                             $spam = TRUE;
                         }
                     }
-                    elseif ($level == "1")
-                    {
+                    elseif ($level == "1") {
                         if ($this->bot->core("settings")
                             ->get("Logon", "Guests")
                         ) {
@@ -157,8 +159,7 @@ class Logon extends BaseActiveModule
                     }
                     elseif ($this->bot->core("settings")
                         ->get("Logon", "Others")
-                    )
-                    {
+                    ) {
                         $spam = TRUE;
                     }
                     if ($spam) {
@@ -173,8 +174,7 @@ class Logon extends BaseActiveModule
                                     $res = "##highlight##" . $aliasm . "##end## Logged On";
                                     $res .= " (" . $name . " ";
                                 }
-                                else
-                                {
+                                else {
                                     $res = "\"" . $name . "\"";
                                     if (!empty($result["firstname"])) {
                                         $res = $result["firstname"] . " " . $res;
@@ -187,13 +187,15 @@ class Logon extends BaseActiveModule
 
                                 $res .= "Lvl ##logon_level##" . $result["level"] . "##end##";
                                 if ($this->bot->game == "ao") {
-                                    $res .= "/##logon_ailevel##" . $result["at_id"] . "##end## " . $result["faction"] . " " . $result["profession"];
+                                    $res
+                                        .= "/##logon_ailevel##" . $result["at_id"] . "##end## " . $result["faction"] . " "
+                                        . $result["profession"];
                                     if ($result["org"] != '') {
-                                        $res .= ", ##logon_organization##" . $result["rank"] . " of " . $result["org"] . "##end##";
+                                        $res .= ", ##logon_organization##" . $result["rank"] . " of " . $result["org"]
+                                            . "##end##";
                                     }
                                 }
-                                else
-                                {
+                                else {
                                     $res .= " " . $result["class"];
                                 }
                                 $res .= ")";
@@ -203,10 +205,10 @@ class Logon extends BaseActiveModule
 
 
                                 if ($this->bot->core("settings")
-                                        ->get("Whois", "Details") == TRUE
+                                    ->get("Whois", "Details") == TRUE
                                 ) {
                                     if ($this->bot->core("settings")
-                                            ->get("Whois", "ShowMain") == TRUE
+                                        ->get("Whois", "ShowMain") == TRUE
                                     ) {
                                         $main = $this->bot->core("alts")
                                             ->main($name);
@@ -217,13 +219,15 @@ class Logon extends BaseActiveModule
                                     $res .= " :: " . $this->bot->core("whois")
                                         ->whois_details($name, $result);
                                 }
-                                else if ($this->bot->core("settings")
-                                             ->get("Whois", "Alts") == TRUE
-                                ) {
-                                    $alts = $this->bot->core("alts")
-                                        ->show_alt($name);
-                                    if ($alts['alts']) {
-                                        $res .= " :: " . $alts['list'];
+                                else {
+                                    if ($this->bot->core("settings")
+                                        ->get("Whois", "Alts") == TRUE
+                                    ) {
+                                        $alts = $this->bot->core("alts")
+                                            ->show_alt($name);
+                                        if ($alts['alts']) {
+                                            $res .= " :: " . $alts['list'];
+                                        }
                                     }
                                 }
 
@@ -236,8 +240,7 @@ class Logon extends BaseActiveModule
                                 $this->last_log["on"][$name] = time();
                             }
                         }
-                        else
-                        {
+                        else {
                             if ($this->last_log["off"][$name] < (time() - 5)) {
                                 $this->show_logon("##logon_logoff_spam##" . $name . " logged off##end##");
                                 $this->last_log["off"][$name] = time();
@@ -279,7 +282,7 @@ class Logon extends BaseActiveModule
 
     function set_msg($name, $message)
     {
-        $id      = $this->bot->core("chat")->get_uid($name);
+        $id = $this->bot->core("chat")->get_uid($name);
         $message = mysql_real_escape_string($message);
         $this->bot->db->query("REPLACE INTO #___logon (id, message) VALUES ('" . $id . "', '" . $message . "')");
         return "Thank you " . $name . ". You logon message has been set.";

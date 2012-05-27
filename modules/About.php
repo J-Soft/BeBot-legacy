@@ -60,19 +60,25 @@ class About extends BaseActiveModule
         $this->bot->core("settings")
             ->create("Version", "LastCheck", 1, "Last time we completed a version check", NULL, TRUE, 99);
         $this->bot->core("settings")
-            ->create("Version", "CheckURL", "http://bebot.shadow-realm.org/bebotversion.php", "URL to check for new BeBot Version", NULL, TRUE, 99);
+            ->create(
+            "Version", "CheckURL", "http://bebot.shadow-realm.org/bebotversion.php",
+            "URL to check for new BeBot Version", NULL, TRUE, 99
+        );
         $this->bot->core("settings")
-            ->create("Version", "CheckUpdate", TRUE, "Should the bot periodically check if there are new updates available?", "On;Off", FALSE, 10);
+            ->create(
+            "Version", "CheckUpdate", TRUE, "Should the bot periodically check if there are new updates available?",
+            "On;Off", FALSE, 10
+        );
 
-        $this->help['description']              = "Shows information about the bot.";
-        $this->help['command']['version']       = "Displays the bot version information.";
+        $this->help['description'] = "Shows information about the bot.";
+        $this->help['command']['version'] = "Displays the bot version information.";
         $this->help['command']['version check'] = "Forces the bot to check if there is a new version available.";
 
-        $this->info          = array();
-        $this->versiontype   = "s";
+        $this->info = array();
+        $this->versiontype = "s";
         $this->updatewaiting = FALSE;
-        $this->lastrun       = FALSE;
-        $this->owner         = $owner;
+        $this->lastrun = FALSE;
+        $this->owner = $owner;
 
     }
 
@@ -91,19 +97,18 @@ class About extends BaseActiveModule
 
         $command = $vars[0];
 
-        switch ($command)
-        {
-            case 'about':
-            case 'version':
-                if (isset($vars[1]) and strtolower($vars[1]) == 'check') {
-                    $return = $this->version_check($name);
-                    unset($this->info);
-                    return $return;
-                }
-                return $this->about_blob();
-                break;
-            default:
-                return "Broken plugin, recieved unhandled command: $command";
+        switch ($command) {
+        case 'about':
+        case 'version':
+            if (isset($vars[1]) and strtolower($vars[1]) == 'check') {
+                $return = $this->version_check($name);
+                unset($this->info);
+                return $return;
+            }
+            return $this->about_blob();
+            break;
+        default:
+            return "Broken plugin, recieved unhandled command: $command";
         }
     }
 
@@ -113,9 +118,12 @@ class About extends BaseActiveModule
         if ((!empty($this->updatewaiting)) and ($msg == 1) and $this->bot
             ->core("security")->check_access($name, "SUPERADMIN")
         ) {
-            $this->bot->send_tell($name, BOT_VERSION_NAME . " v." . $this->updatewaiting['version'] . " is available and was released " . $this->updatewaiting['date'] . " :: " . $this->bot
+            $this->bot->send_tell(
+                $name, BOT_VERSION_NAME . " v." . $this->updatewaiting['version'] . " is available and was released "
+                . $this->updatewaiting['date'] . " :: " . $this->bot
                 ->core("tools")
-                ->make_blob("Details", $this->updatewaiting['window']));
+                ->make_blob("Details", $this->updatewaiting['window'])
+            );
         }
     }
 
@@ -139,7 +147,7 @@ class About extends BaseActiveModule
     function version_check($name = FALSE)
     {
         $available = FALSE;
-        $newer     = FALSE;
+        $newer = FALSE;
 
         if ($name != FALSE and !$this->bot->core("security")
             ->check_access($name, "SUPERADMIN")
@@ -150,17 +158,17 @@ class About extends BaseActiveModule
         $this->bot->log("VERSION", "UPDATE", "Initiating version check");
         // Fetch version XML
         if ($this->bot->core("settings")->exists("Version", "CheckURL")) {
-            $xml = $this->bot->core("tools")->get_site($this->bot
-                ->core("settings")->get("Version", "CheckURL"));
+            $xml = $this->bot->core("tools")->get_site(
+                $this->bot
+                    ->core("settings")->get("Version", "CheckURL")
+            );
         }
-        else
-        {
+        else {
             $this->bot->log("VERSION", "ERROR", "No Update URL set");
             if (!empty($name)) {
                 return "No update URL set";
             }
-            else
-            {
+            else {
                 return;
             }
         }
@@ -170,7 +178,7 @@ class About extends BaseActiveModule
             if (BOT_VERSION_STABLE == FALSE) {
                 $this->versiontype = "d";
             }
-            $this->info['date']            = $this->bot->core("tools")
+            $this->info['date'] = $this->bot->core("tools")
                 ->xmlparse($xml["content"], $this->versiontype . "rel");
             $this->info['upversionstring'] = $this->bot->core("tools")
                 ->xmlparse($xml["content"], $this->versiontype . "ver");
@@ -179,8 +187,7 @@ class About extends BaseActiveModule
                 if (!empty($name)) {
                     return "XML Error. Version string was empty.";
                 }
-                else
-                {
+                else {
                     return;
                 }
             }
@@ -194,14 +201,12 @@ class About extends BaseActiveModule
                 if ($this->info['myversion'][0] < $this->info['upversion'][0]) {
                     $available = TRUE;
                 }
-                else
-                {
+                else {
                     $newer = TRUE;
                 }
 
             }
-            elseif (BOT_VERSION_SNAPSHOT == TRUE)
-            {
+            elseif (BOT_VERSION_SNAPSHOT == TRUE) {
                 $available = TRUE;
             }
 
@@ -210,13 +215,11 @@ class About extends BaseActiveModule
                 if ($this->info['myversion'][1] < $this->info['upversion'][1]) {
                     $available = TRUE;
                 }
-                else
-                {
+                else {
                     $newer = TRUE;
                 }
             }
-            elseif (BOT_VERSION_SNAPSHOT == TRUE)
-            {
+            elseif (BOT_VERSION_SNAPSHOT == TRUE) {
                 $available = TRUE;
             }
 
@@ -225,93 +228,99 @@ class About extends BaseActiveModule
                 if ($this->info['myversion'][2] < $this->info['upversion'][2]) {
                     $available = TRUE;
                 }
-                else
-                {
+                else {
                     $newer = TRUE;
                 }
             }
-            elseif (BOT_VERSION_SNAPSHOT == TRUE)
-            {
+            elseif (BOT_VERSION_SNAPSHOT == TRUE) {
                 $available = TRUE;
             }
 
             if ($newer == TRUE) {
                 $this->set_update_time();
-                $this->bot->log("VERSION", "UPDATE", "Running newer version already. (Running: " . BOT_VERSION . " Reported newest: " . $this->info['upversionstring'] . ")");
+                $this->bot->log(
+                    "VERSION", "UPDATE",
+                    "Running newer version already. (Running: " . BOT_VERSION . " Reported newest: "
+                        . $this->info['upversionstring'] . ")"
+                );
                 if (!empty($name)) {
-                    return "You are running " . BOT_VERSION_NAME . " v." . BOT_VERSION . BOT_VERSION_INFO . " which is newer than " . $this->info['upversionstring'];
+                    return "You are running " . BOT_VERSION_NAME . " v." . BOT_VERSION . BOT_VERSION_INFO
+                        . " which is newer than " . $this->info['upversionstring'];
                 }
-                else
-                {
+                else {
                     return;
                 }
             }
-            else if ($available == TRUE) {
-                $window = "";
+            else {
+                if ($available == TRUE) {
+                    $window = "";
 
-                if ($this->bot->core("settings")->exists("Version", "CheckURL")
-                ) {
-                    $xml = $this->bot->core("tools")->get_site($this->bot
-                                                                   ->core("settings")
-                                                                   ->get("Version", "CheckURL") . "?ver=" . BOT_VERSION);
-                    if (!isset($xml["error"])) {
-                        $window .= "##blob_title##Release information for " . BOT_VERSION_NAME . " v." . $this->info['upversionstring'] . "##end##\n##blob_text##";
-                        $window .= $this->bot->core("tools")
-                                       ->xmlparse($xml["content"], "info") . "##end##\n\n";
-                        $window .= "##blob_title##Changelog##end##\n##blob_text##";
-                        $window .= $this->bot->core("tools")
-                                       ->xmlparse($xml["content"], "log") . "##end##\n\n";
+                    if ($this->bot->core("settings")->exists("Version", "CheckURL")
+                    ) {
+                        $xml = $this->bot->core("tools")->get_site(
+                            $this->bot
+                                ->core("settings")
+                                ->get("Version", "CheckURL") . "?ver=" . BOT_VERSION
+                        );
+                        if (!isset($xml["error"])) {
+                            $window .= "##blob_title##Release information for " . BOT_VERSION_NAME . " v."
+                                . $this->info['upversionstring'] . "##end##\n##blob_text##";
+                            $window .= $this->bot->core("tools")
+                                ->xmlparse($xml["content"], "info") . "##end##\n\n";
+                            $window .= "##blob_title##Changelog##end##\n##blob_text##";
+                            $window .= $this->bot->core("tools")
+                                ->xmlparse($xml["content"], "log") . "##end##\n\n";
+                        }
+                        else {
+                            $this->bot->log(
+                                "VERSION", "ERROR",
+                                "Failed to obtain changelog and info XML: " . $xml["errordesc"] . " " . $xml["content"]
+                            );
+                            $window .= $xml["errordesc"] . " " . $xml["content"];
+                        }
                     }
-                    else
-                    {
-                        $this->bot->log("VERSION", "ERROR", "Failed to obtain changelog and info XML: " . $xml["errordesc"] . " " . $xml["content"]);
-                        $window .= $xml["errordesc"] . " " . $xml["content"];
+                    else {
+                        if (!empty($name)) {
+                            return "No update URL set";
+                        }
+                        else {
+                            return;
+                        }
                     }
-                }
-                else
-                {
+                    $this->set_update_time();
+                    $this->bot->log(
+                        "VERSION", "UPDATE", "Found new available version " . $this->info['upversionstring']
+                    );
+                    $this->updatewaiting['version'] = $this->info['upversionstring'];
+                    $this->updatewaiting['window'] = $window;
+                    $this->updatewaiting['date'] = $this->info['date'];
                     if (!empty($name)) {
-                        return "No update URL set";
+                        return BOT_VERSION_NAME . " v." . $this->info['upversionstring']
+                            . " is available and was released "
+                            . $this->info['date'] . " :: " . $this->bot
+                            ->core("tools")->make_blob("Details", $window);
                     }
-                    else
-                    {
+                    else {
                         return;
                     }
                 }
-                $this->set_update_time();
-                $this->bot->log("VERSION", "UPDATE", "Found new available version " . $this->info['upversionstring']);
-                $this->updatewaiting['version'] = $this->info['upversionstring'];
-                $this->updatewaiting['window']  = $window;
-                $this->updatewaiting['date']    = $this->info['date'];
-                if (!empty($name)) {
-                    return BOT_VERSION_NAME . " v." . $this->info['upversionstring'] . " is available and was released " . $this->info['date'] . " :: " . $this->bot
-                        ->core("tools")->make_blob("Details", $window);
-                }
-                else
-                {
-                    return;
-                }
-            }
-            else
-            {
-                $this->bot->log("VERSION", "UPDATE", "No new version detected");
-                if (!empty($name)) {
-                    return "No new version detected.";
-                }
-                else
-                {
-                    return;
+                else {
+                    $this->bot->log("VERSION", "UPDATE", "No new version detected");
+                    if (!empty($name)) {
+                        return "No new version detected.";
+                    }
+                    else {
+                        return;
+                    }
                 }
             }
         }
-        else
-        {
+        else {
             $this->bot->log("VERSION", "ERROR", "Failed to obtain XML: " . $xml["errordesc"] . " " . $xml["content"]);
             if (!empty($name)) {
                 return $xml["errordesc"] . " " . $xml["content"];
             }
-            else
-            {
+            else {
                 return;
             }
         }
@@ -324,14 +333,14 @@ class About extends BaseActiveModule
     function about_blob()
     {
         $version = BOT_VERSION_NAME . " v." . BOT_VERSION . BOT_VERSION_INFO;
-        $inside  = "##blob_title##::: About :::##end##\n";
+        $inside = "##blob_title##::: About :::##end##\n";
         $inside .= "\n";
         $inside .= "##blob_text##Bot version:##end## $version\n";
         $inside .= "##blob_text##Bot owner:##end## $this->owner\n";
         $inside .= "\n";
         $inside .= "##blob_text##Download URL:##end##\n";
         $inside .= $this->bot->core("tools")
-                       ->chatcmd("http://bebot.shadow-realm.org", "http://bebot.shadow-realm.org", "start") . "\n";
+            ->chatcmd("http://bebot.shadow-realm.org", "http://bebot.shadow-realm.org", "start") . "\n";
         $inside .= "\n";
         $inside .= "##blob_text##Core developers:##end##\n";
         $inside .= "Alreadythere (RK2)\n";

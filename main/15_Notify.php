@@ -54,10 +54,9 @@ class Notify_Core extends BasePassiveModule
     function update_cache()
     {
         $this->cache = array();
-        $notifylist  = $this->bot->db->select("SELECT nickname FROM #___users WHERE notify = 1");
+        $notifylist = $this->bot->db->select("SELECT nickname FROM #___users WHERE notify = 1");
         if (!empty($notifylist)) {
-            foreach ($notifylist as $user)
-            {
+            foreach ($notifylist as $user) {
                 $this->cache[ucfirst(strtolower($user[0]))] = TRUE;
             }
         }
@@ -74,10 +73,10 @@ class Notify_Core extends BasePassiveModule
     {
         $ret['error'] = FALSE;
 
-        $id   = $this->bot->core("chat")->get_uid($user);
+        $id = $this->bot->core("chat")->get_uid($user);
         $user = ucfirst(strtolower($user));
         if ($id == 0) {
-            $ret['error']     = TRUE;
+            $ret['error'] = TRUE;
             $ret['errordesc'] = $user . " is no valid character name!";
             return $ret;
         }
@@ -88,11 +87,10 @@ class Notify_Core extends BasePassiveModule
             // Need to add $user to users table as anonymous and silent
             $this->bot->core("user")->add($source, $user, 0, 0, 1);
         }
-        else
-        {
+        else {
             // Check if already on notify
             if ($usr[0][0] == 1) {
-                $ret['error']     = TRUE;
+                $ret['error'] = TRUE;
                 $ret['errordesc'] = $user . " is already on the notify list!";
                 return $ret;
             }
@@ -114,10 +112,10 @@ class Notify_Core extends BasePassiveModule
     {
         $ret['error'] = FALSE;
 
-        $id   = $this->bot->core("chat")->get_uid($user);
+        $id = $this->bot->core("chat")->get_uid($user);
         $user = ucfirst(strtolower($user));
         if ($id == 0) {
-            $ret['error']     = true;
+            $ret['error'] = true;
             $ret['errordesc'] = $user . " is no valid character name!";
             return $ret;
         }
@@ -126,13 +124,13 @@ class Notify_Core extends BasePassiveModule
         $usr = $this->bot->db->select("SELECT notify FROM #___users WHERE nickname = '" . $user . "'");
 
         if (empty($usr)) {
-            $ret['error']     = true;
+            $ret['error'] = true;
             $ret['errordesc'] = $user . " is not on notify list!";
             return $ret;
         }
 
         if ($usr[0][0] == 0) {
-            $ret['error']     = true;
+            $ret['error'] = true;
             $ret['errordesc'] = $user . " is not on notify list!";
             return $ret;
         }
@@ -144,7 +142,10 @@ class Notify_Core extends BasePassiveModule
         // If in buddy list remove
         $this->bot->core("chat")->buddy_remove($id);
 
-        $this->bot->db->query("UPDATE #___online SET status_gc = 0 WHERE nickname = '" . $user . "' AND botname = '" . $this->bot->botname . "'");
+        $this->bot->db->query(
+            "UPDATE #___online SET status_gc = 0 WHERE nickname = '" . $user . "' AND botname = '" . $this->bot->botname
+                . "'"
+        );
 
         $ret['content'] = $user . " removed from notify list!";
         return $ret;
@@ -159,32 +160,28 @@ class Notify_Core extends BasePassiveModule
 
         asort($notify_list);
 
-        foreach ($notify_list as $key => $value)
-        {
+        foreach ($notify_list as $key => $value) {
             $notify_db = $this->bot->db->select("SELECT notify FROM #___users WHERE nickname = '" . $key . "'");
             $msg .= $key;
 
             if ($value == 1) {
                 $msg .= " [##green##Cache##end##]";
             }
-            else
-            {
+            else {
                 $msg .= " [##red##Cache##end##]";
             }
 
             if ($notify_db[0][0] == 1) {
                 $msg .= "[##green##DB##end##]";
             }
-            else
-            {
+            else {
                 $msg .= "[##red##DB##end##]";
             }
 
             if ($notify_db[0][0] != $value) {
                 $msg .= " ##yellow##MISMATCH##end##\n";
             }
-            else
-            {
+            else {
                 $msg .= "\n";
             }
 

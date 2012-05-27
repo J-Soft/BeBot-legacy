@@ -47,17 +47,21 @@ class ShortCuts_Core extends BasePassiveModule
     {
         parent::__construct($bot, get_class($this));
 
-        $this->bot->db->query("CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("shortcuts", "false")
-                              . " (id INT NOT NULL AUTO_INCREMENT UNIQUE, "
-                              . " shortcut VARCHAR(20) NOT NULL PRIMARY KEY, "
-                              . " long_desc VARCHAR(255) NOT NULL UNIQUE)");
+        $this->bot->db->query(
+            "CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("shortcuts", "false")
+                . " (id INT NOT NULL AUTO_INCREMENT UNIQUE, "
+                . " shortcut VARCHAR(20) NOT NULL PRIMARY KEY, "
+                . " long_desc VARCHAR(255) NOT NULL UNIQUE)"
+        );
 
-        $this->bot->db->query("INSERT IGNORE INTO #___shortcuts (`shortcut`, `long_desc`) VALUES "
-                              . "('Pres', 'President'), ('Gen', 'General'), ('SC', 'Squad Commander'), ('UC', 'Unit Commander'), "
-                              . "('UL', 'Unit Leader'), ('UM', 'Unit Member'), ('App', 'Applicant'), ('Dir', 'Director'), ('BM', 'Board Member'), "
-                              . "('Exec', 'Executive'), ('Mem', 'Member'), ('Adv', 'Advisor'), ('Vet', 'Veteran'), ('Mon', 'Monarch'), "
-                              . "('Coun', 'Counsel'), ('Fol', 'Follower'), ('Anar', 'Anarchist'), ('Lord', 'Lord'), ('Knght', 'Knight'), "
-                              . "('Vas', 'Vassal '), ('Peas', 'Peasant')");
+        $this->bot->db->query(
+            "INSERT IGNORE INTO #___shortcuts (`shortcut`, `long_desc`) VALUES "
+                . "('Pres', 'President'), ('Gen', 'General'), ('SC', 'Squad Commander'), ('UC', 'Unit Commander'), "
+                . "('UL', 'Unit Leader'), ('UM', 'Unit Member'), ('App', 'Applicant'), ('Dir', 'Director'), ('BM', 'Board Member'), "
+                . "('Exec', 'Executive'), ('Mem', 'Member'), ('Adv', 'Advisor'), ('Vet', 'Veteran'), ('Mon', 'Monarch'), "
+                . "('Coun', 'Counsel'), ('Fol', 'Follower'), ('Anar', 'Anarchist'), ('Lord', 'Lord'), ('Knght', 'Knight'), "
+                . "('Vas', 'Vassal '), ('Peas', 'Peasant')"
+        );
 
         $this->register_module("shortcuts");
         $this->register_event("cron", "1hour");
@@ -70,16 +74,15 @@ class ShortCuts_Core extends BasePassiveModule
     function create_caches()
     {
         $this->short = array();
-        $this->long  = array();
+        $this->long = array();
 
         $ret = $this->bot->db->select("SELECT shortcut, long_desc FROM #___shortcuts");
         if (!empty($ret)) {
-            foreach ($ret as $pair)
-            {
-                $pair[0]                           = stripslashes($pair[0]);
-                $pair[1]                           = stripslashes($pair[1]);
+            foreach ($ret as $pair) {
+                $pair[0] = stripslashes($pair[0]);
+                $pair[1] = stripslashes($pair[1]);
                 $this->short[strtolower($pair[1])] = $pair[0];
-                $this->long[strtolower($pair[0])]  = $pair[1];
+                $this->long[strtolower($pair[0])] = $pair[1];
             }
         }
     }
@@ -117,20 +120,27 @@ class ShortCuts_Core extends BasePassiveModule
         $return['error'] = FALSE;
 
         if (isset($this->short[strtolower($long)])) {
-            $return['error']     = true;
-            $return['errordesc'] = 'The text ' . $long . ' already is in the databse with shortcut "' . $this->short[strtolower($long)] . '"!';
+            $return['error'] = true;
+            $return['errordesc']
+                = 'The text ' . $long . ' already is in the databse with shortcut "' . $this->short[strtolower($long)]
+                . '"!';
             return $return;
         }
         if (isset($this->long[strtolower($short)])) {
-            $return['error']     = true;
-            $return['errordesc'] = 'The shortcut ' . $short . ' is already defined for "' . $this->long[strtolower($short)] . '"!';
+            $return['error'] = true;
+            $return['errordesc']
+                = 'The shortcut ' . $short . ' is already defined for "' . $this->long[strtolower($short)] . '"!';
             return $return;
         }
 
-        $return['content']              = 'New shortcut "' . $short . '" added to database with corresponding long entry "' . $long . '".';
+        $return['content']
+            = 'New shortcut "' . $short . '" added to database with corresponding long entry "' . $long . '".';
         $this->long[strtolower($short)] = $long;
         $this->short[strtolower($long)] = $short;
-        $this->bot->db->query("INSERT INTO #___shortcuts (shortcut, long_desc) VALUES ('" . mysql_real_escape_string($short) . "', '" . mysql_real_escape_string($long) . "')");
+        $this->bot->db->query(
+            "INSERT INTO #___shortcuts (shortcut, long_desc) VALUES ('" . mysql_real_escape_string($short) . "', '"
+                . mysql_real_escape_string($long) . "')"
+        );
         return $return;
     }
 
@@ -139,14 +149,15 @@ class ShortCuts_Core extends BasePassiveModule
     function delete_shortcut($short)
     {
         if (!isset($this->long[strtolower($short)])) {
-            $return['error']     = TRUE;
+            $return['error'] = TRUE;
             $return['errordesc'] = 'The shortcut "' . $short . '" does not exist in the database!';
             return $return;
         }
 
-        $return['error']   = FALSE;
-        $return['content'] = 'The shortcut "' . $short . '" and the corresponding long description "' . $this->long[strtolower($short)]
-                             . '" were deleted!';
+        $return['error'] = FALSE;
+        $return['content']
+            = 'The shortcut "' . $short . '" and the corresponding long description "' . $this->long[strtolower($short)]
+            . '" were deleted!';
 
         unset($this->short[strtolower($this->long[strtolower($short)])]);
         unset($this->long[strtolower($short)]);
@@ -160,14 +171,15 @@ class ShortCuts_Core extends BasePassiveModule
     function delete_description($long)
     {
         if (!isset($this->short[strtolower($long)])) {
-            $return['error']     = TRUE;
+            $return['error'] = TRUE;
             $return['errordesc'] = 'The description "' . $long . '" does not exist in the database!';
             return $return;
         }
 
-        $return['error']   = FALSE;
-        $return['content'] = 'The description "' . $long . '" and the corresponding shortcut "' . $this->short[strtolower($long)]
-                             . '" were deleted!';
+        $return['error'] = FALSE;
+        $return['content']
+            = 'The description "' . $long . '" and the corresponding shortcut "' . $this->short[strtolower($long)]
+            . '" were deleted!';
 
         unset($this->long[strtolower($this->short[strtolower($long)])]);
         unset($this->short[strtolower($long)]);
@@ -182,7 +194,7 @@ class ShortCuts_Core extends BasePassiveModule
     {
         $ret = $this->bot->db->select("SELECT shortcut, long_desc FROM #___shortcuts WHERE id = " . $id);
         if (empty($ret)) {
-            $return['error']     = TRUE;
+            $return['error'] = TRUE;
             $return['errordesc'] = "No entry with the ID " . $id . " exists!";
             return $return;
         }
@@ -190,8 +202,10 @@ class ShortCuts_Core extends BasePassiveModule
         $ret[0][0] = stripslashes($ret[0][0]);
         $ret[0][1] = stripslashes($ret[0][1]);
 
-        $return['error']   = false;
-        $return['content'] = "The entry with the ID " . $id . " has been deleted. Shortcut: " . $ret[0][0] . ", long description: " . $ret[0][1] . ".";
+        $return['error'] = false;
+        $return['content']
+            = "The entry with the ID " . $id . " has been deleted. Shortcut: " . $ret[0][0] . ", long description: "
+            . $ret[0][1] . ".";
         unset($this->long[strtolower($ret[0][1])]);
         unset($this->short[strtolower($ret[0][0])]);
         $this->bot->db->query("DELETE FROM #___shortcuts WHERE id = " . $id);

@@ -49,8 +49,10 @@ class ConfigMagik extends BasePassiveModule
      *
      * @return void Returns nothing, like any other constructor-method ��] .
      */
-    function __construct(&$bot, $path = null, $synchronize = false,
-                         $process_sections = true)
+    function __construct(
+        &$bot, $path = null, $synchronize = false,
+        $process_sections = true
+    )
     {
         parent::__construct($bot, get_class($this));
 
@@ -69,8 +71,10 @@ class ConfigMagik extends BasePassiveModule
      * @param  synchronize      Maintain file sychronization.
      * @param  process_sections Process sections (false if there are no sections in the ini.
      */
-    function create_ini($path = null, $synchronize = false,
-                        $process_sections = true)
+    function create_ini(
+        $path = null, $synchronize = false,
+        $process_sections = true
+    )
     {
         // check whether to enable processing-sections or not
         if (isset($process_sections)) {
@@ -132,16 +136,16 @@ class ConfigMagik extends BasePassiveModule
             if (isset($this->VARS[$section][$key])) {
                 $value = $this->VARS[$section][$key];
             }
-            else if (isset($this->VARS[$key])) {
-                $value = $this->VARS[$key];
-            }
-            else
-            {
-                return null;
+            else {
+                if (isset($this->VARS[$key])) {
+                    $value = $this->VARS[$key];
+                }
+                else {
+                    return null;
+                }
             }
         }
-        else
-        {
+        else {
             $value = $this->VARS[$key];
         }
         // if value was not found (false), return NULL (FIX: 11/08/2004 BennyZaminga)
@@ -396,9 +400,9 @@ class ConfigMagik extends BasePassiveModule
             if ($this->PROCESS_SECTIONS) {
                 // render with sections
                 $out .= "\t<tr><th style='border:1px solid white;'>Section</th><th style='border:1px solid white;'>Key</th><th style='border:1px solid white;'>Value</th></tr>\n";
-                $sections     = $this->listSections();
+                $sections = $this->listSections();
                 $num_sections = 0;
-                $num_keys     = 0;
+                $num_keys = 0;
                 foreach ($sections as $section) {
                     $out .= "\t<tr><td style='border:1px solid white;' colspan=3>$section</td></tr>\n";
                     $keys = $this->listKeys($section);
@@ -414,7 +418,7 @@ class ConfigMagik extends BasePassiveModule
             }
             else {
                 // render without sections
-                $keys     = $this->listKeys();
+                $keys = $this->listKeys();
                 $num_keys = 0;
                 $out .= "\t<tr><th style='border:1px solid white;'>Key</th><th style='border:1px solid white;'>Value</th></tr>\n";
                 foreach ($keys as $key) {
@@ -453,7 +457,7 @@ class ConfigMagik extends BasePassiveModule
             }
             // list all keys in given section
             $list = array();
-            $all  = array_keys($this->VARS[$section]);
+            $all = array_keys($this->VARS[$section]);
             foreach ($all as $possible_key) {
                 if (!is_array($this->VARS[$possible_key])) {
                     array_push($list, $possible_key);

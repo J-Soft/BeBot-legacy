@@ -67,177 +67,183 @@ class Tier2 extends BaseActiveModule
     {
         parent::__construct($bot, get_class($this));
 
-        $this->bot    = &$bot;
-        $this->raid   = false;
+        $this->bot = &$bot;
+        $this->raid = false;
         $this->pgroup = array();
-        $this->users  = array();
-        $this->ids    = array(
-            "repose"  => 239469,
+        $this->users = array();
+        $this->ids = array(
+            "repose" => 239469,
             "tempest" => 239470,
             "unshake" => 239471,
-            "indust"  => 239475,
-            "benign"  => 239476,
+            "indust" => 239475,
+            "benign" => 239476,
             "prudent" => 239478,
             "passion" => 239479,
-            "impet"   => 239480,
-            "embryo"  => 239836,
-            "aban"    => 218343,
-            "enel"    => 218342,
-            "ocra"    => 218341,
-            "green"   => 218346,
-            "horned"  => 218347,
-            "orange"  => 218345,
-            "purple"  => 218344,
-            "white"   => 218340
+            "impet" => 239480,
+            "embryo" => 239836,
+            "aban" => 218343,
+            "enel" => 218342,
+            "ocra" => 218341,
+            "green" => 218346,
+            "horned" => 218347,
+            "orange" => 218345,
+            "purple" => 218344,
+            "white" => 218340
         );
-        $this->qls    = array(
-            "repose"  => 1,
+        $this->qls = array(
+            "repose" => 1,
             "tempest" => 1,
             "unshake" => 1,
-            "indust"  => 1,
-            "benign"  => 1,
+            "indust" => 1,
+            "benign" => 1,
             "prudent" => 1,
             "passion" => 1,
-            "impet"   => 1,
-            "embryo"  => 1,
-            "aban"    => 160,
-            "enel"    => 160,
-            "ocra"    => 160,
-            "green"   => 160,
-            "horned"  => 160,
-            "orange"  => 160,
-            "purple"  => 160,
-            "white"   => 160
+            "impet" => 1,
+            "embryo" => 1,
+            "aban" => 160,
+            "enel" => 160,
+            "ocra" => 160,
+            "green" => 160,
+            "horned" => 160,
+            "orange" => 160,
+            "purple" => 160,
+            "white" => 160
         );
-        $this->names  = array(
-            "repose"     => "Will of the Reposeful",
-            "tempest"    => "Will of the Tempestuous",
-            "unshake"    => "Will of the Unshakable",
-            "indust"     => "Advent of the Industrious",
-            "benign"     => "Advent of the Benign",
-            "prudent"    => "Advent of the Prudent",
-            "passion"    => "Advent of the Passionate",
-            "impet"      => "Advent of the Impetuous",
-            "embryo"     => "Embryo of Yoma'Arallu",
-            "aban"       => "Red Glyph of Aban",
-            "enel"       => "Red Glyph of Enel",
-            "ocra"       => "Red Glyph of Ocra",
-            "green"      => "Green Tower Glyph of Thar",
-            "horned"     => "Horned Black Glyph of Shere",
-            "orange"     => "Orange Moon Glyph of Roch",
-            "purple"     => "Purple Star Glyph of Bhotaar",
-            "white"      => "White Sun Glyph of Xum",
-            "will_ffa"   => "Will Free For All",
+        $this->names = array(
+            "repose" => "Will of the Reposeful",
+            "tempest" => "Will of the Tempestuous",
+            "unshake" => "Will of the Unshakable",
+            "indust" => "Advent of the Industrious",
+            "benign" => "Advent of the Benign",
+            "prudent" => "Advent of the Prudent",
+            "passion" => "Advent of the Passionate",
+            "impet" => "Advent of the Impetuous",
+            "embryo" => "Embryo of Yoma'Arallu",
+            "aban" => "Red Glyph of Aban",
+            "enel" => "Red Glyph of Enel",
+            "ocra" => "Red Glyph of Ocra",
+            "green" => "Green Tower Glyph of Thar",
+            "horned" => "Horned Black Glyph of Shere",
+            "orange" => "Orange Moon Glyph of Roch",
+            "purple" => "Purple Star Glyph of Bhotaar",
+            "white" => "White Sun Glyph of Xum",
+            "will_ffa" => "Will Free For All",
             "advent_ffa" => "Advent Free For All"
         );
-        $this->profs  = array("Adventurer",
-                              "Agent",
-                              "Bureaucrat",
-                              "Doctor",
-                              "Enforcer",
-                              "Engineer",
-                              "Fixer",
-                              "Keeper",
-                              "Martial Artist",
-                              "Meta-Physicist",
-                              "Nano-Technician",
-                              "Shade",
-                              "Soldier",
-                              "Trader");
+        $this->profs = array(
+            "Adventurer",
+            "Agent",
+            "Bureaucrat",
+            "Doctor",
+            "Enforcer",
+            "Engineer",
+            "Fixer",
+            "Keeper",
+            "Martial Artist",
+            "Meta-Physicist",
+            "Nano-Technician",
+            "Shade",
+            "Soldier",
+            "Trader"
+        );
 
         $this->wills = array(
-            'Adventurer'      => 'repose',
-            'Agent'           => 'tempest',
-            'Bureaucrat'      => 'tempest',
-            'Doctor'          => 'repose',
-            'Enforcer'        => 'unshake',
-            'Engineer'        => 'unshake',
-            'Fixer'           => 'repose',
-            'Keeper'          => 'unshake',
-            'Martial Artist'  => 'unshake',
-            'Meta-Physicist'  => 'repose',
+            'Adventurer' => 'repose',
+            'Agent' => 'tempest',
+            'Bureaucrat' => 'tempest',
+            'Doctor' => 'repose',
+            'Enforcer' => 'unshake',
+            'Engineer' => 'unshake',
+            'Fixer' => 'repose',
+            'Keeper' => 'unshake',
+            'Martial Artist' => 'unshake',
+            'Meta-Physicist' => 'repose',
             'Nano-Technician' => 'tempest',
-            'Shade'           => 'unshake',
-            'Soldier'         => 'tempest',
-            'Trader'          => 'repose'
+            'Shade' => 'unshake',
+            'Soldier' => 'tempest',
+            'Trader' => 'repose'
         );
 
         $this->advents = array(
-            'Adventurer'      => 'prudent',
-            'Agent'           => 'impet',
-            'Bureaucrat'      => 'passion',
-            'Doctor'          => 'benign',
-            'Enforcer'        => 'prudent',
-            'Engineer'        => 'indust',
-            'Fixer'           => 'impet',
-            'Keeper'          => 'benign',
-            'Martial Artist'  => 'impet',
-            'Meta-Physicist'  => 'passion',
+            'Adventurer' => 'prudent',
+            'Agent' => 'impet',
+            'Bureaucrat' => 'passion',
+            'Doctor' => 'benign',
+            'Enforcer' => 'prudent',
+            'Engineer' => 'indust',
+            'Fixer' => 'impet',
+            'Keeper' => 'benign',
+            'Martial Artist' => 'impet',
+            'Meta-Physicist' => 'passion',
             'Nano-Technician' => 'benign',
-            'Shade'           => 'passion',
-            'Soldier'         => 'prudent',
-            'Trader'          => 'indust'
+            'Shade' => 'passion',
+            'Soldier' => 'prudent',
+            'Trader' => 'indust'
         );
 
         $this->red_glyphs = array(
-            'Adventurer'      => 'ocra',
-            'Agent'           => 'enel',
-            'Bureaucrat'      => 'enel',
-            'Doctor'          => 'ocra',
-            'Enforcer'        => 'aban',
-            'Engineer'        => 'aban',
-            'Fixer'           => 'ocra',
-            'Keeper'          => 'aban',
-            'Martial Artist'  => 'aban',
-            'Meta-Physicist'  => 'ocra',
+            'Adventurer' => 'ocra',
+            'Agent' => 'enel',
+            'Bureaucrat' => 'enel',
+            'Doctor' => 'ocra',
+            'Enforcer' => 'aban',
+            'Engineer' => 'aban',
+            'Fixer' => 'ocra',
+            'Keeper' => 'aban',
+            'Martial Artist' => 'aban',
+            'Meta-Physicist' => 'ocra',
             'Nano-Technician' => 'enel',
-            'Shade'           => 'aban',
-            'Soldier'         => 'enel',
-            'Trader'          => 'ocra'
+            'Shade' => 'aban',
+            'Soldier' => 'enel',
+            'Trader' => 'ocra'
         );
 
         $this->space_glyphs = array(
-            'Adventurer'      => 'purple',
-            'Agent'           => 'orange',
-            'Bureaucrat'      => 'white',
-            'Doctor'          => 'green',
-            'Enforcer'        => 'purple',
-            'Engineer'        => 'horned',
-            'Fixer'           => 'orange',
-            'Keeper'          => 'green',
-            'Martial Artist'  => 'orange',
-            'Meta-Physicist'  => 'white',
+            'Adventurer' => 'purple',
+            'Agent' => 'orange',
+            'Bureaucrat' => 'white',
+            'Doctor' => 'green',
+            'Enforcer' => 'purple',
+            'Engineer' => 'horned',
+            'Fixer' => 'orange',
+            'Keeper' => 'green',
+            'Martial Artist' => 'orange',
+            'Meta-Physicist' => 'white',
             'Nano-Technician' => 'green',
-            'Shade'           => 'white',
-            'Soldier'         => 'purple',
-            'Trader'          => 'horned'
+            'Shade' => 'white',
+            'Soldier' => 'purple',
+            'Trader' => 'horned'
         );
 
         $this->groups = array(
-            "embryo"     => "embryo",
-            "repose"     => "will",
-            "tempest"    => "will",
-            "unshake"    => "will",
-            "benign"     => "advent",
-            "impet"      => "advent",
-            "indust"     => "advent",
-            "passion"    => "advent",
-            "prudent"    => "advent",
-            "will_ffa"   => "will_ffa",
+            "embryo" => "embryo",
+            "repose" => "will",
+            "tempest" => "will",
+            "unshake" => "will",
+            "benign" => "advent",
+            "impet" => "advent",
+            "indust" => "advent",
+            "passion" => "advent",
+            "prudent" => "advent",
+            "will_ffa" => "will_ffa",
             "advent_ffa" => "advent_ffa"
         );
 
-        foreach (array("embryo",
-                       "repose",
-                       "tempest",
-                       "unshake",
-                       "benign",
-                       "impet",
-                       "indust",
-                       "passion",
-                       "prudent",
-                       "will_ffa",
-                       "advent_ffa") as $each) {
+        foreach (
+            array(
+                "embryo",
+                "repose",
+                "tempest",
+                "unshake",
+                "benign",
+                "impet",
+                "indust",
+                "passion",
+                "prudent",
+                "will_ffa",
+                "advent_ffa"
+            ) as $each
+        ) {
             $this->raffles[$each] = array();
         }
 
@@ -269,50 +275,90 @@ class Tier2 extends BaseActiveModule
         else if (preg_match("/^t2 admin user$/i", $msg)) {
             $this->admin_user_console($name);
         }
-        else if (preg_match("/^t2 admin rejoin ([a-zA-Z0-9]+) ([a-zA-Z0-9_]+)$/i", $msg, $info)) {
-            $this->admin_rejoin($name, $info[1], $info[2]);
-        }
-        else if (preg_match("/^t2 join$/i", $msg)) {
-            $this->join_window($name);
-        }
-        else if (preg_match("/^t2 loot ([a-zA-Z_]+)$/i", $msg, $info)) {
-            $this->declare_loot($name, $info[1], $info[1]);
-        }
-        else if (preg_match("/^t2 join all$/i", $msg)) {
-            $this->enter_all_raffles($name);
-        }
-        else if (preg_match("/^t2 join embryo$/i", $msg)) {
-            $this->enter_raffle($name, "embryo", "embryo");
-        }
-        else if (preg_match("/^t2 join will_ffa$/i", $msg)) {
-            $this->enter_raffle($name, "will_ffa", "will_ffa");
-        }
-        else if (preg_match("/^t2 join advent_ffa$/i", $msg)) {
-            $this->enter_raffle($name, "advent_ffa", "advent_ffa");
-        }
-        else if (preg_match("/^t2 join will$/i", $msg)) {
-            $this->enter_raffle($name, $this->wills[$this->users[$name][profession]], "will");
-        }
-        else if (preg_match("/^t2 join advent$/i", $msg)) {
-            $this->enter_raffle($name, $this->advents[$this->users[$name][profession]], "advent");
-        }
-        else if (preg_match("/^t2 leave embryo$/i", $msg)) {
-            $this->leave_raffle($name, "embryo", "embryo");
-        }
-        else if (preg_match("/^t2 leave will_ffa$/i", $msg)) {
-            $this->leave_raffle($name, "will_ffa", "will_ffa");
-        }
-        else if (preg_match("/^t2 leave advent_ffa$/i", $msg)) {
-            $this->leave_raffle($name, "advent_ffa", "advent_ffa");
-        }
-        else if (preg_match("/^t2 leave will$/i", $msg)) {
-            $this->leave_raffle($name, $this->wills[$this->users[$name][profession]], "will");
-        }
-        else if (preg_match("/^t2 leave advent$/i", $msg)) {
-            $this->leave_raffle($name, $this->advents[$this->users[$name][profession]], "advent");
-        }
-        else if (preg_match("/^t2 setprof ([a-zA-Z\s]+)$/i", $msg, $info)) {
-            $this->setprof($name, $info[1]);
+        else {
+            if (preg_match("/^t2 admin rejoin ([a-zA-Z0-9]+) ([a-zA-Z0-9_]+)$/i", $msg, $info)) {
+                $this->admin_rejoin($name, $info[1], $info[2]);
+            }
+            else {
+                if (preg_match("/^t2 join$/i", $msg)) {
+                    $this->join_window($name);
+                }
+                else {
+                    if (preg_match("/^t2 loot ([a-zA-Z_]+)$/i", $msg, $info)) {
+                        $this->declare_loot($name, $info[1], $info[1]);
+                    }
+                    else {
+                        if (preg_match("/^t2 join all$/i", $msg)) {
+                            $this->enter_all_raffles($name);
+                        }
+                        else {
+                            if (preg_match("/^t2 join embryo$/i", $msg)) {
+                                $this->enter_raffle($name, "embryo", "embryo");
+                            }
+                            else {
+                                if (preg_match("/^t2 join will_ffa$/i", $msg)) {
+                                    $this->enter_raffle($name, "will_ffa", "will_ffa");
+                                }
+                                else {
+                                    if (preg_match("/^t2 join advent_ffa$/i", $msg)) {
+                                        $this->enter_raffle($name, "advent_ffa", "advent_ffa");
+                                    }
+                                    else {
+                                        if (preg_match("/^t2 join will$/i", $msg)) {
+                                            $this->enter_raffle($name, $this->wills[$this->users[$name][profession]], "will");
+                                        }
+                                        else {
+                                            if (preg_match("/^t2 join advent$/i", $msg)) {
+                                                $this->enter_raffle(
+                                                    $name, $this->advents[$this->users[$name][profession]], "advent"
+                                                );
+                                            }
+                                            else {
+                                                if (preg_match("/^t2 leave embryo$/i", $msg)) {
+                                                    $this->leave_raffle($name, "embryo", "embryo");
+                                                }
+                                                else {
+                                                    if (preg_match("/^t2 leave will_ffa$/i", $msg)) {
+                                                        $this->leave_raffle($name, "will_ffa", "will_ffa");
+                                                    }
+                                                    else {
+                                                        if (preg_match("/^t2 leave advent_ffa$/i", $msg)) {
+                                                            $this->leave_raffle($name, "advent_ffa", "advent_ffa");
+                                                        }
+                                                        else {
+                                                            if (preg_match("/^t2 leave will$/i", $msg)) {
+                                                                $this->leave_raffle(
+                                                                    $name, $this->wills[$this->users[$name][profession]], "will"
+                                                                );
+                                                            }
+                                                            else {
+                                                                if (preg_match("/^t2 leave advent$/i", $msg)) {
+                                                                    $this->leave_raffle(
+                                                                        $name, $this->advents[$this->users[$name][profession]],
+                                                                        "advent"
+                                                                    );
+                                                                }
+                                                                else {
+                                                                    if (preg_match(
+                                                                        "/^t2 setprof ([a-zA-Z\s]+)$/i", $msg, $info
+                                                                    )
+                                                                    ) {
+                                                                        $this->setprof($name, $info[1]);
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         return false;
@@ -349,18 +395,24 @@ class Tier2 extends BaseActiveModule
         }
 
         if ($this->raid) {
-            $raffles = array("embryo",
-                             "will",
-                             "advent",
-                             "will",
-                             "advent");
+            $raffles = array(
+                "embryo",
+                "will",
+                "advent",
+                "will",
+                "advent"
+            );
 
-            foreach (array("embryo",
-                           "will_ffa",
-                           "advent_ffa",
-                           $this->wills[$this->users[$name][profession]],
-                           $this->advents[$this->users[$name][profession]]) as
-                     $type) {
+            foreach (
+                array(
+                    "embryo",
+                    "will_ffa",
+                    "advent_ffa",
+                    $this->wills[$this->users[$name][profession]],
+                    $this->advents[$this->users[$name][profession]]
+                ) as
+                $type
+            ) {
                 $raffle = array_shift($raffles);
 
                 $this->users[$name][$raffle] = false;
@@ -390,8 +442,7 @@ class Tier2 extends BaseActiveModule
                 $this->raid = true;
                 $this->bot->send_pgroup("<font color=#ffff00>$name</font> has started a Tier 2 raid");
                 $this->admin_console($name);
-                foreach ($this->pgroup as $player)
-                {
+                foreach ($this->pgroup as $player) {
                     $this->join_window($player);
                 }
             }
@@ -412,17 +463,21 @@ class Tier2 extends BaseActiveModule
                 $this->raid = false;
                 $this->bot->send_pgroup("<font color=#ffff00>$name</font> has stopped the Tier 2 raid");
                 $this->users = array();
-                foreach (array("embryo",
-                               "repose",
-                               "tempest",
-                               "unshake",
-                               "benign",
-                               "impet",
-                               "indust",
-                               "passion",
-                               "prudent",
-                               "will_ffa",
-                               "advent_ffa") as $each) {
+                foreach (
+                    array(
+                        "embryo",
+                        "repose",
+                        "tempest",
+                        "unshake",
+                        "benign",
+                        "impet",
+                        "indust",
+                        "passion",
+                        "prudent",
+                        "will_ffa",
+                        "advent_ffa"
+                    ) as $each
+                ) {
                     $this->raffles[$each] = array();
                 }
 
@@ -497,11 +552,15 @@ class Tier2 extends BaseActiveModule
             return;
         }
 
-        foreach (array("embryo",
-                       "will",
-                       "advent",
-                       "will_ffa",
-                       "advent_ffa") as $cat) {
+        foreach (
+            array(
+                "embryo",
+                "will",
+                "advent",
+                "will_ffa",
+                "advent_ffa"
+            ) as $cat
+        ) {
             if ($this->users[$name][$cat]) {
                 continue;
             }
@@ -611,7 +670,11 @@ class Tier2 extends BaseActiveModule
         if ($item != $show_name) {
             $is_ffa = " and is Free For All";
         }
-        $this->bot->send_pgroup($this->names[$show_name] . " has dropped" . $is_ffa . ". <font color=#ffff00>$winner</font> may loot. There are " . count($this->raffles[$item]) . " players left before resetting list for this item.");
+        $this->bot->send_pgroup(
+            $this->names[$show_name] . " has dropped" . $is_ffa
+                . ". <font color=#ffff00>$winner</font> may loot. There are " . count($this->raffles[$item])
+                . " players left before resetting list for this item."
+        );
         $this->users[$winner]["got_" . $group] = true;
 
         $blob = "<font color=CCInfoHeadline> ::: You have loot rights for " . $this->names[$item] . " :::\n\n";
@@ -619,8 +682,10 @@ class Tier2 extends BaseActiveModule
         $blob .= $this->bot->core("tools")
             ->chatcmd("t2 join", "Change my status");
 
-        $this->bot->send_tell($winner, $this->bot->core("tools")
-            ->make_blob("You have loot rights", $blob));
+        $this->bot->send_tell(
+            $winner, $this->bot->core("tools")
+                ->make_blob("You have loot rights", $blob)
+        );
     }
 
 
@@ -632,18 +697,18 @@ class Tier2 extends BaseActiveModule
             return;
         }
         if (!$this->users[$name]) {
-            $profession                     = $this->get_profession($name);
+            $profession = $this->get_profession($name);
             $this->users[$name][profession] = $profession;
-            $this->users[$name][embryo]     = false;
-            $this->users[$name][will]       = false;
-            $this->users[$name][advent]     = false;
-            $this->users[$name][will_ffa]   = false;
+            $this->users[$name][embryo] = false;
+            $this->users[$name][will] = false;
+            $this->users[$name][advent] = false;
+            $this->users[$name][will_ffa] = false;
             $this->users[$name][advent_ffa] = false;
             // Flags so users can't leave and rejoin bot to reset their raffle status
-            $this->users[$name][got_embryo]     = false;
-            $this->users[$name][got_will]       = false;
-            $this->users[$name][got_advent]     = false;
-            $this->users[$name][got_will_ffa]   = false;
+            $this->users[$name][got_embryo] = false;
+            $this->users[$name][got_will] = false;
+            $this->users[$name][got_advent] = false;
+            $this->users[$name][got_will_ffa] = false;
             $this->users[$name][got_advent_ffa] = false;
             // Flag saying the user has left the chat (they are kept in the raid to maintain their got_ flags
             $this->users[$name][gone] = false;
@@ -654,10 +719,12 @@ class Tier2 extends BaseActiveModule
             $blob .= "<font color=CCInfoHeader>I was unable to determine your profession. Please select it from the following list</font>\n";
             foreach ($this->profs as $prof) {
                 $blob .= $this->bot->core("tools")
-                             ->chatcmd("t2 setprof " . $prof, $prof) . "\n\n";
+                    ->chatcmd("t2 setprof " . $prof, $prof) . "\n\n";
             }
-            $this->bot->send_tell($name, $this->bot->core("tools")
-                ->make_blob("Click Here and select your profession", $blob));
+            $this->bot->send_tell(
+                $name, $this->bot->core("tools")
+                    ->make_blob("Click Here and select your profession", $blob)
+            );
             return;
         }
 
@@ -681,8 +748,7 @@ class Tier2 extends BaseActiveModule
             $blob .= "[" . $this->bot->core("tools")
                 ->chatcmd("t2 join embryo", "Enter") . "]  [Leave]";
         }
-        else
-        {
+        else {
             $blob .= "[Enter]  [" . $this->bot->core("tools")
                 ->chatcmd("t2 leave embryo", "Leave") . "]";
         }
@@ -693,8 +759,7 @@ class Tier2 extends BaseActiveModule
             $blob .= "[" . $this->bot->core("tools")
                 ->chatcmd("t2 join will", "Enter") . "]  [Leave]";
         }
-        else
-        {
+        else {
             $blob .= "[Enter]  [" . $this->bot->core("tools")
                 ->chatcmd("t2 leave will", "Leave") . "]";
         }
@@ -705,8 +770,7 @@ class Tier2 extends BaseActiveModule
             $blob .= "[" . $this->bot->core("tools")
                 ->chatcmd("t2 join advent", "Enter") . "]  [Leave]";
         }
-        else
-        {
+        else {
             $blob .= "[Enter]  [" . $this->bot->core("tools")
                 ->chatcmd("t2 leave advent", "Leave") . "]";
         }
@@ -721,8 +785,7 @@ class Tier2 extends BaseActiveModule
             $blob .= "[" . $this->bot->core("tools")
                 ->chatcmd("t2 join will_ffa", "Enter") . "]  [Leave]";
         }
-        else
-        {
+        else {
             $blob .= "[Enter]  [" . $this->bot->core("tools")
                 ->chatcmd("t2 leave will_ffa", "Leave") . "]";
         }
@@ -734,23 +797,25 @@ class Tier2 extends BaseActiveModule
             $blob .= "[" . $this->bot->core("tools")
                 ->chatcmd("t2 join advent_ffa", "Enter") . "]  [Leave]";
         }
-        else
-        {
+        else {
             $blob .= "[Enter]  [" . $this->bot->core("tools")
                 ->chatcmd("t2 leave advent_ffa", "Leave") . "]";
         }
         $blob .= "\n\n";
 
 
-        $blob .= "(1) Embryo + (3) Will = " . $this->make_link($this->red_glyphs[$this->users[$name][profession]]) . "\n";
+        $blob
+            .= "(1) Embryo + (3) Will = " . $this->make_link($this->red_glyphs[$this->users[$name][profession]]) . "\n";
         $blob .= "(3) Advent = " . $this->make_link($this->space_glyphs[$this->users[$name][profession]]) . "\n\n";
         $blob .= "You can trade (3) identical Wills or (2) identical Advents for one of your profession ";
         $blob .= "by trading them to the NPC \"Exchange Officer of IPS\" stationed outside the profession ";
         $blob .= "shop in Jobe Harbor";
 
 
-        $this->bot->send_tell($name, $this->bot->core("tools")
-            ->make_blob("Tier 2 Raid Status", $blob));
+        $this->bot->send_tell(
+            $name, $this->bot->core("tools")
+                ->make_blob("Tier 2 Raid Status", $blob)
+        );
 
     }
 
@@ -766,8 +831,7 @@ class Tier2 extends BaseActiveModule
             $blob .= "[Start]  -  [" . $this->bot->core("tools")
                 ->chatcmd("t2 stop", "Stop") . "]";
         }
-        else
-        {
+        else {
             $blob .= "[" . $this->bot->core("tools")
                 ->chatcmd("t2 start", "Start") . "]  -  [Stop]";
         }
@@ -787,11 +851,13 @@ class Tier2 extends BaseActiveModule
 
         foreach ($this->raffles as $item => $list) {
             $blob .= $this->bot->core("tools")
-                         ->chatcmd("t2 loot " . $item, $this->names[$item]) . " (" . count($list) . " entered)\n";
+                ->chatcmd("t2 loot " . $item, $this->names[$item]) . " (" . count($list) . " entered)\n";
         }
 
-        $this->bot->send_tell($name, $this->bot->core("tools")
-            ->make_blob("Administrate Tier 2 Raid", $blob));
+        $this->bot->send_tell(
+            $name, $this->bot->core("tools")
+                ->make_blob("Administrate Tier 2 Raid", $blob)
+        );
     }
 
 
@@ -807,7 +873,7 @@ class Tier2 extends BaseActiveModule
         }
         $blob = "[" . $this->bot->core("tools")
             ->chatcmd("t2 admin", "Complete Admin") . "]";
-        $cat  = "";
+        $cat = "";
         foreach ($this->raffles as $item => $list) {
             $cur_cat = $this->groups[$item];
             if ($cat != $cur_cat) {
@@ -818,8 +884,10 @@ class Tier2 extends BaseActiveModule
                 ->chatcmd("t2 loot " . $item, $item) . "]  ";
 
         }
-        $this->bot->send_tell($name, $this->bot->core("tools")
-            ->make_blob("Small Loot Window", $blob));
+        $this->bot->send_tell(
+            $name, $this->bot->core("tools")
+                ->make_blob("Small Loot Window", $blob)
+        );
     }
 
 
@@ -841,11 +909,15 @@ class Tier2 extends BaseActiveModule
 
         foreach ($this->users as $u_name => $data) {
             $blob .= "<font color=CCInfoHeader>" . $u_name . ": </font>\n";
-            foreach (array("embryo",
-                           "will",
-                           "advent",
-                           "will_ffa",
-                           "advent_ffa") as $cat) {
+            foreach (
+                array(
+                    "embryo",
+                    "will",
+                    "advent",
+                    "will_ffa",
+                    "advent_ffa"
+                ) as $cat
+            ) {
                 $blob .= "    " . $cat . ": ";
                 if ($data[$cat]) {
                     $blob .= "[Entered]";
@@ -863,8 +935,10 @@ class Tier2 extends BaseActiveModule
                 $blob .= "\n";
             }
         }
-        $this->bot->send_tell($name, $this->bot->core("tools")
-            ->make_blob("Tier 2 User Console", $blob));
+        $this->bot->send_tell(
+            $name, $this->bot->core("tools")
+                ->make_blob("Tier 2 User Console", $blob)
+        );
     }
 
 
@@ -920,7 +994,8 @@ class Tier2 extends BaseActiveModule
         if (!$this->ids[$item]) {
             return "";
         }
-        return "<a href='itemref://" . $this->ids[$item] . "/" . $this->ids[$item] . "/" . $this->qls[$item] . "'>" . $this->names[$item] . "</a>";
+        return "<a href='itemref://" . $this->ids[$item] . "/" . $this->ids[$item] . "/" . $this->qls[$item] . "'>"
+            . $this->names[$item] . "</a>";
     }
 }
 

@@ -65,20 +65,24 @@ class Colors_Core extends BasePassiveModule
         $this->register_module("colors");
         $this->register_event("cron", "1hour");
 
-        $this->bot->db->query("CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("colors", "false")
-                              . " (
+        $this->bot->db->query(
+            "CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("colors", "false")
+                . " (
 						name varchar(25) NOT NULL default '',
 						code varchar(25) NOT NULL default '',
 						PRIMARY KEY  (name)
-					)");
+					)"
+        );
 
-        $this->bot->db->query("CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("color_schemes", "true")
-                              . " (
+        $this->bot->db->query(
+            "CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("color_schemes", "true")
+                . " (
 						module varchar(25) NOT NULL default '',
 						name varchar(25) NOT NULL default '',
 						color_code varchar(25) NOT NULL default '',
 						PRIMARY KEY (module, name)
-					)");
+					)"
+        );
 
         $this->startup = TRUE;
 
@@ -178,10 +182,10 @@ class Colors_Core extends BasePassiveModule
         $this->define_scheme("ao", "whisper", "dullteal", FALSE);
 
         // No tags cache created yet:
-        $this->startup    = FALSE;
-        $this->no_tags    = TRUE;
+        $this->startup = FALSE;
+        $this->no_tags = TRUE;
         $this->theme_info = "";
-        $this->theme      = array();
+        $this->theme = array();
         $this->create_color_cache();
     }
 
@@ -200,8 +204,7 @@ class Colors_Core extends BasePassiveModule
         if ($this->color_tags['##' . $color . '##'] != '') {
             return $this->color_tags['##' . $color . '##'];
         }
-        else
-        {
+        else {
             return "<font color=#000000>";
         }
     }
@@ -212,8 +215,7 @@ class Colors_Core extends BasePassiveModule
         if ($this->color_tags['##' . $color . '##'] != '') {
             return $this->color_tags['##' . $color . '##'] . $text . "</font>";
         }
-        else
-        {
+        else {
             return $text;
         }
     }
@@ -222,7 +224,10 @@ class Colors_Core extends BasePassiveModule
     // defines a new color:
     function define_color($name, $code, $cache = TRUE)
     {
-        $this->bot->db->query("INSERT IGNORE INTO #___colors (name, code) VALUES ('" . mysql_real_escape_string($name) . "', '" . mysql_real_escape_string($code) . "')");
+        $this->bot->db->query(
+            "INSERT IGNORE INTO #___colors (name, code) VALUES ('" . mysql_real_escape_string($name) . "', '"
+                . mysql_real_escape_string($code) . "')"
+        );
 
         if ($cache) {
             $this->no_tags = TRUE;
@@ -234,9 +239,11 @@ class Colors_Core extends BasePassiveModule
     // defines a new color scheme:
     function define_scheme($module, $scheme, $color_name, $cache = TRUE)
     {
-        $this->bot->db->query("INSERT IGNORE INTO #___color_schemes"
-                              . " (module, name, color_code) VALUES ('" . mysql_real_escape_string($module) . "', '"
-                              . mysql_real_escape_string($scheme) . "', '" . mysql_real_escape_string($color_name) . "')");
+        $this->bot->db->query(
+            "INSERT IGNORE INTO #___color_schemes"
+                . " (module, name, color_code) VALUES ('" . mysql_real_escape_string($module) . "', '"
+                . mysql_real_escape_string($scheme) . "', '" . mysql_real_escape_string($color_name) . "')"
+        );
 
         if ($cache) {
             $this->no_tags = TRUE;
@@ -249,13 +256,19 @@ class Colors_Core extends BasePassiveModule
     function define_color_scheme($module, $scheme, $color_name, $color_code)
     {
         // first add color:
-        $this->bot->db->query("INSERT IGNORE INTO #___colors"
-                              . " (name, code) VALUES ('" . mysql_real_escape_string($color_name) . "', '" . mysql_real_escape_string($color_code) . "')");
+        $this->bot->db->query(
+            "INSERT IGNORE INTO #___colors"
+                . " (name, code) VALUES ('" . mysql_real_escape_string($color_name) . "', '" . mysql_real_escape_string(
+                $color_code
+            ) . "')"
+        );
 
         // then add scheme:
-        $this->bot->db->query("INSERT IGNORE INTO #___color_schemes"
-                              . " (module, name, color_code) VALUES ('" . mysql_real_escape_string($module) . "', '"
-                              . mysql_real_escape_string($scheme) . "', '" . mysql_real_escape_string($color_name) . "')");
+        $this->bot->db->query(
+            "INSERT IGNORE INTO #___color_schemes"
+                . " (module, name, color_code) VALUES ('" . mysql_real_escape_string($module) . "', '"
+                . mysql_real_escape_string($scheme) . "', '" . mysql_real_escape_string($color_name) . "')"
+        );
 
         $this->no_tags = TRUE;
         $this->create_color_cache();
@@ -265,9 +278,11 @@ class Colors_Core extends BasePassiveModule
     // changes the color reference for a scheme:
     function update_scheme($module, $scheme, $new_color_name)
     {
-        $this->bot->db->query("UPDATE #___color_schemes"
-                              . " SET color_code = '" . mysql_real_escape_string($new_color_name) . "' WHERE module = '"
-                              . mysql_real_escape_string($module) . "' AND name = '" . mysql_real_escape_string($scheme) . "'");
+        $this->bot->db->query(
+            "UPDATE #___color_schemes"
+                . " SET color_code = '" . mysql_real_escape_string($new_color_name) . "' WHERE module = '"
+                . mysql_real_escape_string($module) . "' AND name = '" . mysql_real_escape_string($scheme) . "'"
+        );
         $this->no_tags = TRUE;
         $this->create_color_cache();
     }
@@ -276,29 +291,35 @@ class Colors_Core extends BasePassiveModule
     // Read scheme file in, update all schemes in the bot with new information out of the file
     function read_scheme_file($filename)
     {
-        $theme_dir    = "./themes/";
+        $theme_dir = "./themes/";
         $ret['error'] = false;
 
         // Make sure filename is valid
         if (!preg_match("/^([a-z01-9-_]+)$/i", $filename)) {
-            $ret['error']     = TRUE;
-            $ret['errordesc'] = "Illegal filename for scheme file! The filename must only contain letters, numbers, - and _!";
+            $ret['error'] = TRUE;
+            $ret['errordesc']
+                = "Illegal filename for scheme file! The filename must only contain letters, numbers, - and _!";
             return $ret;
         }
 
         $scheme_file = file($theme_dir . $filename . ".scheme.xml");
         if (!$scheme_file) {
-            $ret['error']     = TRUE;
+            $ret['error'] = TRUE;
             $ret['errordesc'] = "Scheme file not existing or empty!";
             return $ret;
         }
 
-        foreach ($scheme_file AS $scheme_line)
-        {
-            if (preg_match("/scheme module=\"([a-z_]+)\" name=\"([a-z_]+)\" code=\"([a-z]+)\"/i", $scheme_line, $info)) {
-                $this->bot->db->query("UPDATE #___color_schemes"
-                                      . " SET color_code = '" . mysql_real_escape_string($info[3]) . "' WHERE module = '"
-                                      . mysql_real_escape_string($info[1]) . "' AND name = '" . mysql_real_escape_string($info[2]) . "'");
+        foreach ($scheme_file AS $scheme_line) {
+            if (preg_match(
+                "/scheme module=\"([a-z_]+)\" name=\"([a-z_]+)\" code=\"([a-z]+)\"/i", $scheme_line, $info
+            )
+            ) {
+                $this->bot->db->query(
+                    "UPDATE #___color_schemes"
+                        . " SET color_code = '" . mysql_real_escape_string($info[3]) . "' WHERE module = '"
+                        . mysql_real_escape_string($info[1]) . "' AND name = '" . mysql_real_escape_string($info[2])
+                        . "'"
+                );
             }
         }
         $this->no_tags = TRUE;
@@ -312,31 +333,33 @@ class Colors_Core extends BasePassiveModule
     // Creates a scheme file containing all schemes in the bot table
     function create_scheme_file($filename, $name)
     {
-        $theme_dir    = "./themes/";
+        $theme_dir = "./themes/";
         $ret['error'] = false;
 
         // Make sure filename is valid
         if (!preg_match("/^([a-z01-9-_]+)$/i", $filename)) {
-            $ret['error']     = TRUE;
-            $ret['errordesc'] = "Illegal filename for scheme file! The filename must only contain letters, numbers, - and _!";
+            $ret['error'] = TRUE;
+            $ret['errordesc']
+                = "Illegal filename for scheme file! The filename must only contain letters, numbers, - and _!";
             return $ret;
         }
 
-        $header = '<schemes name="Scheme for ' . ucfirst(strtolower($this->bot->botname)) . '" version="1.0" author="' . ucfirst(strtolower($name)) . '" link="">';
+        $header = '<schemes name="Scheme for ' . ucfirst(strtolower($this->bot->botname)) . '" version="1.0" author="'
+            . ucfirst(strtolower($name)) . '" link="">';
         $footer = '</schemes>';
 
         $filename = $filename .= ".scheme.xml";
 
         $handle = fopen($theme_dir . $filename, "w");
         if (!$handle) {
-            $ret['error']     = TRUE;
+            $ret['error'] = TRUE;
             $ret['errordesc'] = "Can't open scheme file " . $filename . "!";
             return $ret;
         }
 
         $schemes = $this->bot->db->select("SELECT * FROM #___color_schemes ORDER BY module ASC, name ASC");
         if (empty($schemes)) {
-            $ret['error']     = TRUE;
+            $ret['error'] = TRUE;
             $ret['errordesc'] = "No schemes defined!";
             return $ret;
         }
@@ -345,9 +368,12 @@ class Colors_Core extends BasePassiveModule
         if (!fwrite($handle, $header . "\n")) {
             $status = FALSE;
         }
-        foreach ($schemes as $scheme)
-        {
-            if (!fwrite($handle, '<scheme module="' . $scheme[0] . '" name="' . $scheme[1] . '" code="' . $scheme[2] . '" />' . "\n")) {
+        foreach ($schemes as $scheme) {
+            if (!fwrite(
+                $handle,
+                '<scheme module="' . $scheme[0] . '" name="' . $scheme[1] . '" code="' . $scheme[2] . '" />' . "\n"
+            )
+            ) {
                 $status = FALSE;
             }
         }
@@ -358,7 +384,7 @@ class Colors_Core extends BasePassiveModule
         fclose($handle);
 
         if (!$status) {
-            $ret['error']     = TRUE;
+            $ret['error'] = TRUE;
             $ret['errordesc'] = "Error while writing schemes!";
             return $ret;
         }
@@ -387,8 +413,7 @@ class Colors_Core extends BasePassiveModule
 
         // Now write the lines for the default theme file, mark errors to bail after closing file
         $status = TRUE;
-        foreach ($theme_file as $theme_line)
-        {
+        foreach ($theme_file as $theme_line) {
             if (!fwrite($handle, $theme_line . "\n")) {
                 $status = FALSE;
             }
@@ -414,8 +439,10 @@ class Colors_Core extends BasePassiveModule
         $theme_dir = "./themes/";
 
         // Security check, theme filename HAS to be all letters or numbers, otherwise dying here for security reasons!
-        if (!preg_match("/^([a-z01-9-_]+)$/i", $this->bot->core("settings")
-            ->get("Color", "Theme"))
+        if (!preg_match(
+            "/^([a-z01-9-_]+)$/i", $this->bot->core("settings")
+                ->get("Color", "Theme")
+        )
         ) {
             die("POSSIBLE SECURITY PROBLEM! The theme filename can only contain letters, numbers - and _ for security reasons!\nThe bot has been shutdown.\n");
         }
@@ -427,8 +454,7 @@ class Colors_Core extends BasePassiveModule
         if (!is_file($theme_file_name)) {
             $theme_file = $this->create_theme_file($theme_file_name);
         }
-        else
-        {
+        else {
             $theme_file = file($theme_file_name);
         }
 
@@ -438,33 +464,38 @@ class Colors_Core extends BasePassiveModule
         }
 
         // Initialize theme array with the colors required by a theme
-        $this->theme               = array();
-        $this->theme["normal"]     = "#000000";
-        $this->theme["highlight"]  = "#000000";
-        $this->theme["error"]      = "#000000";
+        $this->theme = array();
+        $this->theme["normal"] = "#000000";
+        $this->theme["highlight"] = "#000000";
+        $this->theme["error"] = "#000000";
         $this->theme["blob_title"] = "#000000";
-        $this->theme["blob_text"]  = "#000000";
+        $this->theme["blob_text"] = "#000000";
 
         // Parse the input file now
-        foreach ($theme_file as $theme_line)
-        {
+        foreach ($theme_file as $theme_line) {
             $theme_line = trim($theme_line);
-            if (preg_match("/color name=\"([a-z_]+)\" code=\"(#[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])\"/i", $theme_line, $info)) {
+            if (preg_match(
+                "/color name=\"([a-z_]+)\" code=\"(#[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f])\"/i", $theme_line,
+                $info
+            )
+            ) {
                 $this->theme[strtolower($info[1])] = $info[2];
             }
-            elseif (preg_match("/color name=\"([a-z_]+)\" color=\"([a-z]+)\"/i", $theme_line, $info))
-            {
-                $cols = $this->bot->db->select("SELECT code FROM #___colors WHERE name = '" . mysql_real_escape_string($info[2]) . "'");
+            elseif (preg_match("/color name=\"([a-z_]+)\" color=\"([a-z]+)\"/i", $theme_line, $info)) {
+                $cols = $this->bot->db->select(
+                    "SELECT code FROM #___colors WHERE name = '" . mysql_real_escape_string($info[2]) . "'"
+                );
                 if (empty($cols)) {
                     $this->theme[strtolower($info[1])] = "#000000";
                 }
-                else
-                {
+                else {
                     $this->theme[strtolower($info[1])] = $cols[0][0];
                 }
             }
-            elseif (preg_match("/theme name=\"(.*)\" version=\"(.*)\" author=\"(.*)\" link=\"(.*)\"/i", $theme_line, $info))
-            {
+            elseif (preg_match(
+                "/theme name=\"(.*)\" version=\"(.*)\" author=\"(.*)\" link=\"(.*)\"/i", $theme_line, $info
+            )
+            ) {
                 $this->theme_info = "Name of theme: " . $info[1] . "\n";
                 $this->theme_info .= "Version: " . $info[2] . "\n";
                 $this->theme_info .= "Author: " . $info[3] . "\n";
@@ -482,7 +513,7 @@ class Colors_Core extends BasePassiveModule
             return;
         }
 
-        $this->no_tags    = FALSE;
+        $this->no_tags = FALSE;
         $this->color_tags = array();
 
         // Parse theme file
@@ -490,18 +521,16 @@ class Colors_Core extends BasePassiveModule
 
         // Create color tags for themes
         $theme_strings = array();
-        foreach ($this->theme as $color => $colorcode)
-        {
+        foreach ($this->theme as $color => $colorcode) {
             $this->color_tags["##" . strtolower($color) . "##"] = "<font color=" . $colorcode . ">";
-            $theme_strings[]                                    = "color_code = '" . $color . "'";
+            $theme_strings[] = "color_code = '" . $color . "'";
         }
         $theme_string = implode(" OR ", $theme_strings);
 
         // Create all other color tags
         $cols = $this->bot->db->select("SELECT name, code FROM #___colors");
         if (!empty($cols)) {
-            foreach ($cols as $col)
-            {
+            foreach ($cols as $col) {
                 if (!isset($this->color_tags["##" . strtolower($col[0]) . "##"])) {
                     $this->color_tags["##" . strtolower($col[0]) . "##"] = "<font color=" . $col[1] . ">";
                 }
@@ -509,29 +538,34 @@ class Colors_Core extends BasePassiveModule
         }
 
         // Create all scheme tags for schemes using theme colors
-        $cols = $this->bot->db->select("SELECT concat(module, '_', name) AS scheme, color_code FROM #___color_schemes "
-                                       . "WHERE " . $theme_string . " UNION SELECT name AS scheme, color_code FROM #___color_schemes WHERE (" . $theme_string
-                                       . ") AND module = 'global'");
+        $cols = $this->bot->db->select(
+            "SELECT concat(module, '_', name) AS scheme, color_code FROM #___color_schemes "
+                . "WHERE " . $theme_string . " UNION SELECT name AS scheme, color_code FROM #___color_schemes WHERE ("
+                . $theme_string
+                . ") AND module = 'global'"
+        );
 
         if (!empty($cols)) {
-            foreach ($cols as $col)
-            {
+            foreach ($cols as $col) {
                 if (!isset($this->color_tags["##" . strtolower($col[0]) . "##"])) {
-                    $this->color_tags["##" . strtolower($col[0]) . "##"] = "<font color=" . $this->theme[strtolower($col[1])] . ">";
+                    $this->color_tags["##" . strtolower($col[0]) . "##"]
+                        = "<font color=" . $this->theme[strtolower($col[1])] . ">";
                 }
             }
         }
 
         // Now create all scheme tags for schemes using no theme colors
-        $cols = $this->bot->db->select("SELECT concat(t1.module, '_', t1.name) AS name, t2.code FROM "
-                                       . "#___color_schemes AS t1, #___colors AS t2 WHERE t1.color_code = t2.name AND NOT (" . $theme_string . ") UNION "
-                                       . "SELECT t1.name AS name, t2.code AS code FROM #___color_schemes AS t1, #___colors AS t2 WHERE "
-                                       . "t1.color_code = t2.name AND t1.module = 'global' AND NOT (" . $theme_string . ")");
+        $cols = $this->bot->db->select(
+            "SELECT concat(t1.module, '_', t1.name) AS name, t2.code FROM "
+                . "#___color_schemes AS t1, #___colors AS t2 WHERE t1.color_code = t2.name AND NOT (" . $theme_string
+                . ") UNION "
+                . "SELECT t1.name AS name, t2.code AS code FROM #___color_schemes AS t1, #___colors AS t2 WHERE "
+                . "t1.color_code = t2.name AND t1.module = 'global' AND NOT (" . $theme_string . ")"
+        );
 
         $this->color_tags["##end##"] = "</font>";
         if (!empty($cols)) {
-            foreach ($cols as $col)
-            {
+            foreach ($cols as $col) {
                 if (!isset($this->color_tags["##" . strtolower($col[0]) . "##"])) {
                     $this->color_tags["##" . strtolower($col[0]) . "##"] = "<font color=" . $col[1] . ">";
                 }
@@ -553,8 +587,7 @@ class Colors_Core extends BasePassiveModule
         }
 
         // Go ahead and replace all tags
-        foreach ($this->color_tags as $tag => $font)
-        {
+        foreach ($this->color_tags as $tag => $font) {
             $text = preg_replace("/$tag/i", $font, $text);
         }
 

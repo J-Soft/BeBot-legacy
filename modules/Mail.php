@@ -57,7 +57,8 @@ class Mail extends BaseActiveModule
 
         //$this -> register_event("cron", "12hour");
 
-        $this->bot->db->query("CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("mail_message", "true") . "
+        $this->bot->db->query(
+            "CREATE TABLE IF NOT EXISTS " . $this->bot->db->define_tablename("mail_message", "true") . "
 						(id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 						recieved TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 						expires TIMESTAMP,
@@ -65,7 +66,8 @@ class Mail extends BaseActiveModule
 						mailbox VARCHAR(13),
 						recipient VARCHAR(13),
 						sender VARCHAR(13),
-						message TEXT)");
+						message TEXT)"
+        );
 
         //Register commands for this module
         $this->register_command('all', 'mail', 'GUEST');
@@ -76,60 +78,77 @@ class Mail extends BaseActiveModule
 
         //Create settings
         $this->bot->core("settings")
-            ->create($this->module_name, "Max_life_read", "6_months", "How long should a read message be kept?", "1_week;2_weeks;1_month;6_months;1_year;2_years");
+            ->create(
+            $this->module_name, "Max_life_read", "6_months", "How long should a read message be kept?",
+            "1_week;2_weeks;1_month;6_months;1_year;2_years"
+        );
         $this->bot->core("settings")
-            ->create($this->module_name, "Max_life_unread", "1_year", "How long should an unread message be kept?", "1_week;2_weeks;1_month;6_months;1_year;2_years");
+            ->create(
+            $this->module_name, "Max_life_unread", "1_year", "How long should an unread message be kept?",
+            "1_week;2_weeks;1_month;6_months;1_year;2_years"
+        );
 
         //Create preferences
         $this->bot->core("prefs")
-            ->create($this->module_name, "Life_read", "How long should a read message be kept?", "1_month", "1_week;2_weeks;1_month;6_months;1_year;2_years", "GUEST");
+            ->create(
+            $this->module_name, "Life_read", "How long should a read message be kept?", "1_month",
+            "1_week;2_weeks;1_month;6_months;1_year;2_years", "GUEST"
+        );
         $this->bot->core("prefs")
-            ->create($this->module_name, "Life_unread", "How long should an unread message be kept?", "6_months", "1_week;2_weeks;1_month;6_months;1_year;2_years", "GUEST");
+            ->create(
+            $this->module_name, "Life_unread", "How long should an unread message be kept?", "6_months",
+            "1_week;2_weeks;1_month;6_months;1_year;2_years", "GUEST"
+        );
         $this->bot->core("prefs")
-            ->create($this->module_name, "Logon_notification", "Do you want to be notified about new mail when you log on?", "Yes", "Yes;No", "GUEST");
+            ->create(
+            $this->module_name, "Logon_notification", "Do you want to be notified about new mail when you log on?",
+            "Yes", "Yes;No", "GUEST"
+        );
 
-        $this->help['description']                           = "Module to send mail messages to other members of the bot.";
-        $this->help['command']['mail']                       = "Shows a list of messages for you.";
+        $this->help['description'] = "Module to send mail messages to other members of the bot.";
+        $this->help['command']['mail'] = "Shows a list of messages for you.";
         $this->help['command']['mail send <name> <message>'] = "Send the mail <message> to player <name>";
-        $this->help['notes']                                 = "Mail is delivered to any registered alt of the player <name>";
+        $this->help['notes'] = "Mail is delivered to any registered alt of the player <name>";
     }
 
 
     function command_handler($name, $msg, $origin)
     {
         $this->error->reset();
-        $com = $this->parse_com($msg, array('com',
-                                            'sub',
-                                            'target',
-                                            'message'));
-        switch (ucfirst($com['sub']))
-        {
-            case 'Delete':
-                if ((isset($com['target'])) && (is_int(intval($com['target'])))) {
-                    return ($this->mail_delete($name, $com['target']));
-                    unset($com['target']); //We don't want to trigger the first check below.
-                }
+        $com = $this->parse_com(
+            $msg, array(
+                'com',
+                'sub',
+                'target',
+                'message'
+            )
+        );
+        switch (ucfirst($com['sub'])) {
+        case 'Delete':
+            if ((isset($com['target'])) && (is_int(intval($com['target'])))) {
+                return ($this->mail_delete($name, $com['target']));
+                unset($com['target']); //We don't want to trigger the first check below.
+            }
             //No break here as we want the list to be sent after deleting a message
-            case '':
-            case 'Read':
-                if ((isset($com['target'])) && (is_int(intval($com['target'])))) {
-                    return ($this->make_item_blob("Mail item {$com['target']}", $this->mail_read($name, $com['target'])));
-                }
-                else
-                {
-                    return ($this->make_item_blob('Mail list', $this->mail_list($name)));
-                }
-                break;
+        case '':
+        case 'Read':
+            if ((isset($com['target'])) && (is_int(intval($com['target'])))) {
+                return ($this->make_item_blob("Mail item {$com['target']}", $this->mail_read($name, $com['target'])));
+            }
+            else {
+                return ($this->make_item_blob('Mail list', $this->mail_list($name)));
+            }
+            break;
 
-            case 'Send':
-                return ($this->mail_send($name, $com['target'], $com['message']));
-                break;
+        case 'Send':
+            return ($this->mail_send($name, $com['target'], $com['message']));
+            break;
 
-            default:
-                //No matches. Sending usage information (Another useless comment)
-                $this->error->set("Unknown sub command '##highlight##{$com['sub']}##end##'. ");
-                return ($this->error->message());
-                break;
+        default:
+            //No matches. Sending usage information (Another useless comment)
+            $this->error->set("Unknown sub command '##highlight##{$com['sub']}##end##'. ");
+            return ($this->error->message());
+            break;
         }
     }
 
@@ -151,13 +170,18 @@ class Mail extends BaseActiveModule
     function notify($name, $startup = false)
     {
         //Notify people that are logging on if they've got new mail
-        if ((!$startup) && ($this->bot->core("prefs")
-                                ->get($name, "Mail", "Logon_notification") == true)
+        if ((!$startup)
+            && ($this->bot->core("prefs")
+                ->get($name, "Mail", "Logon_notification") == true)
         ) {
-            $mailbox        = $this->bot->core("alts")->main($name);
+            $mailbox = $this->bot->core("alts")->main($name);
             $no_of_messages = $this->new_mail_count($mailbox);
             if ($no_of_messages != 0) {
-                $this->bot->send_tell($name, $this->make_item_blob("You've got ##error##$no_of_messages##end## new messages.", $this->mail_list($name)));
+                $this->bot->send_tell(
+                    $name, $this->make_item_blob(
+                        "You've got ##error##$no_of_messages##end## new messages.", $this->mail_list($name)
+                    )
+                );
             }
         }
     }
@@ -178,13 +202,12 @@ class Mail extends BaseActiveModule
     function new_mail_count($mailbox)
     {
         //Getting the number of new mail (obviously)
-        $query  = "SELECT COUNT(id) AS no_of_messages FROM #___mail_message WHERE mailbox='$mailbox' AND is_read=0";
+        $query = "SELECT COUNT(id) AS no_of_messages FROM #___mail_message WHERE mailbox='$mailbox' AND is_read=0";
         $result = $this->bot->db->select($query, MYSQL_ASSOC);
         if (empty($result)) {
             return 0;
         }
-        else
-        {
+        else {
             return ($result[0]['no_of_messages']);
         }
     }
@@ -193,13 +216,12 @@ class Mail extends BaseActiveModule
     function mail_list($user)
     {
         //Returns a window containing new and read mail
-        $mailbox  = $this->bot->core("alts")->main($user);
-        $window   = "##yellow##:::##end## Mail for ##highlight##$user##end## ($mailbox) ##yellow##:::##end##<br><br>";
-        $query    = "SELECT * FROM #___mail_message WHERE mailbox='$mailbox' ORDER BY is_read, recieved DESC";
+        $mailbox = $this->bot->core("alts")->main($user);
+        $window = "##yellow##:::##end## Mail for ##highlight##$user##end## ($mailbox) ##yellow##:::##end##<br><br>";
+        $query = "SELECT * FROM #___mail_message WHERE mailbox='$mailbox' ORDER BY is_read, recieved DESC";
         $messages = $this->bot->db->select($query, MYSQL_ASSOC);
         if (!empty($messages)) {
-            foreach ($messages as $message)
-            {
+            foreach ($messages as $message) {
                 $message['message'] = base64_decode($message['message']);
                 //Make the "unread" header if it hasn't been made already and there is unread mail
                 if (($message['is_read'] == '0') && (empty($unread_header))) {
@@ -216,16 +238,15 @@ class Mail extends BaseActiveModule
                     $message['message'] = substr($message['message'], 0, 20) . '...';
                 }
                 $window .= $this->bot->core("tools")
-                               ->chatcmd("mail delete " . $message['id'], "[delete]") . " ";
+                    ->chatcmd("mail delete " . $message['id'], "[delete]") . " ";
                 $window .= "{$message['recieved']} ";
                 $window .= "To: ##highlight##{$message['recipient']}##end## ";
                 $window .= "From: ##highlight##{$message['sender']}##end##  ::: ";
                 $window .= $this->bot->core("tools")
-                               ->chatcmd("mail read " . $message['id'], $message['message']) . "<br>";
+                    ->chatcmd("mail read " . $message['id'], $message['message']) . "<br>";
             }
         }
-        else
-        {
+        else {
             $window .= "No mail for you.";
         }
         return ($window);
@@ -234,9 +255,9 @@ class Mail extends BaseActiveModule
 
     function mail_read($user, $id)
     {
-        $mailbox  = $this->bot->core("alts")->main($user);
-        $window   = "##yellow##:::##end## Mail for ##highlight##$user##end## ($mailbox) ##yellow##:::##end##<br><br>";
-        $query    = "SELECT * FROM #___mail_message WHERE id=$id AND mailbox='$mailbox'";
+        $mailbox = $this->bot->core("alts")->main($user);
+        $window = "##yellow##:::##end## Mail for ##highlight##$user##end## ($mailbox) ##yellow##:::##end##<br><br>";
+        $query = "SELECT * FROM #___mail_message WHERE id=$id AND mailbox='$mailbox'";
         $messages = $this->bot->db->select($query, MYSQL_ASSOC);
         if (!empty($messages)) {
             $message = $messages[0];
@@ -247,14 +268,21 @@ class Mail extends BaseActiveModule
             $window .= "[" . $this->bot->core("tools")
                 ->chatcmd("mail delete " . $message['id'], "delete") . "] ";
             $window .= "[" . $this->bot->core("tools")
-                ->chatcmd("mail send {$message['sender']} The message you sent on {$message['recieved']} has been read", "Notify sender") . "]";
-            $time  = strtotime("+" . str_replace('_', ' ', $this->bot
-                ->core("prefs")->get($user, 'Mail', 'Life_read')));
-            $query = "UPDATE #___mail_message SET is_read=true, expires=FROM_UNIXTIME('$time') WHERE id=$id AND is_read=false";
+                ->chatcmd(
+                "mail send {$message['sender']} The message you sent on {$message['recieved']} has been read",
+                "Notify sender"
+            ) . "]";
+            $time = strtotime(
+                "+" . str_replace(
+                    '_', ' ', $this->bot
+                        ->core("prefs")->get($user, 'Mail', 'Life_read')
+                )
+            );
+            $query
+                = "UPDATE #___mail_message SET is_read=true, expires=FROM_UNIXTIME('$time') WHERE id=$id AND is_read=false";
             $this->bot->db->query($query);
         }
-        else
-        {
+        else {
             $window .= "<br>Message $id was not found.";
         }
         return ($window);
@@ -264,30 +292,32 @@ class Mail extends BaseActiveModule
     function mail_send($sender, $recipient, $message)
     {
         $recipient = ucfirst(strtolower($recipient));
-        $mailbox   = $this->bot->core("alts")->main($recipient);
-        $time      = str_replace('_', ' ', $this->bot->core("settings")
-            ->get('Mail', 'Max_life_unread'));
-        $expires   = strtotime("+$time");
+        $mailbox = $this->bot->core("alts")->main($recipient);
+        $time = str_replace(
+            '_', ' ', $this->bot->core("settings")
+                ->get('Mail', 'Max_life_unread')
+        );
+        $expires = strtotime("+$time");
 
         if (!$this->bot->core("security")->check_access($recipient, "GUEST")) {
-            $this->error->set("The recipient ($recipient) is not a known member or guest of this bot. Please check spelling.");
+            $this->error->set(
+                "The recipient ($recipient) is not a known member or guest of this bot. Please check spelling."
+            );
             return ($this->error->message());
         }
-        elseif (empty($message))
-        {
+        elseif (empty($message)) {
             return ("There is no point in sending empty messages. Usage: <pre>mail send &lt;recipient&gt; &lt;message&gt;");
         }
-        else
-        {
+        else {
             $mail_message = mysql_real_escape_string($message);
             $mail_message = str_replace('<', '&lt;', $mail_message);
             $mail_message = base64_encode($mail_message);
-            $query        = "INSERT INTO #___mail_message (mailbox, recipient, sender, message, expires) VALUES('$mailbox', '$recipient', '$sender', '$mail_message', FROM_UNIXTIME($expires))";
+            $query
+                = "INSERT INTO #___mail_message (mailbox, recipient, sender, message, expires) VALUES('$mailbox', '$recipient', '$sender', '$mail_message', FROM_UNIXTIME($expires))";
             $this->bot->db->query($query);
-            $alts   = $this->bot->core("alts")->get_alts($mailbox);
+            $alts = $this->bot->core("alts")->get_alts($mailbox);
             $alts[] = $mailbox;
-            foreach ($alts as $alt)
-            {
+            foreach ($alts as $alt) {
                 if ($this->bot->core("chat")->buddy_exists($alt)) {
                     if ($this->bot->core("chat")->buddy_online($alt)) {
                         $online[] = $alt;
@@ -295,9 +325,10 @@ class Mail extends BaseActiveModule
                 }
             }
             if (!empty($online)) {
-                foreach ($online as $send)
-                {
-                    $this->bot->send_tell($send, $this->make_item_blob("You've just Recieved a new message.", $this->mail_list($send)));
+                foreach ($online as $send) {
+                    $this->bot->send_tell(
+                        $send, $this->make_item_blob("You've just Recieved a new message.", $this->mail_list($send))
+                    );
                 }
             }
             return ("Message sent to $recipient ($mailbox).");
@@ -308,13 +339,12 @@ class Mail extends BaseActiveModule
     function mail_delete($name, $id)
     {
         $mailbox = $this->bot->core("alts")->main($name);
-        $query   = "DELETE FROM #___mail_message WHERE id=$id AND mailbox='$mailbox'";
+        $query = "DELETE FROM #___mail_message WHERE id=$id AND mailbox='$mailbox'";
         $this->bot->db->query($query);
         if (mysql_affected_rows($this->bot->db->CONN) == 1) {
             return ("Mail $id has been deleted.");
         }
-        else
-        {
+        else {
             $this->error->set("Mail message '$id' was either not found or did not belong to $name.");
             return ($this->error->message());
         }

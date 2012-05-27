@@ -53,9 +53,10 @@ class VhItems extends BaseActiveModule
 
         $this->register_command('all', 'items', 'GUEST');
 
-        $this->help['description']                  = 'Searches the central database for information about an item.';
-        $this->help['command']['items [ql] <item>'] = "Searches and displays information about an <item> of the optional [ql]";
-        $this->help['notes']                        = "This module uses the Xyphos Items Database .";
+        $this->help['description'] = 'Searches the central database for information about an item.';
+        $this->help['command']['items [ql] <item>']
+            = "Searches and displays information about an <item> of the optional [ql]";
+        $this->help['notes'] = "This module uses the Xyphos Items Database .";
     }
 
 
@@ -71,7 +72,7 @@ class VhItems extends BaseActiveModule
                     $search = implode(' ', $parts);
                 }
                 else {
-                    $ql     = 0;
+                    $ql = 0;
                     $search = $words;
                 }
                 $url = $this->server;
@@ -98,8 +99,7 @@ class VhItems extends BaseActiveModule
                 if (!empty($result["content"])) {
                     return $result["content"];
                 }
-                else
-                {
+                else {
                     return "Unable to query database";
                 }
             }

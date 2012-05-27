@@ -72,13 +72,14 @@ class AOChatWrapper_Core extends BasePassiveModule
 
         //When it fails attempt to get it from the cache.
         if ($uid === false) {
-            $db_uid = $this->bot->db->select("SELECT ID FROM #___whois WHERE nickname = '" . $user . "' LIMIT 1", MYSQL_ASSOC);
+            $db_uid = $this->bot->db->select(
+                "SELECT ID FROM #___whois WHERE nickname = '" . $user . "' LIMIT 1", MYSQL_ASSOC
+            );
 
             if (!empty($db_uid)) {
                 $uid = $db_uid[0]['ID'];
             }
-            else
-            {
+            else {
                 $this->error->set("I was unable to get the user id for user: '$user'");
                 // TODO: adapt all calls to get_uid() to check for instanceof BotError?
                 // return($this->error);
@@ -102,13 +103,14 @@ class AOChatWrapper_Core extends BasePassiveModule
         $name = $this->bot->aoc->get_uname($user);
 
         if ($name === false || $name === 0 || $name === -1) {
-            $db_name = $this->bot->db->select("SELECT nickname FROM #___whois WHERE ID = '" . $user . "' OR nickname = '" . $user . "'");
+            $db_name = $this->bot->db->select(
+                "SELECT nickname FROM #___whois WHERE ID = '" . $user . "' OR nickname = '" . $user . "'"
+            );
 
             if (!empty($db_name)) {
                 $name = $db_name[0][0];
             }
-            else
-            {
+            else {
                 $name = false;
                 $this->bot->log('GETUNAME', 'FAILED', "I was unable to get the user name belonging to: $user");
             }
@@ -124,34 +126,35 @@ class AOChatWrapper_Core extends BasePassiveModule
         if (empty($user) || ($uid = $this->get_uid($user)) === false) {
             return false;
         }
-        else
-        {
+        else {
             // FIXME
             // Currently checking specifically for 4294967295 as userid to ensure we never ever send an add buddy
             // packet to AoC as it will disconnect the player.
             if ($uid == 4294967295) {
-                $this->bot->log("BUDDY", "BUDDY-ADD", "Received add request for " . $this->get_uname($uid) . "(" . $uid . ") This user is likely in the userlist and might need to be manually removed if this error persists.");
+                $this->bot->log(
+                    "BUDDY", "BUDDY-ADD", "Received add request for " . $this->get_uname($uid) . "(" . $uid
+                    . ") This user is likely in the userlist and might need to be manually removed if this error persists."
+                );
                 return FALSE;
             }
 
 
             if (!($this->bot->aoc->buddy_exists($uid)) && $uid != 0 && $uid != -1
-                && $uid != $this->get_uid($this->bot->botname) && $this->get_uname($uid) != -1
+                && $uid != $this->get_uid($this->bot->botname)
+                && $this->get_uname($uid) != -1
             ) {
                 if (!$que || $this->bot->core("buddy_queue")->check_queue()) {
                     $this->bot->aoc->buddy_add($uid);
                     $this->bot->log("BUDDY", "BUDDY-ADD", $this->get_uname($uid));
                     return true;
                 }
-                else
-                {
+                else {
                     $return = $this->bot->core("buddy_queue")
                         ->into_queue($uid, $add);
                     return $return;
                 }
             }
-            else
-            {
+            else {
                 return false;
             }
         }
@@ -164,23 +167,20 @@ class AOChatWrapper_Core extends BasePassiveModule
         if (empty($user) || ($uid = $this->get_uid($user)) === false) {
             return false;
         }
-        else
-        {
+        else {
             if (($this->bot->aoc->buddy_exists($uid))) {
                 if ($this->bot->core("buddy_queue")->check_queue()) {
                     $this->bot->aoc->buddy_remove($uid);
                     $this->bot->log("BUDDY", "BUDDY-DEL", $this->get_uname($uid));
                     return true;
                 }
-                else
-                {
+                else {
                     $return = $this->bot->core("buddy_queue")
                         ->into_queue($uid, $add);
                     return $return;
                 }
             }
-            else
-            {
+            else {
                 return false;
             }
         }

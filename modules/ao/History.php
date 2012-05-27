@@ -52,9 +52,9 @@ class History extends BaseActiveModule
 
         $this->register_command('all', 'history', 'GUEST');
 
-        $this->help['description']               = "Plugin to display the history of a player.";
+        $this->help['description'] = "Plugin to display the history of a player.";
         $this->help['command']['history <name>'] = "Shows the history of the player <name>";
-        $this->help['notes']                     = "No notes";
+        $this->help['notes'] = "No notes";
     }
 
 
@@ -63,8 +63,10 @@ class History extends BaseActiveModule
         if (preg_match("/^history (.+)$/i", $msg, $info)) {
             return $this->player_history($info[1]);
         }
-        else if (preg_match("/^history$/i", $msg, $info)) {
-            return "No name specified";
+        else {
+            if (preg_match("/^history$/i", $msg, $info)) {
+                return "No name specified";
+            }
         }
         return false;
     }
@@ -76,18 +78,23 @@ class History extends BaseActiveModule
     function player_history($name)
     {
         $name = ucfirst(strtolower($name));
-        $id   = $this->bot->core("chat")->get_uid($name);
+        $id = $this->bot->core("chat")->get_uid($name);
         if (!empty($id)) {
-            $output  = "##blob_title##::: Character history for " . $name . " :::##end##\n\n";
+            $output = "##blob_title##::: Character history for " . $name . " :::##end##\n\n";
             $content = $this->bot->core("tools")
-                ->get_site("http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . $name . " ");
+                ->get_site(
+                "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . $name . " "
+            );
             if (!$content['error']) {
                 $history = $this->bot->core("tools")
                     ->xmlparse($content['content'], "history");
-                $events  = explode("<entry", $history);
-                for ($i = 1; $i < count($events); $i++)
-                {
-                    if (preg_match("/date=\"(.+)\" level=\"([0-9]+)\" ailevel=\"([0-9]*)\" faction=\"(.+)\" guild=\"(.*)\" rank=\"(.*)\"/i", $events[$i], $result)) {
+                $events = explode("<entry", $history);
+                for ($i = 1; $i < count($events); $i++) {
+                    if (preg_match(
+                        "/date=\"(.+)\" level=\"([0-9]+)\" ailevel=\"([0-9]*)\" faction=\"(.+)\" guild=\"(.*)\" rank=\"(.*)\"/i",
+                        $events[$i], $result
+                    )
+                    ) {
                         if (empty($result[5])) {
                             $result[5] = "##white##Not in guild##end##";
                         }
@@ -95,14 +102,20 @@ class History extends BaseActiveModule
                         if (empty($result[4])) {
                             $result[4] = "##white##No faction##end##";
                         }
-                        else if ($result[4] == 'Omni') {
-                            $result[4] = "##omni##Omni ##end##";
-                        }
-                        else if ($result[4] == 'Clan') {
-                            $result[4] = "##clan##Clan ##end##";
-                        }
-                        else if ($result[4] == 'Neutral') {
-                            $result[4] = "##neutral##Neutral ##end##";
+                        else {
+                            if ($result[4] == 'Omni') {
+                                $result[4] = "##omni##Omni ##end##";
+                            }
+                            else {
+                                if ($result[4] == 'Clan') {
+                                    $result[4] = "##clan##Clan ##end##";
+                                }
+                                else {
+                                    if ($result[4] == 'Neutral') {
+                                        $result[4] = "##neutral##Neutral ##end##";
+                                    }
+                                }
+                            }
                         }
 
                         if (!empty($result[6])) {
@@ -118,13 +131,11 @@ class History extends BaseActiveModule
                 return "History for " . $name . " :: " . $this->bot
                     ->core("tools")->make_blob("click to view", $output);
             }
-            else
-            {
+            else {
                 return $content['errordesc'];
             }
         }
-        else
-        {
+        else {
             return "Player ##highlight##" . $name . "##end## does not exist.";
         }
     }

@@ -51,8 +51,8 @@ class ping extends BaseActiveModule
         $this->register_command('all', 'ping', 'OWNER');
         $this->register_command('all', 'tracert', 'OWNER');
 
-        $this->help['description']        = 'Runs a ping or trace route to chat server that the bot is currently running on.';
-        $this->help['command']['ping']    = "Pings the current chat server and shows the result.";
+        $this->help['description'] = 'Runs a ping or trace route to chat server that the bot is currently running on.';
+        $this->help['command']['ping'] = "Pings the current chat server and shows the result.";
         $this->help['command']['tracert'] = "Runs a trace route to the current chat server and shows the result.";
 
         $this->bot->core("settings")
@@ -67,8 +67,10 @@ class ping extends BaseActiveModule
         if (preg_match("/^ping$/i", $msg)) {
             return $this->ping_server();
         }
-        else if (preg_match("/^tracert$/i", $msg)) {
-            return $this->tracert_server();
+        else {
+            if (preg_match("/^tracert$/i", $msg)) {
+                return $this->tracert_server();
+            }
         }
     }
 
@@ -76,10 +78,10 @@ class ping extends BaseActiveModule
     function ping_server()
     {
         $count = $this->bot->core("settings")->get("Ping", "PingCount");
-        $host  = $this->select_dimension(); //Dimension we're on
+        $host = $this->select_dimension(); //Dimension we're on
 
         // replace bad chars
-        $host  = preg_replace("/[^A-Za-z0-9.-]/", "", $host);
+        $host = preg_replace("/[^A-Za-z0-9.-]/", "", $host);
         $count = preg_replace("/[^0-9]/", "", $count);
 
         //check target IP or domain
@@ -87,8 +89,7 @@ class ping extends BaseActiveModule
             $results = system("ping -c$count -w$count $host", $details);
             system("killall ping");
         }
-        else
-        {
+        else {
             $results = exec("ping -n $count $host", $details);
         }
 
@@ -99,10 +100,8 @@ class ping extends BaseActiveModule
         if (empty($results)) {
             $msg .= "Could not find results.  Please check <i>!settings ping</i> and verify you have the correct system type selected.";
         }
-        else
-        {
-            foreach ($details as $key => $value)
-            {
+        else {
+            foreach ($details as $key => $value) {
                 $msg .= $value . "\n";
             }
         }
@@ -115,10 +114,10 @@ class ping extends BaseActiveModule
     function tracert_server()
     {
         $count = $this->bot->core("settings")->get("Ping", "PingCount");
-        $host  = $this->select_dimension(); //Dimension we're on
+        $host = $this->select_dimension(); //Dimension we're on
 
         // replace bad chars
-        $host  = preg_replace("/[^A-Za-z0-9.-]/", "", $host);
+        $host = preg_replace("/[^A-Za-z0-9.-]/", "", $host);
         $count = preg_replace("/[^0-9]/", "", $count);
 
         //check target IP or domain
@@ -126,8 +125,7 @@ class ping extends BaseActiveModule
             $results = system("traceroute $host", $details);
             system("killall -q traceroute");
         }
-        else
-        {
+        else {
             $results = exec("tracert $host", $details);
         }
 
@@ -137,10 +135,8 @@ class ping extends BaseActiveModule
         if (empty($results)) {
             $msg .= "Could not find results.  Please check <i>!settings ping</i> and verify you have the correct system type selected.";
         }
-        else
-        {
-            foreach ($details as $key => $value)
-            {
+        else {
+            foreach ($details as $key => $value) {
                 $msg .= $value . "\n";
             }
         }
@@ -155,18 +151,17 @@ class ping extends BaseActiveModule
     */
     function select_dimension()
     {
-        switch ($this->bot->dimension)
-        {
-            case 0:
-                return "chat.dt.funcom.com";
-            case 1;
-                return "chat.d1.funcom.com";
-            case 2:
-                return "chat.d2.funcom.com";
-            case 3:
-                return "chat.d3.funcom.com";
-            default:
-                return false;
+        switch ($this->bot->dimension) {
+        case 0:
+            return "chat.dt.funcom.com";
+        case 1;
+            return "chat.d1.funcom.com";
+        case 2:
+            return "chat.d2.funcom.com";
+        case 3:
+            return "chat.d3.funcom.com";
+        default:
+            return false;
         }
     }
 

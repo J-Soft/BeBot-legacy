@@ -47,8 +47,8 @@ class Team
     function Team(&$teamMember, $teamName)
     {
         $this->teamMembers = array();
-        $this->teamName    = $teamName;
-        $this->numMembers  = 0;
+        $this->teamName = $teamName;
+        $this->numMembers = 0;
         $this->AddMember($teamMember);
     }
 
@@ -161,11 +161,11 @@ class TeamMember
 
     function TeamMember($name, $level, $profession, $guild, $leader = false)
     {
-        $this->name       = $name;
-        $this->level      = $level;
+        $this->name = $name;
+        $this->level = $level;
         $this->profession = $profession;
-        $this->guild      = $guild;
-        $this->leader     = $leader;
+        $this->guild = $guild;
+        $this->leader = $leader;
     }
 
 
