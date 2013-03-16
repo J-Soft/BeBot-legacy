@@ -562,7 +562,7 @@ class Bot
     )
     {
         // Never send any privategroup message in AoC, because this would disconnect the bot
-        if ($this->game == "aoc") {
+        if (AOCHAT_GAME == "aoc") {
             return FALSE;
         }
 
@@ -898,7 +898,7 @@ class Bot
             return true;
         }
         if ($channel == "gmsg") {
-            if ($group == $this->guildname || ($this->game == "aoc" && $group == "~Guild")) {
+            if ($group == $this->guildname || (AOCHAT_GAME == "aoc" && $group == "~Guild")) {
                 $group = "org";
             }
             $registered = $this->commands[$channel][$group];
@@ -994,7 +994,7 @@ class Bot
         $user = $this->core("chat")->get_uname($args[0]);
         $mem = $this->core("notify")->check($user);
 
-        if ($this->game == "ao") {
+        if (AOCHAT_GAME == "ao") {
 
             // Make sure we only cache members and guests to prevent any issues with !is and anything else that might do buddy actions on non members.
             if ($mem) {
@@ -1410,10 +1410,10 @@ class Bot
         $args[2] = utf8_decode($args[2]);
 
         if (isset($this->commands["gmsg"][$group]) || $group == $this->guildname
-            || ($this->game == "aoc" && $group == "~Guild")
+            || (AOCHAT_GAME == "aoc" && $group == "~Guild")
         ) {
 
-            if ($this->game == "aoc" && $group == "~Guild") {
+            if (AOCHAT_GAME == "aoc" && $group == "~Guild") {
                 $msg = "[" . $this->guildname . "] ";
             }
             else {
@@ -1431,7 +1431,7 @@ class Bot
 
         $disgc = $this->core("settings")->get("Core", "DisableGC");
         $disgcchat = $this->core("settings")->get("Core", "DisableGCchat");
-        if (($group == $this->guildname || ($this->game == "aoc" && $group == "~Guild")) && $disgc && $disgcchat) {
+        if (($group == $this->guildname || (AOCHAT_GAME == "aoc" && $group == "~Guild")) && $disgc && $disgcchat) {
             Return FALSE;
         }
 
@@ -1453,7 +1453,7 @@ class Bot
         }
 
         if (!isset($this->other_bots[$user])) {
-            if ($group == $this->guildname || ($this->game == "aoc" && $group == "~Guild")) {
+            if ($group == $this->guildname || (AOCHAT_GAME == "aoc" && $group == "~Guild")) {
                 if (!$disgc) {
                     $found = $this->handle_command_input($user, $args[2], "gc");
                 }
