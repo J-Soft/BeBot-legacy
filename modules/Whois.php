@@ -125,7 +125,7 @@ class Whois extends BaseActiveModule
     */
     function buddy($name, $msg)
     {
-        if ($this->bot->game == "aoc") {
+        if (AOCHAT_GAME == "aoc") {
             if (isset($this->name[$name])) {
                 $user = $this->name[$name];
                 $origin = $this->origin[$name];

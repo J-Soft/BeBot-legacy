@@ -80,8 +80,8 @@ class ModuleCatcher_Core extends BasePassiveModule
         }
 
         // Load up game core-modules
-        if (is_dir("./core/" . $this->bot->game . "/")) {
-            $folder = dir("./core/" . $this->bot->game . "/");
+        if (is_dir("./core/" . AOCHAT_GAME . "/")) {
+            $folder = dir("./core/" . AOCHAT_GAME . "/");
             while ($mod = $folder->read()) {
                 if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)) {
                     $value = $this->bot->core("ini")->get($mod, "Core");
@@ -138,8 +138,8 @@ class ModuleCatcher_Core extends BasePassiveModule
         }
 
         // Load up all game modules
-        if (is_dir("./modules/" . $this->bot->game . "/")) {
-            $folder = dir("./modules/" . $this->bot->game . "/");
+        if (is_dir("./modules/" . AOCHAT_GAME . "/")) {
+            $folder = dir("./modules/" . AOCHAT_GAME . "/");
             while ($mod = $folder->read()) {
                 if (!is_dir($mod) && !preg_match("/^_/", $mod) && preg_match("/\.php$/i", $mod)) {
                     $value = $this->bot->core("ini")->get($mod, "Modules");

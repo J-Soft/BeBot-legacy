@@ -235,6 +235,7 @@ else {
 
 define('AOCHAT_GAME', $game);
 define('AOCHAT_GAME_DIM', $dim);
+define('AOCHAT_GAME_DIM_NAME', $dimension);
 
 require_once "./Sources/MySQL.php";
 require_once "./Sources/AOChat.php";

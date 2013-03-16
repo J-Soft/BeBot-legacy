@@ -185,6 +185,7 @@ class BotStatistics_Core extends BasePassiveModule
                 if ($monthtime < $bot[4]) {
                     $month = time() - $bot[4];
                 }
+                $dayon = 0;
                 $weekon = 0;
                 $monthon = 0;
                 $allon = 0;
@@ -390,7 +391,7 @@ class BotStatistics_Core extends BasePassiveModule
         $this->online = TRUE;
         $this->bot->db->query(
             "UPDATE " . $this->DB . "#___bots SET time = '" . time() . "' WHERE bot = '" . $this->bot->botname
-                . "' AND dim = '" . $this->bot->dimension . "'"
+                . "' AND dim = '" . AOCHAT_GAME_DIM_NAME . "'"
         );
         if ($cron == 86400) {
             $monthago = time() - (60 * 60 * 24 * 30);

@@ -256,7 +256,7 @@ class Bot
         unset($this->username);
         unset($this->password);
 
-        if ($this->game == "aoc") {
+        if (AOCHAT_GAME == "aoc") {
             $dispg = TRUE;
         }
         else {
@@ -664,7 +664,7 @@ class Bot
                 $msg = $this->core("colors")->colorize("normal", $msg);
             }
 
-            if ($this->game == "ao") {
+            if (AOCHAT_GAME == "ao") {
                 $guild = $this->guildname;
             }
             else {
@@ -1347,7 +1347,7 @@ class Bot
     */
     function inc_gannounce($args)
     {
-        if ($args[2] == 32772 && $this->game == "ao") {
+        if ($args[2] == 32772 && AOCHAT_GAME == "ao") {
             $this->guildname = $args[1];
             $this->log("CORE", "INC_GANNOUNCE", "Detected org name as: $args[1]");
             if ($this->vannounce) {
@@ -1362,7 +1362,7 @@ class Bot
     */
     function inc_vannounce($args)
     {
-        if ($this->game == "ao") {
+        if (AOCHAT_GAME == "ao") {
             if ((stripos($args[1], "Welcome to Anarchy Online") !== FALSE) and $this->guildbot == TRUE) {
                 $msg = BOT_VERSION_NAME . " v." . BOT_VERSION . BOT_VERSION_INFO . " online";
                 if (!empty($this->guildname)) {
