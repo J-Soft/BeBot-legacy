@@ -517,7 +517,7 @@ class IRC extends BaseActiveModule
                                 }
 
                                 $res .= " (Lvl " . $who['level'] . " ";
-                                if ($this->bot->game == "ao") {
+                                if (AOCHAT_GAME == "ao") {
                                     $res .= "/ " . $who['at_id'] . " (" . $who['at'] . ") ";
                                 }
                                 $res .= $who['class'];
@@ -1234,7 +1234,7 @@ class IRC extends BaseActiveModule
                 $result .= " " . $who["lastname"];
             }
 
-            if ($this->bot->game == "ao") {
+            if (AOCHAT_GAME == "ao") {
                 $result .= " is a level " . $who["level"] . " " . $at . "" . $who["gender"] . " " . $who["breed"] . " ";
                 $result .= $who["profession"] . ", " . $who["faction"];
             }

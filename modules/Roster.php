@@ -48,7 +48,7 @@ class Roster_Handler extends BaseActiveModule
         $this->register_command("all", "rosterupdate", "ADMIN");
         $this->register_command("all", "buddylist", "ADMIN");
 
-        if ($this->bot->game == "ao") {
+        if (AOCHAT_GAME == "ao") {
             $this->register_event("cron", "1hour");
         }
 
@@ -261,7 +261,7 @@ class Roster_Handler extends BaseActiveModule
         $blob = "";
         $total = 0;
 
-        if ($this->bot->game == "aoc") {
+        if (AOCHAT_GAME == "aoc") {
             $cp = "class";
         }
         else {

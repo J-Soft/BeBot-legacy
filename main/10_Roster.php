@@ -306,7 +306,7 @@ class Roster_Core extends BasePassiveModule
         /*
         Only run the update if the XML returns more than one member, otherwise we skip the update.
         */
-        if (count($members) > 1 || $this->bot->game == "aoc") {
+        if (count($members) > 1 || AOCHAT_GAME == "aoc") {
             $buddies = $this->bot->aoc->buddies;
             $this->added = 0;
             $this->removed = 0;
@@ -320,7 +320,7 @@ class Roster_Core extends BasePassiveModule
             }
             unset($db_members_sql);
 
-            if ($this->bot->game == "ao") {
+            if (AOCHAT_GAME == "ao") {
                 /*
                 Go through all members and make sure we are up to date.
                 */
@@ -507,7 +507,7 @@ class Roster_Core extends BasePassiveModule
                     */
                     $whois = $this->bot->core("whois")->lookup($member[1]);
 
-                    if ($this->bot->game == "ao") {
+                    if (AOCHAT_GAME == "ao") {
                         /*
                         Catch deleted characters.
                         */
@@ -811,7 +811,7 @@ class Roster_Core extends BasePassiveModule
             || $this->bot
                 ->core("settings")
                 ->get("Members", "Roster") == "Fallback")
-            && $this->bot->game == "ao"
+            && AOCHAT_GAME == "ao"
         ) {
             // Get the guild roster
             $i = 0;

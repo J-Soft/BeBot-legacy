@@ -69,7 +69,7 @@ class BotStatisticsUI extends BaseActiveModule
     function check_bots($name, $origin, $msg)
     {
         if (!$this->bot->accessallbots) {
-            $msg = $this->bot->botname . " " . $this->bot->dimension;
+            $msg = $this->bot->botname . " " . AOCHAT_GAME_DIM_NAME;
         }
         if (!empty($msg)) {
             $msg = explode(" ", $msg, 2);

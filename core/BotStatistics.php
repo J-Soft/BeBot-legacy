@@ -118,12 +118,12 @@ class BotStatistics_Core extends BasePassiveModule
     {
         $result = $this->bot->db->select(
             "SELECT bot, dim, online, time FROM " . $this->DB . "#___bots WHERE bot = '" . $this->bot->botname
-                . "' AND dim = '" . $this->bot->dimension . "'"
+                . "' AND dim = '" . AOCHAT_GAME_DIM_NAME . "'"
         );
         if (empty($result)) {
             $this->bot->db->query(
                 "INSERT INTO " . $this->DB . "#___bots (bot, dim, online, time, start) VALUES ('" . $this->bot->botname
-                    . "', '" . $this->bot->dimension . "', " . time() . ", 0, " . time() . ")"
+                    . "', '" . AOCHAT_GAME_DIM_NAME . "', " . time() . ", 0, " . time() . ")"
             );
         }
         else {
@@ -137,7 +137,7 @@ class BotStatistics_Core extends BasePassiveModule
             }
             $this->bot->db->query(
                 "UPDATE " . $this->DB . "#___bots SET online = " . time() . " WHERE bot = '" . $this->bot->botname
-                    . "' AND dim = '" . $this->bot->dimension . "'"
+                    . "' AND dim = '" . AOCHAT_GAME_DIM . "'"
             );
         }
     }
@@ -146,7 +146,7 @@ class BotStatistics_Core extends BasePassiveModule
     function check_bots($name, $origin, $bot = FALSE, $dim = FALSE)
     {
         if (!$dim) {
-            $dim = $this->bot->dimension;
+            $dim = AOCHAT_GAME_DIM_NAME;
         }
         if ($bot) {
             $bot = mysql_real_escape_string($bot);
@@ -397,7 +397,7 @@ class BotStatistics_Core extends BasePassiveModule
             $monthago = time() - (60 * 60 * 24 * 30);
             $log = $this->bot->db->select(
                 "SELECT ID, start, end FROM " . $this->DB . "#___bots_log WHERE bot = '" . $this->bot->botname
-                    . "' AND dim = '" . $this->bot->dimension . "' AND end < " . $monthago
+                    . "' AND dim = '" . AOCHAT_GAME_DIM_NAME . "' AND end < " . $monthago
             );
             if (!empty($log)) {
                 foreach ($log as $l) {
@@ -405,7 +405,7 @@ class BotStatistics_Core extends BasePassiveModule
                     $this->bot->db->query(
                         "UPDATE " . $this->DB . "#___bots SET total = total + " . $total
                             . ", restarts = restarts + 1 WHERE bot = '" . $this->bot->botname . "' AND dim = '"
-                            . $this->bot->dimension . "'"
+                            . AOCHAT_GAME_DIM_NAME . "'"
                     );
                     $this->bot->db->query("DELETE FROM " . $this->DB . "#___bots_log WHERE ID = " . $l[0]);
 
@@ -420,7 +420,7 @@ class BotStatistics_Core extends BasePassiveModule
         if ($this->online) {
             $this->bot->db->query(
                 "UPDATE " . $this->DB . "#___bots SET time = " . time() . " WHERE bot = '" . $this->bot->botname
-                    . "' AND dim = '" . $this->bot->dimension . "'"
+                    . "' AND dim = '" . AOCHAT_GAME_DIM_NAME . "'"
             );
         }
     }

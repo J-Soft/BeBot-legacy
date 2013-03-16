@@ -186,7 +186,7 @@ class Logon extends BaseActiveModule
                                 }
 
                                 $res .= "Lvl ##logon_level##" . $result["level"] . "##end##";
-                                if ($this->bot->game == "ao") {
+                                if (AOCHAT_GAME == "ao") {
                                     $res
                                         .= "/##logon_ailevel##" . $result["at_id"] . "##end## " . $result["faction"] . " "
                                         . $result["profession"];

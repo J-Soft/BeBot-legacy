@@ -306,7 +306,7 @@ class Alts_Core extends BasePassiveModule
                         $whoisalt = $this->bot->core("whois")->lookup($alt);
                         if (!empty($whoisalt['level'])) {
                             $window .= "\n##normal## - (##highlight##" . $whoisalt['level'] . "##end##";
-                            if ($this->bot->game == "ao") {
+                            if (AOCHAT_GAME == "ao") {
                                 $window .= "/##lime##" . $whoisalt['at_id'] . "##end##";
                             }
                             $window .= " " . $whoisalt['profession'] . ")##end##";

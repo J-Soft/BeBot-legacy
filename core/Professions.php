@@ -54,7 +54,7 @@ class Profession_Core extends BasePassiveModule
         $this->bot->db->query("DROP TABLE IF EXISTS #___professions");
         $this->register_module("professions");
 
-        if ($this->bot->game == "aoc") {
+        if (AOCHAT_GAME == "aoc") {
             $this->cache = array(
                 'Barbarian' => 'barb',
                 'Conqueror' => 'conq',

@@ -6,7 +6,10 @@ Version 0.6.9
 - Fixed a bug in !massmsg/!massinvite reported by bitnykk @ Forum
 - Added a setting for Raffle Output
 - Fixes following AO server merges
+  - All characters will be considered rerolled by the bot. Wipe your users table if you want to start fresh.
+  - It would probably be a good idea to wipe your whois table.
 - Updated serverlist for AOC
+- Removed AO module Server as it no longer serves any purpose.
 
 
 -------------

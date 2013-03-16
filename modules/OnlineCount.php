@@ -52,7 +52,7 @@ class OnlineCounting extends BaseActiveModule
         $this->register_command("all", "count", "GUEST");
         $this->register_command("all", "check", "GUEST");
 
-        if ($this->bot->game == "aoc") {
+        if (AOCHAT_GAME == "aoc") {
             $this->cp = "class";
         }
         else {

@@ -55,7 +55,7 @@ class Whois extends BaseActiveModule
         $this->help['command']['whois <name>'] = "Shows information about player <name>.";
 
         $this->register_command("all", "whois", "GUEST");
-        if ($this->bot->game == "aoc") {
+        if (AOCHAT_GAME == "aoc") {
             $this->register_event("buddy");
         }
 
@@ -145,13 +145,13 @@ class Whois extends BaseActiveModule
     function whois_player($source, $name, $origin)
     {
         $name = ucfirst(strtolower($name));
-        if ($this->bot->game == "aoc") {
+        if (AOCHAT_GAME == "aoc") {
             $this->name[$name] = $source;
             $this->origin[$name] = $origin;
         }
         $who = $this->bot->core("whois")->lookup($name);
 
-        if ($this->bot->game == "aoc" && $who) {
+        if (AOCHAT_GAME == "aoc" && $who) {
             unset($this->name[$name]);
             unset($this->origin[$name]);
         }
@@ -161,7 +161,7 @@ class Whois extends BaseActiveModule
         elseif (!$who["error"]) {
             $result = "##whois_name##" . $who["nickname"] . "##end## is a level ";
             $result .= "##whois_level##" . $who["level"] . "##end##";
-            if ($this->bot->game == "ao") {
+            if (AOCHAT_GAME == "ao") {
                 $result .= "/##whois_alienlevel##" . $who["at_id"] . "##end## " . $who["breed"];
             }
             $result .= " ##whois_profession##";
@@ -174,7 +174,7 @@ class Whois extends BaseActiveModule
                 $result .= $who["profession"];
             }
 
-            if ($this->bot->game == "ao") {
+            if (AOCHAT_GAME == "ao") {
                 $result .= "##end##, ";
             }
 
@@ -204,7 +204,7 @@ class Whois extends BaseActiveModule
                 $result .= "##end##, ";
             }
 
-            if ($this->bot->game == "ao") {
+            if (AOCHAT_GAME == "ao") {
                 $result .= "##" . $who["faction"] . "##" . $who["faction"] . "##end##";
             }
 

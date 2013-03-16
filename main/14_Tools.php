@@ -59,7 +59,7 @@ class tools extends BasePassiveModule
 
         $this->useragent
             = BOT_VERSION_NAME . "/" . BOT_VERSION . BOT_VERSION_INFO . " (Originating bot: " . $this->bot->botname
-            . "; Dimension: " . $this->bot->dimension . ";)";
+            . "; Dimension: " . AOCHAT_GAME_DIM_NAME . ";)";
     }
 
 
@@ -71,7 +71,7 @@ class tools extends BasePassiveModule
         case'o':
         case'gu':
         case '3':
-            if ($this->bot->game == "aoc") {
+            if (AOCHAT_GAME == "aoc") {
                 $chatcmd = "gu <pre>";
             }
             else {

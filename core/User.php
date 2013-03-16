@@ -160,7 +160,7 @@ class User_Core extends BasePassiveModule
             }
         }
 
-        if ($this->bot->game == "ao") {
+        if (AOCHAT_GAME == "ao") {
             // Add the user to the whois cache.
             $members = $this->bot->core("whois")->lookup($name);
             if ($members["error"] == true) {
