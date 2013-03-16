@@ -296,26 +296,11 @@ class Roster_Core extends BasePassiveModule
             "Starting roster update for guild id: " . $this->bot->guildid . " on RK" . $this->bot->dimension
         );
         if (!$this->bot->core("settings")->get("Members", "QuietUpdate")) {
-            $this->bot->send_gc("##normal##" . $msg . "Roster update starting ::: System busy##end##");
+            $this->bot->send_gc("##normal## Roster update starting ::: System busy##end##");
         }
         // Get the guild roster
-        if ($this->bot->game == "ao") {
-            $dimension = $this->bot->dimension;
-            switch (strtolower($dimension)) {
-            case "testlive":
-                $dimension = "0";
-                break;
-            case "atlantean";
-                $dimension = "1";
-                break;
-            case "rimor":
-                $dimension = "2";
-                break;
-            case "die neue welt":
-                $dimension = "3";
-                break;
-            }
-            $members = $this->parse_org($dimension, $this->bot->guildid);
+        if (AOCHAT_GAME == "ao") {
+            $members = $this->parse_org(AOCHAT_GAME_DIM, $this->bot->guildid);
         }
 
         /*
@@ -365,10 +350,10 @@ class Roster_Core extends BasePassiveModule
                                 if ($member["id"] == "0" || $member["id"] == "-1" || $member["id"] == ""
                                     || $member["id"] == NULL
                                     || empty($member["id"])
-                                    || strlen($id) < 5
+                                    //|| strlen($id) < 5
                                 ) {
                                     $this->bot->log(
-                                        "ROSTER", "ID", "Get ID Failed for $name (ID: " . $member["id"] . ")"
+                                        "ROSTER", "ID", "Get ID Failed for " . $member['id'] . " (ID: " . $member["id"] . ")"
                                     );
                                 }
                                 else {
@@ -670,7 +655,7 @@ class Roster_Core extends BasePassiveModule
         else {
             $this->bot->log("ROSTER", "UPDATE", "Starting roster update");
             if (!$this->bot->core("settings")->get("Members", "QuietUpdate")) {
-                $this->bot->send_pgroup("##normal##" . $msg . "Roster update starting ::: System busy##end##");
+                $this->bot->send_pgroup("##normal## Roster update starting ::: System busy##end##");
             }
             $buddies = $this->bot->aoc->buddies;
             $num = 0;
@@ -712,7 +697,7 @@ class Roster_Core extends BasePassiveModule
                         if ($id != $member[0]) {
                             if ($id == "0" || $id == "-1" || $id == "" || $id == NULL || empty($id) || strlen($id) < 5
                             ) {
-                                $this->bot->log("ROSTER", "ID", "Get ID Failed for $name (ID: " . $id . ")");
+                                $this->bot->log("ROSTER", "ID", "Get ID Failed for " . $member[1] . " (ID: " . $id . ")");
                             }
                             else {
                                 $this->erase(

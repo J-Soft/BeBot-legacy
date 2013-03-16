@@ -462,12 +462,12 @@ class Whois_Core extends BasePassiveModule
         ) {
             $site1NAME = "Anarchy-Online";
             $site1URL
-                = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower(
+                = "http://people.anarchy-online.com/character/bio/d/" . AOCHAT_GAME_DIM . "/name/" . strtolower(
                 $name
             ) . "/bio.xml";
             $site2NAME = "Auno";
             $site2URL
-                = "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . strtolower(
+                = "http://auno.org/ao/char.php?output=xml&dimension=" . AOCHAT_GAME_DIM . "&name=" . strtolower(
                 $name
             );
         }
@@ -476,7 +476,7 @@ class Whois_Core extends BasePassiveModule
         ) {
             $site1NAME = "Anarchy-Online";
             $site1URL
-                = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower(
+                = "http://people.anarchy-online.com/character/bio/d/" . AOCHAT_GAME_DIM . "/name/" . strtolower(
                 $name
             ) . "/bio.xml";
             $site2NAME = FALSE;
@@ -486,7 +486,7 @@ class Whois_Core extends BasePassiveModule
         ) {
             $site1NAME = "Auno";
             $site1URL
-                = "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . strtolower(
+                = "http://auno.org/ao/char.php?output=xml&dimension=" . AOCHAT_GAME_DIM . "&name=" . strtolower(
                 $name
             );
             $site2NAME = FALSE;
@@ -494,12 +494,12 @@ class Whois_Core extends BasePassiveModule
         else {
             $site1NAME = "Auno";
             $site1URL
-                = "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . strtolower(
+                = "http://auno.org/ao/char.php?output=xml&dimension=" . AOCHAT_GAME_DIM . "&name=" . strtolower(
                 $name
             );
             $site2NAME = "Anarchy-Online";
             $site2URL
-                = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower(
+                = "http://people.anarchy-online.com/character/bio/d/" . AOCHAT_GAME_DIM . "/name/" . strtolower(
                 $name
             ) . "/bio.xml";
         }
@@ -805,13 +805,13 @@ class Whois_Core extends BasePassiveModule
 
         if ($this->bot->core("settings")->get("Whois", "ShowLinks") == TRUE) {
             $funcomURL
-                = "http://people.anarchy-online.com/character/bio/d/" . $this->bot->dimension . "/name/" . strtolower(
+                = "http://people.anarchy-online.com/character/bio/d/" . AOCHAT_GAME_DIM . "/name/" . strtolower(
                 $whois['nickname']
             );
             $vhabotURL
                 = "http://characters.vhabot.net/character.php?character=" . strtolower($whois['nickname']) . "&dimension="
-                . $this->bot->dimension;
-            $aunoURL = "http://auno.org/ao/char.php?dimension=" . $this->bot->dimension . "&name=" . strtolower(
+                . AOCHAT_GAME_DIM;
+            $aunoURL = "http://auno.org/ao/char.php?dimension=" . AOCHAT_GAME_DIM . "&name=" . strtolower(
                 $whois['nickname']
             );
 

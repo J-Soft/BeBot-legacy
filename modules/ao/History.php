@@ -83,7 +83,7 @@ class History extends BaseActiveModule
             $output = "##blob_title##::: Character history for " . $name . " :::##end##\n\n";
             $content = $this->bot->core("tools")
                 ->get_site(
-                "http://auno.org/ao/char.php?output=xml&dimension=" . $this->bot->dimension . "&name=" . $name . " "
+                "http://auno.org/ao/char.php?output=xml&dimension=" . AOCHAT_GAME_DIM . "&name=" . $name . " "
             );
             if (!$content['error']) {
                 $history = $this->bot->core("tools")

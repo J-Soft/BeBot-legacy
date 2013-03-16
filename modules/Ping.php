@@ -78,7 +78,7 @@ class ping extends BaseActiveModule
     function ping_server()
     {
         $count = $this->bot->core("settings")->get("Ping", "PingCount");
-        $host = $this->select_dimension(); //Dimension we're on
+        $host = $this->bot->server;
 
         // replace bad chars
         $host = preg_replace("/[^A-Za-z0-9.-]/", "", $host);
@@ -144,27 +144,4 @@ class ping extends BaseActiveModule
         return "Trace route results :: " . $this->bot->core("tools")
             ->make_blob("Click to view", $msg);
     }
-
-
-    /*
-    Pick the correct dimention
-    */
-    function select_dimension()
-    {
-        switch ($this->bot->dimension) {
-        case 0:
-            return "chat.dt.funcom.com";
-        case 1;
-            return "chat.d1.funcom.com";
-        case 2:
-            return "chat.d2.funcom.com";
-        case 3:
-            return "chat.d3.funcom.com";
-        default:
-            return false;
-        }
-    }
-
 }
-
-?>

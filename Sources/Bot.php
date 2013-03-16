@@ -109,8 +109,7 @@ class Bot
 {
     var $lasttell;
     var $banmsgout;
-    var $dimension;
-    var $botversion;
+     var $botversion;
     var $botversionname;
     var $other_bots;
     var $aoc;
@@ -131,6 +130,8 @@ class Bot
     var $proxy_server_address;
     var $starttime;
     var $commands;
+    var $server;
+    var $port;
 
     private $module_links;
     private $cron_times;
@@ -149,19 +150,18 @@ class Bot
     Prepares bot.
     */
     function __construct(
-        $uname, $pwd, $botname, $dim, $botversion,
+        $uname, $pwd, $botname, $botversion,
         $botversionname, $other_bots, &$aoc, &$irc, &$db,
         $commprefix, $crondelay, $telldelay, $maxsize,
         $recontime, $guildbot, $guildid, $guild, $log,
         $log_path, $log_timestamp, $use_proxy_server,
-        $proxy_server_address, $proxy_server_port, $game,
-        $accessallbots, $sixtyfourbit
+        $proxy_server_address, $proxy_server_port,
+        $accessallbots, $sixtyfourbit, $server, $port
     )
     {
         $this->username = $uname;
         $this->password = $pwd;
         $this->botname = ucfirst(strtolower($botname));
-        $this->dimension = ucfirst(strtolower($dim));
         $this->botversion = $botversion;
         $this->botversionname = $botversionname;
         $this->other_bots = $other_bots;
@@ -193,8 +193,10 @@ class Bot
         $this->cron_job_activate = array();
         $this->cron_job_timer = array();
         $this->cron_activated = false;
-        $this->game = $game;
         $this->accessallbots = $accessallbots;
+
+        $this->server = $server;
+        $this->port = $port;
 
         $this->glob = array();
         $this->vannounce = FALSE;
@@ -209,43 +211,11 @@ class Bot
         // Make sure all cronjobs are locked, we don't want to run any cronjob before we are logged in!
         $this->cron_activated = false;
 
-        // Get dimension server
-        switch ($this->dimension) {
-        case "0":
-            $dimension = "Testlive";
-            break;
-        case "1";
-            $dimension = "Atlantean";
-            break;
-        case "2":
-            $dimension = "Rimor";
-            break;
-        case "3":
-            $dimension = "Die neue welt";
-            break;
-        Default:
-            $dimension = ucfirst(strtolower($this->dimension));
-        }
-
-        Require("conf/ServerList.php");
-
-        if (isset($server_list['ao'][$dimension])) {
-            $server = $server_list['ao'][$dimension]['server'];
-            $port = $server_list['ao'][$dimension]['port'];
-        }
-        elseif (isset($server_list['aoc'][$dimension])) {
-            $server = $server_list['aoc'][$dimension]['server'];
-            $port = $server_list['aoc'][$dimension]['port'];
-        }
-        else {
-            die("Unknown dimension (" . $this->dimension . ")");
-        }
-
         // AoC authentication is a bit different
-        if ($this->game == "aoc") {
+        if (AOCHAT_GAME == "aoc") {
             $this->log("LOGIN", "STATUS", "Authenticating");
             if ($this->aoc->authenticateConan(
-                $server, $port, $this->username, $this->password, $this->botname, $this->sixtyfourbit
+                $this->server, $this->port, $this->username, $this->password, $this->botname, $this->sixtyfourbit
             ) == false
             ) {
                 $this->cron_activated = false;
@@ -260,8 +230,8 @@ class Bot
         }
         else {
             // Open connection
-            $this->log("LOGIN", "STATUS", "Connecting to $this->game server $server:$port");
-            if (!$this->aoc->connect($server, $port, $this->sixtyfourbit)) {
+            $this->log("LOGIN", "STATUS", "Connecting to " . AOCHAT_GAME . " server $this->server:$this->port");
+            if (!$this->aoc->connect($this->server, $this->port, $this->sixtyfourbit)) {
                 $this->cron_activated = false;
                 $this->disconnect();
                 $this->log(
@@ -1783,7 +1753,7 @@ class Bot
 
     public function get_all_commands()
     {
-        Return $commands;
+        Return $this->commands;
     }
 
 
@@ -1791,7 +1761,6 @@ class Bot
     {
         $channel = strtolower($channel);
         $command = strtolower($command);
-        $handler = "";
         $allchannels = array(
             "gc",
             "tell",
@@ -1803,7 +1772,7 @@ class Bot
             foreach ($allchannels AS $cnl) {
                 $handlers[] = get_class($this->commands[$cnl][$command]);
             }
-            $handler = implode(", ", $handles);
+            $handler = implode(", ", $handlers);
         }
         else {
             $handler = get_class($this->commands[$channel][$command]);
@@ -1991,4 +1960,3 @@ class Bot
     }
 }
 
-?>

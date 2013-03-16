@@ -2,24 +2,19 @@
 // AO
 $server_list['ao']['Testlive'] = array(
     'server' => 'chat.dt.funcom.com',
-    'port' => 7109
+    'port' => 7109,
+    'dim' => 4
 );
-$server_list['ao']['Atlantean'] = array(
+$server_list['ao']['Rubi-Ka'] = array(
     'server' => 'chat.d1.funcom.com',
-    'port' => 7101
-);
-$server_list['ao']['Rimor'] = array(
-    'server' => 'chat.d2.funcom.com',
-    'port' => 7102
-);
-$server_list['ao']['Die neue welt'] = array(
-    'server' => 'chat.d3.funcom.com',
-    'port' => 7103
+    'port' => 7105,
+    'dim' => 5
+
 );
 
 // AOC
 $server_list['aoc']['EU'] = array(
-    'server' => 'aoc-eu-um.live.ageofconan.com',
+    'server' => 'dm02-sto.ageofconan.com',
     'port' => 7000
 );
 $server_list['aoc']['US'] = array(

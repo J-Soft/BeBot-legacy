@@ -39,11 +39,14 @@ define('BOT_VERSION', "0.6.9");
 define('BOT_VERSION_INFO', ".(Snapshot)");
 define('BOT_VERSION_NAME', "BeBot");
 
-// Is this a development snapshot from BZR?
+// Is this a development snapshot from GIT?
 define('BOT_VERSION_SNAPSHOT', TRUE);
 
 // Is this a stable release or a development release?
 define('BOT_VERSION_STABLE', TRUE);
+
+define ('BOT_CONF_VERSION_REQ', 1);
+
 
 // Workaround for backport to 0.6 branch
 $bot_version = BOT_VERSION . BOT_VERSION_INFO;
@@ -200,16 +203,38 @@ if (empty($ao_password) || $ao_password == "") {
         die("No password set in either ./conf/" . $conffile . " or in ./conf/pw");
     }
 }
-if (is_numeric($dimension) || strcasecmp($dimension, "Atlantean") == 0 || strcasecmp($dimension, "Rimor") == 0
-    || strcasecmp($dimension, "Die neue welt") == 0
-) {
+/*
+ * Force updating of config files.
+ */
+if (!isset($conf_version))
+{
+    die("Your bot configuration is outdated or corrupted.\nPlease check its contents against the template.");
+}
+else if ($conf_version < BOT_CONF_VERSION_REQ)
+{
+    die("Options in the config file has been changed in this version of " . BOT_VERSION_NAME);
+}
+
+require_once("./conf/ServerList.php");
+
+if (isset($server_list['ao'][$dimension])) {
+    $server = $server_list['ao'][$dimension]['server'];
+    $port = $server_list['ao'][$dimension]['port'];
+    $dim = $server_list['ao'][$dimension]['dim'];
     $game = "ao";
 }
-else {
+elseif (isset($server_list['aoc'][$dimension])) {
+    $server = $server_list['aoc'][$dimension]['server'];
+    $port = $server_list['aoc'][$dimension]['port'];
+    $dim = 0;
     $game = "aoc";
+}
+else {
+    die("Unknown dimension (" . $this->dimension . ")");
 }
 
 define('AOCHAT_GAME', $game);
+define('AOCHAT_GAME_DIM', $dim);
 
 require_once "./Sources/MySQL.php";
 require_once "./Sources/AOChat.php";
@@ -235,7 +260,7 @@ echo "Creating MySQL class!\n";
 $aoc = new AOChat("callback", $game);
 echo "Creating AOChat class!\n";
 $bot
-    = new Bot($ao_username, $ao_password, $bot_name, $dimension, $bot_version, $bot_version_name, $other_bots, $aoc, $irc, $db, $command_prefix, $cron_delay, $tell_delay, $max_blobsize, $reconnect_time, $guildbot, $guild_id, $guild, $log, $logpath, $log_timestamp, $use_proxy_server, $proxy_server_address, $proxy_server_port, $game, $accessallbots, $sixtyfourbit);
+    = new Bot($ao_username, $ao_password, $bot_name, $bot_version, $bot_version_name, $other_bots, $aoc, $irc, $db, $command_prefix, $cron_delay, $tell_delay, $max_blobsize, $reconnect_time, $guildbot, $guild_id, $guild, $log, $logpath, $log_timestamp, $use_proxy_server, $proxy_server_address, $proxy_server_port, $accessallbots, $sixtyfourbit, $server, $port);
 echo "Creating main Bot class!\n";
 $db->bot = $bot;
 

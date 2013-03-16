@@ -6,7 +6,7 @@
   $ao_username = "";               // Account username
   $ao_password = "";               // Account password (optional, will request on running of Bot if not entered here)
   $bot_name = "";                  // Name of the bot-character
-  $dimension = "";                 // The name of the server you play on, or (1, 2 or 3 for AO)
+  $dimension = "";                 // The name of the server you play on. For AO this would be Rubi-Ka or Testlive
   $guild = "";                     // Name of the guild running the bot (AOC only)
 
 /*
@@ -68,5 +68,8 @@
   */
   $use_proxy_server = false;                // Enable simple web proxy server for HTTP lookups?
   $proxy_server_address = "";                // Proxy server to use address to use
+
+  // Do NOT modify this line
+  $conf_version = 1;
 
 ?>
