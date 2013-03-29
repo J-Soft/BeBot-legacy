@@ -14,7 +14,7 @@ $server_list['ao']['Rubi-Ka'] = array(
 
 // AOC
 $server_list['aoc']['EU'] = array(
-    'server' => 'dm02-sto.ageofconan.com',
+    'server' => 'dm01-sto.ageofconan.com',
     'port' => 7000
 );
 $server_list['aoc']['US'] = array(
